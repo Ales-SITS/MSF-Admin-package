@@ -1,0 +1,269 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+.siteOverviewMsf {
+  overflow: hidden;
+  padding: 1em;
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  &.teams {
+    font-family: $ms-font-family-fallbacks;
+  }
+}
+
+.overviewWrapper {
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.2);
+}
+
+.overviewWrapper h1 {
+  margin: 5px
+}
+
+.overviewWrapper h1 a {
+  text-decoration: none;
+  color: black;
+}
+
+.overviewWrapper h1 a:hover {
+  color: bisque
+}
+
+.overviewWrapper h1 a:active, .overviewWrapper h1 a:visited {
+  color: black
+}
+
+
+.overviewWrapper h3 {
+  margin: 2px
+}
+
+.detailsWrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 3px rgba(0,0,0,0.2);
+}
+
+.detailsWrapperButton {
+  outline: 0;
+  border: 0;
+  font-size: 16px;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 5px;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.detailsWrapperButton:hover {
+  background-color: bisque;
+} 
+
+.resultsWrapper {
+  max-height: 500px;
+  padding: 5px;
+  overflow-y: scroll;
+}
+
+.resultsWrapper::-webkit-scrollbar {
+  background-color: rgb(255, 255, 255);
+}
+
+.resultsWrapper::-webkit-scrollbar-thumb {
+  background-color: rgb(190, 190, 190);
+}
+
+.resultsWrapper::-webkit-scrollbar-thumb:hover {
+  background-color: bisque;
+}
+
+.resultsWrapper::-webkit-scrollbar-track {
+  background-color: rgb(250, 250, 250);
+}
+
+.detailsWrapper ul li {
+  margin: 2px 0;
+}
+
+.siteBox {
+  display: flex;
+  flex-direction: column;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  padding: 2px;
+  box-shadow: 0 0 2px rgba(0,0,0,0.5);
+  border: 1px solid rgba(167, 167, 255,0);
+  transition: 0.2s;
+}
+
+.siteBox:hover {
+  border: 1px solid rgba(167, 167, 255, 1)
+}
+
+.siteBoxTop {
+  height: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.siteBoxTop div:nth-child(1) {
+  width: 220px;
+}
+
+.siteBoxTop div:nth-child(2) {
+  width: 220px;
+  display: flex;
+  justify-content: center;
+}
+
+.siteBoxTop div:nth-child(3) {
+  width: 220px;
+  display: flex;
+  justify-content: end;
+}
+
+
+.siteBoxTop a {
+  color: black;
+  text-decoration: none;
+}
+
+.siteBoxTop a:visited, .siteBoxTop a:active {
+  color: black
+}
+
+.detailsButton {
+  outline: 0;
+  border: 0;
+  width: 100%;
+  cursor: pointer;
+  text-align: center;
+  background-color: #ffffff;
+  height: 15px;
+  line-height: 15px;
+  font-size: 10px;
+  color: rgb(255, 179, 36)
+}
+
+.mainSiteBox {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 15px 5px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 3px rgba(0,0,0,0.2);
+}
+
+.mainSiteBoxTop{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mainSiteBoxBottom{
+  display: flex
+}
+
+.mainSiteBoxBottom a {
+  text-decoration: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 30px;
+  line-height: 30px;
+  margin: 0 5px;
+  text-align: center;
+  color: black;
+  background-color: rgb(252, 189, 113);
+  transition: 0.3s;
+}
+
+.mainSiteBoxBottom a:hover {
+  color: black;
+  background-color: rgb(253, 213, 163);
+}
+
+.mainSiteBoxBottom a:visited, .mainSiteBoxBottom a:active {
+  color: black
+}  
+
+.idBox {
+  background-color: rgb(235, 235, 235);
+  text-align: right;
+  width: fit-content;
+  font-size: 10px;
+  max-height: 20px;
+  border-radius: 10px;
+  padding: 2px 5px;
+  transition: 0.2s;
+  cursor: copy
+}
+
+.idBox:hover {
+  background-color: rgb(250, 250, 250);
+}
+
+
+.loader {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+}
+
+.loader div {
+  position: absolute;
+  top: 10px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ffffff;
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+
+.loader div:nth-child(1) {
+  left: 8px;
+  animation: loader1 0.6s infinite;
+}
+.loader div:nth-child(2) {
+  left: 8px;
+  animation: loader2 0.6s infinite;
+}
+.loader div:nth-child(3) {
+  left: 32px;
+  animation: loader2 0.6s infinite;
+}
+.loader div:nth-child(4) {
+  left: 56px;
+  animation: loader3 0.6s infinite;
+}
+
+@keyframes loader1 {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes loader3 {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+@keyframes loader2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(24px, 0);
+  }
+}

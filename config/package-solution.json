@@ -1,0 +1,47 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "msf-admin-package-client-side-solution",
+    "id": "087c5348-5903-491e-b90c-03233fc57c28",
+    "version": "2.0.1.2",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "webApiPermissionRequests": [
+      {
+        "resource": "Microsoft Graph",
+        "scope": "Reports.Read.All"
+      }
+    ],
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.16.1"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "msf-admin-package description"
+      },
+      "longDescription": {
+        "default": "msf-admin-package description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "msf-admin-package Feature",
+        "description": "The feature that activates elements of the msf-admin-package solution.",
+        "id": "97999a72-c8fa-409e-9d0e-19527b72c0ea",
+        "version": "2.0.1.2"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/msf-admin-package.sppkg"
+  }
+  
+}

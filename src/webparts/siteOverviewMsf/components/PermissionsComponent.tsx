@@ -72,9 +72,9 @@ export default function PermissionsComponent (props) {
 
         }, [props]);
 
-    console.log(users)
-    console.log(groups)
-    console.log(up)
+    //console.log(users)
+    //console.log(groups)
+    //console.log(up)
 
      return (
         <div className={perstyles.permissionBoxAnchor}>

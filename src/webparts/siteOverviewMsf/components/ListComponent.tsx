@@ -24,7 +24,7 @@ export default function ListComponent (props) {
     const siteurl = props.siteurl
     const context = props.context
 
-        console.log(list)
+    //console.log(list)
 
      return (
 

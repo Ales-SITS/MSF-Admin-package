@@ -31,6 +31,7 @@ import HubsiteComponent from "./HubsiteComponent"
 import SubsiteComponent from "./SubsiteComponent"
 import ListComponent from "./ListComponent"
 import PermissionsComponent from "./PermissionsComponent"
+import PnP_AllPermissions from "../PnPScripts/PnP_AllPermissions"
 
 export default function SiteOverviewMsf (props) {
     const {
@@ -83,7 +84,6 @@ export default function SiteOverviewMsf (props) {
         );     
         const result = searchResults.PrimarySearchResults
         setHubLoading(false)
-
         return result
     }  
 
@@ -164,7 +164,7 @@ export default function SiteOverviewMsf (props) {
             setLists(arr);
           })   
 
-       }, [props.details, siteID, siteTitle]);
+       }, [props.details, siteID]);
 
        const copyOnClick = (e) => {
         navigator.clipboard.writeText(e.target.innerText)
@@ -185,14 +185,32 @@ export default function SiteOverviewMsf (props) {
        //const libraries = lists.filter( lib => lib.list.template === "documentLibrary")
        //const genlist = lists.filter( lib => lib.list.template === "genericList" && lib.displayName !== "DO_NOT_DELETE_SPLIST_SITECOLLECTION_AGGREGATED_CONTENTTYPES")
 
+
+       const [subFilter,setSubFilter] = useState("")
+       const searchFilter = (e) => {
+           setSubFilter(e)
+       }
+
+       const subsitesfiltered = subsites.filter( sub => sub.Title.includes(subFilter))
+    
+
        const genlist = lists.filter( list => list.template === 100 && list.name!=="DO_NOT_DELETE_SPLIST_SITECOLLECTION_AGGREGATED_CONTENTTYPES")
        const libraries = lists.filter( lib => lib.template === 101)
 
     const [permVis,setPermVis] = useState(false)
     const permVisHandler = () =>{
+        setPnpVis(false)
         setPermVis(!permVis)
     }
  
+    const [pnpVis,setPnpVis] = useState(false)
+    const pnpVisHandler = () =>{
+        setPermVis(false)
+        setPnpVis(!pnpVis)
+    }
+ 
+
+
      return (
         <div className={styles.overviewWrapper}>
             <div className={styles.mainSiteBox}>
@@ -206,12 +224,12 @@ export default function SiteOverviewMsf (props) {
                     <a href={`${siteURL}/_layouts/15/user.aspx`} title="Site Permissions"><Icon iconName="SecurityGroup"/></a>
                     <a href={`${siteURL}/_layouts/15/siteanalytics.aspx?view=19`} title="Site Usage"><Icon iconName="LineChart"/></a>  
                     <a href={`${siteURL}/_layouts/15/storman.aspx`} title="Site Storage"><Icon iconName="OfflineStorage"/></a> 
-
-                    <button onClick={permVisHandler}>Permissions detailed list</button> 
+                    <button onClick={pnpVisHandler} title="PnP Scripts" className="PnPScriptButton"><Icon iconName="PasteAsCode"/></button>
+                    <button onClick={permVisHandler} title="Permissions"><Icon iconName="PeopleAlert"/></button> 
                 </div>
             </div>
             {permVis && <PermissionsComponent context={context} url={siteURL}/>}
-
+            {pnpVis && <PnP_AllPermissions onCloseHandler={pnpVisHandler} siteurl={site_url}/>}
             <div className={styles.detailsWrapper}>
                 <button className={styles.detailsWrapperButton} onClick={hubhideHandler}>
                     <span>{hubhide ? "▲ " : "▼ "} Hub associated sites</span>
@@ -245,8 +263,14 @@ export default function SiteOverviewMsf (props) {
                 </button>
                 {!subhide && 
                     <div className={styles.resultsWrapper}>
+                        <input 
+                        type="text" 
+                        name="siteName" 
+                        placeholder="Filter by site Title"
+                        onChange={e => searchFilter(e.target.value)} 
+                        /><span>({subsitesfiltered.length})</span>
                         <ul>
-                            {subsites.map((site,idx)=>
+                            {subsitesfiltered.map((site,idx)=>
                             <li key={idx}>
                                 <SubsiteComponent site={site} context={context}/>
                             </li>

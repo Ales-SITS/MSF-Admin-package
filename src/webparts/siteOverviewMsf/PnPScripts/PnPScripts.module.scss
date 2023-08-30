@@ -1,0 +1,64 @@
+.scriptModal {
+  position: fixed;
+  width: 1000px;
+  top: 5%;
+  left: 50%;
+  margin-left: -500px;
+  height: 90%;
+  border-radius: 5px;
+  padding: 5px;
+  z-index: 3;
+  box-shadow: 0 0 5px rgba(0,0,0,0.2);
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+}
+
+.scriptModalTop {
+  display: flex;
+  justify-content: space-between;
+  height: 30px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.scriptModalTop button {
+  outline: none;
+  border: none;
+  background-color: rgba(0,0,0,0);
+  cursor: pointer;
+}
+
+.scriptModalTop button:hover {
+  color: orange
+}
+
+.scriptModalInput {
+  display: flex;
+  justify-content: space-between;
+  height: 30px;
+  width: 95%;
+}
+
+.scriptModalInput input {
+  width: 45%;
+  height: 30px
+}
+
+.scriptModalInput select {
+  width: 45%;
+  height: 30px
+}
+
+.scriptModalInput select > option{
+  height: 30px
+}
+
+.scriptModal pre {
+  cursor:copy;
+  width: 95%;
+  height: 85%;
+  overflow: scroll;
+}

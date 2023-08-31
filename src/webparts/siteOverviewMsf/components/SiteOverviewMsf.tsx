@@ -31,7 +31,7 @@ import HubsiteComponent from "./HubsiteComponent"
 import SubsiteComponent from "./SubsiteComponent"
 import ListComponent from "./ListComponent"
 import PermissionsComponent from "./PermissionsComponent"
-import PnP_AllPermissions from "../PnPScripts/PnP_AllPermissions"
+import PnP_Generator from "../PnPScripts/PnP_Generator"
 
 export default function SiteOverviewMsf (props) {
     const {
@@ -228,8 +228,8 @@ export default function SiteOverviewMsf (props) {
                     <button onClick={permVisHandler} title="Permissions"><Icon iconName="PeopleAlert"/></button> 
                 </div>
             </div>
-            {permVis && <PermissionsComponent context={context} url={siteURL}/>}
-            {pnpVis && <PnP_AllPermissions onCloseHandler={pnpVisHandler} siteurl={site_url}/>}
+            {permVis && <PermissionsComponent onCloseHandler={permVisHandler} context={context} url={siteURL}/>}
+            {pnpVis && <PnP_Generator onCloseHandler={pnpVisHandler} type={"top_site"} siteurl={site_url}/>}
             <div className={styles.detailsWrapper}>
                 <button className={styles.detailsWrapperButton} onClick={hubhideHandler}>
                     <span>{hubhide ? "▲ " : "▼ "} Hub associated sites</span>

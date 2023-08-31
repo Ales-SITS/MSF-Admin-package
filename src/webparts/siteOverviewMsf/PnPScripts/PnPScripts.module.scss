@@ -8,7 +8,7 @@
   border-radius: 5px;
   padding: 5px;
   z-index: 3;
-  box-shadow: 0 0 5px rgba(0,0,0,0.2);
+  box-shadow: 0 0 8px rgba(0,0,0,0.3);
   background-color: white;
   display: flex;
   flex-direction: column;
@@ -19,9 +19,15 @@
 .scriptModalTop {
   display: flex;
   justify-content: space-between;
+  align-items: start;
   height: 30px;
   margin-bottom: 10px;
-  width: 100%;
+  margin-top: 5px;
+  width: 98%;
+}
+
+.scriptModalTop h2 {
+  margin: 0
 }
 
 .scriptModalTop button {
@@ -38,27 +44,14 @@
 .scriptModalInput {
   display: flex;
   justify-content: space-between;
-  height: 30px;
+  height: fit-content;
   width: 95%;
-}
-
-.scriptModalInput input {
-  width: 45%;
-  height: 30px
-}
-
-.scriptModalInput select {
-  width: 45%;
-  height: 30px
-}
-
-.scriptModalInput select > option{
-  height: 30px
 }
 
 .scriptModal pre {
   cursor:copy;
   width: 95%;
   height: 85%;
+  border-radius: 5px;
   overflow: scroll;
 }

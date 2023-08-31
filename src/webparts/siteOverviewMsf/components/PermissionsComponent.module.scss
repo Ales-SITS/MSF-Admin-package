@@ -1,20 +1,74 @@
-.permissionBoxAnchor {
-  position: relative;
-  width: 100%;
-}
-
-.permissionBox {
-  position: absolute;
-  top:1px;
-  width: 110%;
-  left:-5%;
-  height: fit-content;
-  padding: 5px;
+.permissionModal {
+  position: fixed;
+  width: 1000px;
+  top: 5%;
+  left: 50%;
+  margin-left: -500px;
+  height: 90%;
   border-radius: 5px;
-  box-shadow: 0 0 3px rgba(0,0,0,0.2);
-  background-color: rgba(255, 255, 255, 0.95);
+  padding: 5px;
+  z-index: 3;
+  box-shadow: 0 0 8px rgba(0,0,0,0.3);
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
 }
 
-.permissions{
-  display: flex
+.permissionModalTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  height: fit-content;
+  margin-bottom: 10px;
+  margin-top: 5px;
+  width: 98%;
+}
+
+.permissionModalTop h2 {
+  margin: 0
+}
+
+.permissionModalTop button {
+  outline: none;
+  border: none;
+  background-color: rgba(0,0,0,0);
+  cursor: pointer;
+}
+
+.permissionModalTop button:hover {
+  color: orange
+}
+
+.permissionModalInput {
+  display: flex;
+  justify-content: space-between;
+  height: fit-content;
+  width: 95%;
+  margin-bottom: 5px;
+  border-bottom: 1px solid grey
+}
+
+.permissionModalInput input {
+  width: 50%;
+  height: 30px
+}
+
+.permissionModalResults {
+  width: 95%;
+  height: 85%;
+  border-radius: 5px;
+  overflow-y: scroll;
+}
+
+.userPermBox {
+  height: 30px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.userPermBox span {
+  width: 33%;
+  text-align: left;
 }

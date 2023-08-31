@@ -17,7 +17,7 @@ Get-PnPSiteCollectionAdmin
     );
 }
 
-export function PnPCollectionAdmin2 (props) {
+export function PnPAllPermissions (props) {
     const copyOnClick = (e) => {
         navigator.clipboard.writeText(e.target.innerText)
     }

@@ -21,6 +21,9 @@ import "@pnp/graph/sites";
 import "@pnp/sp/hubsites";
 import "@pnp/graph/search";
 
+import "@pnp/sp/items";
+import "@pnp/sp/items/get-all";
+
 import { Web } from "@pnp/sp/webs";   
 
 import { SearchResults } from "@pnp/sp/search";
@@ -29,11 +32,15 @@ import { Site } from "@pnp/graph/sites";
 //COMPONENTS
 import HubsiteComponent from "./HubsiteComponent"
 import SubsiteComponent from "./SubsiteComponent"
+import PageComponent from "./PageComponent"
+import LibraryComponent from "./LibraryComponent"
 import ListComponent from "./ListComponent"
+
 import PermissionsComponent from "./PermissionsComponent"
 import PnP_Generator from "../PnPScripts/PnP_Generator"
 
 export default function SiteOverviewMsf (props) {
+//PROPS
     const {
         header,
         site_id,
@@ -42,17 +49,24 @@ export default function SiteOverviewMsf (props) {
         context
       } = props.details;
 
+
+
+//LOADERS      
     const [hubLoading,setHubLoading] = useState(true)
     const [subLoading,setSubLoading] = useState(true)
     const [listsLoading,setListsLoading] = useState(true)
+    const [pagesLoading,setPagesLoading] = useState(true)
 
+ 
+//CONST
     const [siteTitle,setSiteTitle] = useState(context.pageContext.web.title)
-
+        
     const [siteURL,setSiteURL] = useState(
         site_id === undefined || site_id === null || site_id === "" ? context.pageContext.site.absoluteUrl : site_url)
     const [siteID,setSiteID] = useState(
         site_id === undefined || site_id === null || site_id === "" ? context.pageContext.site.id._guid : site_id)
 
+//CONST & HIDERS        
     const [hubsites, setHubsites] = useState([])
     const [hubhide, setHubhide] = useState(expanded)
     const hubhideHandler = () => {
@@ -65,6 +79,12 @@ export default function SiteOverviewMsf (props) {
         setSubhide(!subhide)
     }
 
+    const [pages, setPages] = useState([])
+    const [pageshide, setPageshide] = useState(expanded)
+    const pageshideHandler = () => {
+        setPageshide(!pageshide)
+    }
+
     const [lists,setLists] = useState([])
     const [libhide,setLibhide] = useState(expanded)
     const libhideHandler = () => {
@@ -75,6 +95,8 @@ export default function SiteOverviewMsf (props) {
     const lishideHandler = () => {
         setLishide(!lishide)
     }
+
+//GETTERS
 
     async function getHub(id) {
         setHubLoading(true)
@@ -106,8 +128,16 @@ export default function SiteOverviewMsf (props) {
         return lists
     }   
   
+    async function getPages(id) {   
+        setPagesLoading(true)
+        const sp = spfi().using(SPFxsp(context));     
+        const site = Web([sp.web, `${siteURL}`])      
+        const sites = await site.lists.getByTitle("Site Pages").items.select('FileLeafRef', 'Title', 'Id', 'GUID')()
+        setPagesLoading(false)
 
-    //TESTING
+        return sites
+    }   
+
     async function getSubsiteLists(id) {
         setListsLoading(true);
         const sp = spfi().using(SPFxsp(context));
@@ -136,7 +166,6 @@ export default function SiteOverviewMsf (props) {
           return listArr;
         });
       }    
-     //TESTING
 
 
     useEffect(() => {
@@ -162,7 +191,13 @@ export default function SiteOverviewMsf (props) {
             setLists([]);
             const arr:any = result
             setLists(arr);
-          })   
+          })
+
+        getPages(site_id).then(result => {     
+            setPages([]);
+            const arr:any = result
+            setPages(arr);
+          })     
 
        }, [props.details, siteID]);
 
@@ -182,20 +217,42 @@ export default function SiteOverviewMsf (props) {
         setSiteTitle(header)
     },[header])
 
-       //const libraries = lists.filter( lib => lib.list.template === "documentLibrary")
-       //const genlist = lists.filter( lib => lib.list.template === "genericList" && lib.displayName !== "DO_NOT_DELETE_SPLIST_SITECOLLECTION_AGGREGATED_CONTENTTYPES")
+//FILTERS    
+    const genlist = lists.filter( list => list.template === 100 && list.name!=="DO_NOT_DELETE_SPLIST_SITECOLLECTION_AGGREGATED_CONTENTTYPES")
+    const libraries = lists.filter( lib => lib.template === 101)
+    const sitePages = lists.filter(lib => lib.template === 119 )   
 
-
-       const [subFilter,setSubFilter] = useState("")
-       const searchFilter = (e) => {
+    const [subFilter,setSubFilter] = useState("")
+    const searchSubFilter = (e) => {
            setSubFilter(e)
        }
+    const subsitesfiltered = subsites.filter( sub => sub.Title.includes(subFilter))
 
-       const subsitesfiltered = subsites.filter( sub => sub.Title.includes(subFilter))
-    
+    const [hubFilter,setHubFilter] = useState("")
+    const searchHubFilter = (e) => {
+           setHubFilter(e)
+       }    
+    const hubsitesfiltered = hubsites.filter( hub => hub.Title.includes(hubFilter))
 
-       const genlist = lists.filter( list => list.template === 100 && list.name!=="DO_NOT_DELETE_SPLIST_SITECOLLECTION_AGGREGATED_CONTENTTYPES")
-       const libraries = lists.filter( lib => lib.template === 101)
+    const [pageFilter,setPageFilter] = useState("")
+    const searchPageFilter = (e) => {
+        setPageFilter(e)
+    }
+    const pagesfiltered = pages.filter( page => page.Title.includes(pageFilter))
+
+    const [libFilter,setLibFilter] = useState("")
+    const searchLibFilter = (e) => {
+        setLibFilter(e)
+    }
+    const libfiltered = libraries.filter( lib => lib.name.includes(libFilter))
+
+    const [listFilter,setListFilter] = useState("")
+    const searchListFilter = (e) => {
+        setLibFilter(e)
+    }
+    const listfiltered = genlist.filter( list => list.name.includes(listFilter))
+
+//MODALS   
 
     const [permVis,setPermVis] = useState(false)
     const permVisHandler = () =>{
@@ -232,17 +289,28 @@ export default function SiteOverviewMsf (props) {
             {pnpVis && <PnP_Generator onCloseHandler={pnpVisHandler} type={"top_site"} siteurl={site_url}/>}
             <div className={styles.detailsWrapper}>
                 <button className={styles.detailsWrapperButton} onClick={hubhideHandler}>
-                    <span>{hubhide ? "▲ " : "▼ "} Hub associated sites</span>
+                    <span>{hubhide ? "▶ " : "▼ "} Hub associated sites</span>
                     {
                     hubLoading ? 
                     <div className={styles.loader}><div></div><div></div><div></div><div></div></div>:
-                    <span>({hubsites.length})</span>
+                    <span><span className={styles.displayedNum}>{hubsitesfiltered.length}/</span>{hubsites.length}</span>
                      }
                 </button>
+                {!hubhide && 
+                    <div className={styles.resultsFilterInputBox}>
+                        <input
+                            className={styles.resultsFilterInput} 
+                            type="text" 
+                            name="siteName" 
+                            placeholder="Filter by the site title"
+                            onChange={e => searchHubFilter(e.target.value)} 
+                            />
+                    </div>
+                    }
                 {!hubhide &&
                     <div className={styles.resultsWrapper}>
                         <ul>
-                            {hubsites.map((hubsite,idx)=>
+                            {hubsitesfiltered.map((hubsite,idx)=>
                             <li key={idx}>
                                 <HubsiteComponent hubsite={hubsite} context={context}/>
                             </li>
@@ -253,22 +321,28 @@ export default function SiteOverviewMsf (props) {
             </div>
             <div className={styles.detailsWrapper}>
                 <button className={styles.detailsWrapperButton} onClick={subhideHandler}>
-                    <span>{subhide ? "▲ " : "▼ "} Subsites</span>
+                    <span>{subhide ? "▶ " : "▼ "} Subsites</span>
                     {
                     subLoading ? 
                     <div className={styles.loader}><div></div><div></div><div></div><div></div></div>:
-                    <span>({subsites.length})</span>
+                    <span><span className={styles.displayedNum}>{subsitesfiltered.length}/</span>{subsites.length}</span>
                     }
                     
                 </button>
                 {!subhide && 
+                    <div className={styles.resultsFilterInputBox}>
+                        <input
+                            className={styles.resultsFilterInput} 
+                            type="text" 
+                            name="subsiteName" 
+                            placeholder="Filter by the subsite title"
+                            onChange={e => searchSubFilter(e.target.value)} 
+                            />
+                    </div>
+                    }
+                {!subhide && 
                     <div className={styles.resultsWrapper}>
-                        <input 
-                        type="text" 
-                        name="siteName" 
-                        placeholder="Filter by site Title"
-                        onChange={e => searchFilter(e.target.value)} 
-                        /><span>({subsitesfiltered.length})</span>
+
                         <ul>
                             {subsitesfiltered.map((site,idx)=>
                             <li key={idx}>
@@ -280,20 +354,63 @@ export default function SiteOverviewMsf (props) {
                 }
             </div>
             <div className={styles.detailsWrapper}>
+                <button className={styles.detailsWrapperButton} onClick={pageshideHandler}>
+                    <span>{lishide ? "▶ " : "▼ "} Pages</span>
+                    {
+                    pagesLoading ? 
+                    <div className={styles.loader}><div></div><div></div><div></div><div></div></div>:
+                    <span><span className={styles.displayedNum}>{pagesfiltered.length}/</span>{pages.length}</span>
+                    }
+                </button>
+                {!pageshide && sitePages[0] !== undefined && 
+                    <div className={styles.resultsFilterInputBox}>
+                        <input
+                            className={styles.resultsFilterInput} 
+                            type="text" 
+                            name="pageName" 
+                            placeholder="Filter by the page title"
+                            onChange={e => searchPageFilter(e.target.value)} 
+                            />
+                    </div>
+                    }
+                {!pageshide && sitePages[0] !== undefined &&
+                    <div className={styles.resultsWrapper}>
+                        <ul>
+                            {pagesfiltered.map((page,idx)=>
+                                <li key={idx}>
+                                    <PageComponent page={page} siteurl={siteURL} sitePages={sitePages[0]}/>
+                                </li>
+                            )}
+                        </ul>
+                    </div>
+                }
+            </div>
+            <div className={styles.detailsWrapper}>
                 <button className={styles.detailsWrapperButton} onClick={libhideHandler}>
-                    <span>{libhide ? "▲ " : "▼ "} Libraries</span>
+                    <span>{libhide ? "▶ " : "▼ "} Libraries</span>
                     {
                     listsLoading ? 
                     <div className={styles.loader}><div></div><div></div><div></div><div></div></div>:
-                    <span>({libraries.length})</span>
+                    <span><span className={styles.displayedNum}>{libfiltered.length}/</span>{libraries.length}</span>
                     }
                 </button>
                 {!libhide && 
+                    <div className={styles.resultsFilterInputBox}>
+                        <input
+                            className={styles.resultsFilterInput} 
+                            type="text" 
+                            name="pageName" 
+                            placeholder="Filter by the library name"
+                            onChange={e => searchLibFilter(e.target.value)} 
+                            />
+                    </div>
+                    }
+                {!libhide && 
                     <div className={styles.resultsWrapper}>
                         <ul>
-                            {libraries.map((list,idx)=>
+                            {libfiltered.map((list,idx)=>
                                 <li key={idx}>
-                                    <ListComponent list={list} siteurl={siteURL}/>
+                                    <LibraryComponent list={list} siteurl={siteURL}/>
                                 </li>
                             )}
                         </ul>
@@ -302,17 +419,28 @@ export default function SiteOverviewMsf (props) {
             </div>
             <div className={styles.detailsWrapper}>
                 <button className={styles.detailsWrapperButton} onClick={lishideHandler}>
-                    <span>{lishide ? "▲ " : "▼ "} Lists</span>
+                    <span>{lishide ? "▶ " : "▼ "} Lists</span>
                     {
                     listsLoading ? 
                     <div className={styles.loader}><div></div><div></div><div></div><div></div></div>:
-                    <span>({genlist.length})</span>
+                    <span><span className={styles.displayedNum}>{listfiltered.length}/</span>{genlist.length}</span>
                     }
                 </button>
                 {!lishide && 
+                    <div className={styles.resultsFilterInputBox}>
+                        <input
+                            className={styles.resultsFilterInput} 
+                            type="text" 
+                            name="pageName" 
+                            placeholder="Filter by the list name"
+                            onChange={e => searchListFilter(e.target.value)} 
+                            />
+                    </div>
+                    }
+                {!lishide && 
                     <div className={styles.resultsWrapper}>
                         <ul>
-                            {genlist.map((list,idx)=>
+                            {listfiltered.map((list,idx)=>
                                 <li key={idx}>
                                     <ListComponent list={list} siteurl={siteURL}/>
                                 </li>

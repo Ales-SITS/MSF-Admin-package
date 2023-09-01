@@ -18,7 +18,7 @@ import "@pnp/graph/sites";
 import { Icon } from '@fluentui/react/lib/Icon';
 
 
-export default function ListComponent (props) {
+export default function LibraryComponent(props) {
 
     const list = props.list
     const siteurl = props.siteurl
@@ -30,9 +30,9 @@ export default function ListComponent (props) {
             <div className={styles.itemBoxTop}>
                 <div><a href={list.url} title={list.url}>{list.name}</a></div>
                 <div className={substyles.subsiteBoxBottom}>
-                    <a className={`${styles.buttonMedium} ${styles.buttonMediumList}`}  href={`${siteurl}/_layouts/15/listedit.aspx?List={${list.id}}`} title="Library Settings"><Icon iconName="Settings"/></a>
-                    <a className={`${styles.buttonMedium} ${styles.buttonMediumList}`}  href={`${siteurl}/_layouts/15/user.aspx?obj={${list.id}},doclib&List={${list.id}}`} title="Library Permissions"><Icon iconName="SecurityGroup"/></a>
-                    <a className={`${styles.buttonMedium} ${styles.buttonMediumList}`} href={`${siteurl}/_layouts/15/storman.aspx?root=${list.url.split("/")[3]}`} title="List Storage"><Icon iconName="OfflineStorage"/></a>  
+                    <a className={`${styles.buttonMedium} ${styles.buttonMediumLibrary}`}  href={`${siteurl}/_layouts/15/listedit.aspx?List={${list.id}}`} title="Library Settings"><Icon iconName="Settings"/></a>
+                    <a className={`${styles.buttonMedium} ${styles.buttonMediumLibrary}`}  href={`${siteurl}/_layouts/15/user.aspx?obj={${list.id}},doclib&List={${list.id}}`} title="Library Permissions"><Icon iconName="SecurityGroup"/></a>
+                    <a className={`${styles.buttonMedium} ${styles.buttonMediumLibrary}`} href={`${siteurl}/_layouts/15/storman.aspx?root=${list.url.split("/")[3]}`} title="List Storage"><Icon iconName="OfflineStorage"/></a>  
                 </div>
                 <div><span className={styles.idBox}>{list.id}</span></div>    
             </div>   

@@ -1,54 +1,30 @@
-.subSiteBoxBottom{
+.subsiteBoxBottom{
   display: flex
 }
 
-.subSiteBoxBottom a {
-  text-decoration: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 20px;
-  line-height: 20px;
-  font-size: 10px;
-  margin: 0 3px;
-  text-align: center;
-  color: black;
-  background-color: rgb(176, 176, 255);
-  transition: 0.3s;
-}
-
-.subSiteBoxBottom a:hover {
-  color: black;
-  background-color: rgb(206, 206, 253);
-}
-
-.subSiteBoxBottom a:visited, .subSiteBoxBottom a:active {
-  color: black
-}  
-
-.subItem {
+.subsite {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.subItem div:nth-child(1) {
+.subsite div:nth-child(1) {
   width: 210px;
 }
 
-.subItem div:nth-child(2) {
+.subsite div:nth-child(2) {
   width: 210px;
   display: flex;
   justify-content: center;
 }
 
-.subItem div:nth-child(3) {
+.subsite div:nth-child(3) {
   width: 210px;
   display: flex;
   justify-content: end;
 }
 
-
-.subItemBottom a {
+.subsiteBottom a {
   text-decoration: none;
   width: 20px;
   height: 20px;
@@ -62,11 +38,11 @@
   transition: 0.3s;
 }
 
-.subItemBottom a:hover {
+.subsiteBottom a:hover {
   color: black;
   background-color: rgb(255, 236, 195);
 }
 
-.subItemBottom a:visited, .subItemBottom a:active {
+.subsiteBottom a:visited, .subsiteBottom a:active {
   color: black
 }  

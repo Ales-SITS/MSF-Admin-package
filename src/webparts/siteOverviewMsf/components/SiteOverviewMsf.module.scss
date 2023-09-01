@@ -43,33 +43,42 @@
 .detailsWrapper {
   display: flex;
   flex-direction: column;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   border-radius: 5px;
-  box-shadow: 0 0 3px rgba(0,0,0,0.2);
+  box-shadow: 0 0 8px rgba(0,0,0,0.3);
 }
 
 .detailsWrapperButton {
   outline: 0;
   border: 0;
-  font-size: 16px;
+  font-size: 18px;
   height: 30px;
   line-height: 30px;
   padding: 0 5px;
   display: flex;
   justify-content: space-between;
-  background-color: rgb(250, 250, 250);
+  background-color: rgb(119, 119, 119);
+  color: white;
   cursor: pointer;
+  border-radius: 5px;
   transition: 0.2s;
 }
 
 .detailsWrapperButton:hover {
   background-color: bisque;
+  color: rgb(36, 36, 36)
 } 
+
+.displayedNum {
+  font-size: 10px;
+}
 
 .resultsWrapper {
   max-height: 500px;
   padding: 5px;
   overflow-y: scroll;
+  background: rgb(245,245,245);
+  background: linear-gradient(90deg, rgba(245,245,245,1) 0%, rgba(236,236,236,1) 24%);
 }
 
 .resultsWrapper::-webkit-scrollbar {
@@ -88,79 +97,134 @@
   background-color: rgb(250, 250, 250);
 }
 
-.resultsWrapper input {
-  width: 80%;
+.resultsWrapper ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.resultsFilterInputBox {
+  margin-bottom: 2px
+}
+
+.resultsFilterInput {
+  width: 50%;
   padding: 3px;
+  margin: 2px;
   border-radius: 5px;
+  height: 25px;
   margin-left: 40px;
   border: 0;
   outline: none;
   background-color: #ffffff;
 }
 
-.resultsWrapper input:focus {
-  border: 1px solid black
+.resultsFilterInput:focus {
+  border: 1px solid orange
 }
+
 
 .detailsWrapper ul li {
   margin: 2px 0;
 }
 
-.siteBox {
+.itemBoxWrapper {
+  display: flex;
+  align-items: start;
+}
+
+.itemBox {
   display: flex;
   flex-direction: column;
-  border-radius: 5px;
+  align-items: center;
   margin-bottom: 5px;
-  padding: 2px;
-  box-shadow: 0 0 2px rgba(0,0,0,0.5);
   border: 1px solid rgba(167, 167, 255,0);
   transition: 0.2s;
 }
 
-.siteBox:hover {
-  border: 1px solid rgba(167, 167, 255, 1)
+.itemBoxHubsite:hover {
+  border: 1px solid orange
 }
 
-.siteBoxTop {
-  height: 30px;
+.itemBoxTop {
+  min-height: 30px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  display: relative;
+  z-index: 2;
+  border-radius: 5px;
+  padding: 2px;
+  //box-shadow: 0 0 2px rgba(0,0,0,0.5);
+  transition: 0.2s;
+  background-color: white;
+  cursor: pointer
 }
 
-.siteBoxTop div:nth-child(1) {
-  width: 220px;
+.itemBoxTop:hover {
+  background-color: #fff2e1;
 }
 
-.siteBoxTop div:nth-child(2) {
-  width: 220px;
+.itemBoxTopSelected {
+  background-color: #fff2e1;
+  box-shadow: 0px 2px 5px 1px rgba(0,0,0,0.2)
+}
+
+.itemBoxTopLeft {
   display: flex;
-  justify-content: center;
+  width: 500px
 }
 
-.siteBoxTop div:nth-child(3) {
-  width: 220px;
+.itemBoxTopRight {
+  width: 200px;
   display: flex;
   justify-content: end;
 }
 
+.arrow {
+  outline: none;
+  border: none;
+  background-color: rgba(0,0,0,0);
+  width: 30px;
+  height: 30px;
+  font-size: 12px;
+  text-align: center;
+  line-height: 30px;
+  color: #afafaf;
+  transition: 0.2s;
+  cursor: pointer;
+}
 
-.siteBoxTop a {
+.arrowOpened {
+  transform: rotate(90deg) !important;
+  font-size: 14px;
+  color: #fcbd71;
+}
+
+.itemBoxTop a {
+  font-size: 15px;
   color: black;
   text-decoration: none;
 }
 
-.siteBoxTop a:visited, .siteBoxTop a:active {
+.itemBoxTop a:visited, .itemBoxTop a:active {
   color: black
 }
+
+.itemBoxBottom {
+  padding: 5px;
+  width: 95%;
+  background-color: #fff8ef;
+  display: relative;
+  z-index: 1;
+}
+
 
 .detailsButton {
   outline: 0;
   border: 0;
   width: 100%;
-  cursor: pointer;
   text-align: center;
-  background-color: #ffffff;
   height: 15px;
   line-height: 15px;
   font-size: 10px;
@@ -198,7 +262,7 @@
   text-align: center;
   color: black;
   background-color: rgb(252, 189, 113);
-  transition: 0.3s;
+  transition: 0.5s;
   border: none;
   cursor: pointer;
 }
@@ -211,6 +275,41 @@
 .mainSiteBoxBottom a:visited, .mainSiteBoxBottom a:active {
   color: black
 }  
+
+.idBoxWrapper{
+  width: fit-content;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  background-color: #a0a0a0;
+  transition: 0.2s;
+  border-radius: 20px;
+  margin-right: 5px 
+}
+
+.idBoxLabel {
+  outline: 0;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 20px;
+  line-height: 20px;
+  font-size: 12px;
+  background-color: #a0a0a0;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.idBoxLabel:hover {
+  background-color: #bbb9b9;
+}
+
+.idBoxWrapperOpened {
+
+}
 
 .idBox {
   background-color: rgb(235, 235, 235);
@@ -261,6 +360,69 @@
   left: 56px;
   animation: loader3 0.6s infinite;
 }
+
+.buttonBox {
+  border-radius: 30px;
+  width: fit-content !important;
+  display: flex;
+  justify-content: center;
+  padding: 1px
+}
+
+.buttonBoxSubsite {
+  background-color: rgb(255, 235, 147);
+}
+
+.buttonBoxHubsite {
+  background-color: rgb(253, 198, 130);
+}
+
+.buttonMedium {
+  text-decoration: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 25px;
+  line-height: 25px;
+  font-size: 14px;
+  margin: 0 3px;
+  text-align: center;
+  color: black;
+  background-color: rgba(0,0,0,0);
+  transition: 0.2s;
+}
+
+.buttonMedium:visited, .buttonMedium:active {
+  color: black
+}  
+
+.buttonMediumSite {
+  background-color: rgb(253, 198, 130);
+}
+
+.buttonMediumSite:hover {
+  background-color: orange
+}
+
+.buttonMediumSubsite:hover {
+  background-color: orange;
+}
+
+.buttonMediumPage {
+  background-color: rgb(255, 235, 147);
+}
+
+.buttonMediumLibrary {
+  background-color: rgb(209, 227, 255);
+}
+
+.buttonMediumList {
+  background-color: rgb(221, 191, 255);
+}
+
+.buttonMediumList:hover {
+  background-color: rgb(255, 246, 167);
+}
+
 
 @keyframes loader1 {
   0% {

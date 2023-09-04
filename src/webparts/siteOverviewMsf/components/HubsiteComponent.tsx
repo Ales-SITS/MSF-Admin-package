@@ -98,8 +98,8 @@ const idHandler = (e) => {
           navigator.clipboard.writeText(e.target.innerText)
           }
           
-    console.log(site_id)
-    console.log(hubsite)
+    //console.log(site_id)
+    //console.log(hubsite)
       
     return (
         <div className={styles.itemBoxWrapper} onClick={listHandler}>
@@ -126,7 +126,7 @@ const idHandler = (e) => {
               {!listsHidden &&
                 <div className={styles.itemBoxBottom}>
                   {listsLoading? 
-                  <div className={styles.loader}><div></div><div></div><div></div><div></div></div>:     
+                  <div className={styles.loaderWrapper}><div className={styles.loader}><div></div><div></div><div></div><div></div></div></div>:     
                     <div>
                       <span>Libraries</span>
                       <ul>

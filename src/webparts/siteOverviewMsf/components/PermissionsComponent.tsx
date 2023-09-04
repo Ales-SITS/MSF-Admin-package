@@ -22,6 +22,7 @@ import { Web } from "@pnp/sp/webs";
 import { Icon } from '@fluentui/react/lib/Icon';
 
 import { PermissionKind } from "@pnp/sp/security";
+import { PropertyPaneDescription } from 'SiteOverviewMsfWebPartStrings';
 
 export default function PermissionsComponent (props) {
 
@@ -91,9 +92,9 @@ const closeHandler = () => {
     props.onCloseHandler()
 }
 
-console.log(role)
+//console.log(role)
 //FILTERED
-const [displayCount, setDisplayCount] = useState(50);
+const [displayCount, setDisplayCount] = useState(30);
 
 const [usersFilter,setUsersFilter] = useState("")
 const usersFilterHandler = (e) => {
@@ -101,11 +102,11 @@ const usersFilterHandler = (e) => {
     setDisplayCount(50)
 }
 
-const usersfiltered = users.filter( user => user.Title.includes(usersFilter))
+const usersfiltered = users.filter( user => user.Title.toLowerCase().includes(usersFilter.toLowerCase()))
 const usersToDisplay = usersfiltered.slice(0, displayCount);
 
 const handleScroll = (event) => {
-    event.currentTarget.scrollTop + event.currentTarget.offsetHeight >= event.currentTarget.scrollHeight ? setDisplayCount(displayCount + 50) : null
+    event.currentTarget.scrollTop + event.currentTarget.offsetHeight >= event.currentTarget.scrollHeight ? setDisplayCount(displayCount + 30) : null
 }
 
 //console.log(usersToDisplay)
@@ -142,40 +143,94 @@ return (
 
   function PersonPermissions (props) {
     const user = props.user
-    //console.log(props.user.LoginName)
+    console.log(props.user.LoginName)
     const [up,setUp] = useState(null)
-
     async function getUp(loginName) {  
         const sp = spfi().using(SPFxsp(props.context));     
         const site = Web([sp.web, `${props.url}`])      
-        const users = await site.getUserEffectivePermissions(loginName) 
+        const user = await site.getUserEffectivePermissions(loginName) 
         
-        console.log(users)
+        console.log(user)
 
-        return users
+        //High: '2147483647', Low: '4294967295'
+        //High: '2147483647', Low: '4294967295'
+
+
+        //High: '2147483647', Low: '4294967295'
+
+        if(
+            //FULL
+            sp.web.hasPermissions(user,PermissionKind.FullMask)        
+        ) {
+            console.log(`${user} - is admin`)
+            return "Full control permissions"
+        } else if  (
+            //EDIT
+            sp.web.hasPermissions(user,PermissionKind.ManageLists ) &&
+            sp.web.hasPermissions(user,PermissionKind.AddListItems) &&
+            sp.web.hasPermissions(user,PermissionKind.EditListItems) &&
+            sp.web.hasPermissions(user,PermissionKind.EditListItems) &&
+            sp.web.hasPermissions(user,PermissionKind.ViewListItems) &&
+            sp.web.hasPermissions(user,PermissionKind.OpenItems) &&
+            sp.web.hasPermissions(user,PermissionKind.ViewVersions) &&
+            sp.web.hasPermissions(user,PermissionKind.DeleteVersions) &&
+            sp.web.hasPermissions(user,PermissionKind.CreateAlerts) &&
+            sp.web.hasPermissions(user,PermissionKind.ViewFormPages) &&
+            sp.web.hasPermissions(user,PermissionKind.BrowseDirectories) &&
+            sp.web.hasPermissions(user,PermissionKind.CreateSSCSite) &&
+            sp.web.hasPermissions(user,PermissionKind.ViewPages) &&
+            sp.web.hasPermissions(user,PermissionKind.BrowseUserInfo) &&
+            sp.web.hasPermissions(user,PermissionKind.UseRemoteAPIs) &&
+            sp.web.hasPermissions(user,PermissionKind.UseClientIntegration) &&
+            sp.web.hasPermissions(user,PermissionKind.Open) &&
+            sp.web.hasPermissions(user,PermissionKind.EditMyUserInfo) &&
+            sp.web.hasPermissions(user,PermissionKind.ManagePersonalViews) &&
+            sp.web.hasPermissions(user,PermissionKind.AddDelPrivateWebParts) &&
+            sp.web.hasPermissions(user,PermissionKind.UpdatePersonalWebParts)
+        ) {
+            return "Edit permissions"
+        } else if (
+            //READ
+            sp.web.hasPermissions(user,PermissionKind.ViewListItems) &&
+            sp.web.hasPermissions(user,PermissionKind.OpenItems) &&
+            sp.web.hasPermissions(user,PermissionKind.ViewVersions) &&
+            sp.web.hasPermissions(user,PermissionKind.CreateAlerts) &&
+            sp.web.hasPermissions(user,PermissionKind.ViewFormPages) &&
+            sp.web.hasPermissions(user,PermissionKind.CreateSSCSite) &&
+            sp.web.hasPermissions(user,PermissionKind.ViewPages) &&
+            sp.web.hasPermissions(user,PermissionKind.BrowseUserInfo) &&
+            sp.web.hasPermissions(user,PermissionKind.UseRemoteAPIs) &&
+            sp.web.hasPermissions(user,PermissionKind.UseClientIntegration) &&
+            sp.web.hasPermissions(user,PermissionKind.Open)
+        ) {
+            return "Read permissions"
+        } else {
+            return "Other permissions"
+        }
+
     }  
 
     useEffect(() => {
         getUp(props.user.LoginName).then(result => {  
-
+            console.log(result)
             setUp(result);
         });
  
-        },[]);
+        },[props]);
 
-   
+    console.log(user)
     
     return (
         <li>    
             <div className={perstyles.userPermBox}>
                 <span>
-                    {user.Title}
+                    {user.Title}{user.IsSiteAdmin && " (Site Admin)"}
                 </span>
                 <span>
                     {user.Email}
                 </span> 
                 <span>
-                    {up === null ? null : `${(up.High >>> 0).toString(2)}/${(up.Low >>> 0).toString(2)}`}
+                    {up}
                 </span>  
             </div>
          

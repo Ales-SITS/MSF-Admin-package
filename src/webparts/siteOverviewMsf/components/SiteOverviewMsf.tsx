@@ -62,7 +62,7 @@ export default function SiteOverviewMsf (props) {
     const [siteTitle,setSiteTitle] = useState(context.pageContext.web.title)
         
     const [siteURL,setSiteURL] = useState(
-        site_id === undefined || site_id === null || site_id === "" ? context.pageContext.site.absoluteUrl : site_url)
+        site_url === undefined || site_url === null || site_url === "" ? context.pageContext.site.absoluteUrl : site_url)
     const [siteID,setSiteID] = useState(
         site_id === undefined || site_id === null || site_id === "" ? context.pageContext.site.id._guid : site_id)
 
@@ -84,6 +84,10 @@ export default function SiteOverviewMsf (props) {
     const pageshideHandler = () => {
         setPageshide(!pageshide)
     }
+
+    const [pagesfiltered, setPagesfiltered] = useState([])
+    //const pagesfiltered = pages.length === 0 ? [] : pages.filter( page => page.Title.includes(pageFilter))
+
 
     const [lists,setLists] = useState([])
     const [libhide,setLibhide] = useState(expanded)
@@ -134,6 +138,7 @@ export default function SiteOverviewMsf (props) {
         const site = Web([sp.web, `${siteURL}`])      
         const sites = await site.lists.getByTitle("Site Pages").items.select('FileLeafRef', 'Title', 'Id', 'GUID')()
         setPagesLoading(false)
+        sites.length === 0 ? setPagesfiltered(pages) :  setPagesfiltered(pages.filter( page => page.Title.includes(pageFilter)))
 
         return sites
     }   
@@ -197,7 +202,7 @@ export default function SiteOverviewMsf (props) {
             setPages([]);
             const arr:any = result
             setPages(arr);
-          })     
+          })        
 
        }, [props.details, siteID]);
 
@@ -238,7 +243,8 @@ export default function SiteOverviewMsf (props) {
     const searchPageFilter = (e) => {
         setPageFilter(e)
     }
-    const pagesfiltered = pages.filter( page => page.Title.includes(pageFilter))
+    //console.log(pages.length === 0)
+    //const pagesfiltered = pages.length === 0 ? [] : pages.filter( page => page.Title.includes(pageFilter))
 
     const [libFilter,setLibFilter] = useState("")
     const searchLibFilter = (e) => {
@@ -248,7 +254,7 @@ export default function SiteOverviewMsf (props) {
 
     const [listFilter,setListFilter] = useState("")
     const searchListFilter = (e) => {
-        setLibFilter(e)
+        setListFilter(e)
     }
     const listfiltered = genlist.filter( list => list.name.includes(listFilter))
 

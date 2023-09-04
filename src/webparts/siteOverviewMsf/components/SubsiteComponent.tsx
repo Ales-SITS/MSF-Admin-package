@@ -127,7 +127,7 @@ async function getSubsiteLists(id) {
               {!listsHidden &&
                 <div className={styles.itemBoxBottom}>
                   {listsLoading? 
-                  <div className={styles.loader}><div></div><div></div><div></div><div></div></div>:     
+                  <div className={styles.loaderWrapper}><div className={styles.loader}><div></div><div></div><div></div><div></div></div></div>:     
                   <div>
                       <span>Libraries</span>
                       <ul>

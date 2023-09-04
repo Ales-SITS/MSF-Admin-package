@@ -29,7 +29,10 @@ export default class SiteOverviewMsfWebPart extends BaseClientSideWebPart<ISiteO
 
   public async onInit(): Promise<void> {
     try {  
-      this.siteID = await this.getID()     
+      this.properties.site_url === undefined ? 
+      this.siteID = await this.getID(this.context.pageContext.web.absoluteUrl) : 
+      this.siteID = await this.getID(this.properties.site_url)
+
       return super.onInit();
     } catch (error) {
       console.error('Error in onInit:', error);
@@ -54,8 +57,9 @@ export default class SiteOverviewMsfWebPart extends BaseClientSideWebPart<ISiteO
   }
 
   
-  private async getID() {
-    const urlObject = new URL(this.properties.site_url);
+  private async getID(url) {
+    
+    const urlObject = new URL(url);
     const host = urlObject.hostname
     const path = urlObject.pathname;
     const graph = graphfi().using(SPFx(this.context))
@@ -75,7 +79,7 @@ export default class SiteOverviewMsfWebPart extends BaseClientSideWebPart<ISiteO
   protected async onPropertyPaneFieldChanged(propertyPath: string, oldValue: any, newValue: any) {
     if (propertyPath === 'site_url') {
       try {  
-        this.siteID = await this.getID()           
+        this.siteID = await this.getID(this.properties.site_url)           
       } catch (error) {
         console.error('Change:', error);   
       }
@@ -100,7 +104,8 @@ export default class SiteOverviewMsfWebPart extends BaseClientSideWebPart<ISiteO
               groupFields: [
 
                 PropertyPaneTextField('site_url', {
-                  label: "Site url"
+                  label: "Site url",
+                  value: this.context.pageContext.web.absoluteUrl
                 }),
                 PropertyPaneLabel('site_url', {
                   text: `ID: ${this.siteID}`

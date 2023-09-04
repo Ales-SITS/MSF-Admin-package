@@ -143,21 +143,39 @@ return (
 
   function PersonPermissions (props) {
     const user = props.user
-    console.log(props.user.LoginName)
+    //console.log(props.user.LoginName)
     const [up,setUp] = useState(null)
     async function getUp(loginName) {  
         const sp = spfi().using(SPFxsp(props.context));     
         const site = Web([sp.web, `${props.url}`])      
         const user = await site.getUserEffectivePermissions(loginName) 
         
-        console.log(user)
+        console.log(user.Low)
 
-        //High: '2147483647', Low: '4294967295'
-        //High: '2147483647', Low: '4294967295'
-
-
+        //High: '2147483647', Low: '4294967295'  Site Admin
         //High: '2147483647', Low: '4294967295'
 
+        //High: '432', Low: '1011030767'  Edit
+        //High: '176', Low: '138612833'  Read
+
+        //High: '0', Low: '0' access without access
+
+        /*High Value: The "High" value represents the permissions that 
+        are explicitly granted to the user or group on the resource.
+        These are the permissions that have been assigned directly to 
+        the user or group through SharePoint permissions management.
+
+        Low Value: The "Low" value represents the permissions that are granted through group memberships.
+        It includes the permissions inherited from SharePoint groups that the user is a member of. 
+        For example, if a user is a member of a SharePoint group that has read access to a document library, 
+        the "Low" value will include these permissions.
+        */
+
+        if (user.Low === 4294967295) {return "Full control"}
+        else if (user.Low === 1011030767) {return "Edit"}
+        else if (user.Low === 138612833) {return "Read"}
+        else if (user.Low === 0) {return "No access"}
+        /*
         if(
             //FULL
             sp.web.hasPermissions(user,PermissionKind.FullMask)        
@@ -207,18 +225,23 @@ return (
         } else {
             return "Other permissions"
         }
-
+        */
+        return user.Low.toString()
     }  
 
     useEffect(() => {
-        getUp(props.user.LoginName).then(result => {  
-            console.log(result)
-            setUp(result);
+        getUp(props.user.LoginName).then(result => {
+            
+            result === '4294967295' ? setUp("Full control") :
+            result === '1011030767' ? setUp("Edit") :
+            result === '138612833' ? setUp("Read") :
+            result === '0' ? setUp("No access") :
+            setUp("Other")
         });
  
         },[props]);
 
-    console.log(user)
+    //console.log(user)
     
     return (
         <li>    

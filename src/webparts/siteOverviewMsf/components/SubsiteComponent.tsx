@@ -112,7 +112,7 @@ async function getSubsiteLists(id) {
                           <button className={styles.idBoxLabel} onClick={(e)=>idHandler(e)}>id</button>
                           {!idhidden && <span className={styles.idBox} onClick={(e)=>copyOnClick(e)}>{site_id}</span>}   
                       </div>
-                      <a href={site.Url} title={site.Url}>{site.Title}</a>
+                      <a className={styles.itemBoxSiteLink} href={site.Url} title={`Go to ${site.Url}`}>{site.Title}</a>
                     </div>
                     <div className={styles.itemBoxTopRight}>
                       <div className={`${styles.buttonBox} ${styles.buttonBoxSubsite}`}>

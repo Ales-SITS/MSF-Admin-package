@@ -85,9 +85,10 @@ export default function SiteOverviewMsf (props) {
         setPageshide(!pageshide)
     }
 
-    const [pagesfiltered, setPagesfiltered] = useState([])
+    //const [pagesfiltered, setPagesfiltered] = useState([])
     //const pagesfiltered = pages.length === 0 ? [] : pages.filter( page => page.Title.includes(pageFilter))
-
+    //console.log(pages)
+    //console.log(pagesfiltered)
 
     const [lists,setLists] = useState([])
     const [libhide,setLibhide] = useState(expanded)
@@ -138,7 +139,7 @@ export default function SiteOverviewMsf (props) {
         const site = Web([sp.web, `${siteURL}`])      
         const sites = await site.lists.getByTitle("Site Pages").items.select('FileLeafRef', 'Title', 'Id', 'GUID')()
         setPagesLoading(false)
-        sites.length === 0 ? setPagesfiltered(pages) :  setPagesfiltered(pages.filter( page => page.Title.includes(pageFilter)))
+        //sites.length === 0 ? setPagesfiltered(pages) : setPagesfiltered(pages.filter( page => page.Title.includes(pageFilter)))
 
         return sites
     }   
@@ -231,20 +232,20 @@ export default function SiteOverviewMsf (props) {
     const searchSubFilter = (e) => {
            setSubFilter(e)
        }
-    const subsitesfiltered = subsites.filter( sub => sub.Title.includes(subFilter))
+    const subsitesfiltered = subsites.filter( sub => sub.Title.toLowerCase().includes(subFilter.toLowerCase()))
 
     const [hubFilter,setHubFilter] = useState("")
     const searchHubFilter = (e) => {
            setHubFilter(e)
        }    
-    const hubsitesfiltered = hubsites.filter( hub => hub.Title.includes(hubFilter))
+    const hubsitesfiltered = hubsites.filter( hub => hub.Title.toLowerCase().includes(hubFilter.toLowerCase()))
 
     const [pageFilter,setPageFilter] = useState("")
     const searchPageFilter = (e) => {
         setPageFilter(e)
     }
     //console.log(pages.length === 0)
-    //const pagesfiltered = pages.length === 0 ? [] : pages.filter( page => page.Title.includes(pageFilter))
+    const pagesfiltered = pages.length === 0 ? [] : pages.filter( page => page.Title.toLowerCase().includes(pageFilter.toLowerCase()))
 
     const [libFilter,setLibFilter] = useState("")
     const searchLibFilter = (e) => {
@@ -272,8 +273,6 @@ export default function SiteOverviewMsf (props) {
         setPnpVis(!pnpVis)
     }
  
-
-
      return (
         <div className={styles.overviewWrapper}>
             <div className={styles.mainSiteBox}>
@@ -361,7 +360,7 @@ export default function SiteOverviewMsf (props) {
             </div>
             <div className={styles.detailsWrapper}>
                 <button className={styles.detailsWrapperButton} onClick={pageshideHandler}>
-                    <span>{lishide ? "▶ " : "▼ "} Pages</span>
+                    <span>{pageshide ? "▶ " : "▼ "} Pages</span>
                     {
                     pagesLoading ? 
                     <div className={styles.loader}><div></div><div></div><div></div><div></div></div>:

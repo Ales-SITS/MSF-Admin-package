@@ -24,9 +24,71 @@ export default function ListComponent (props) {
     const siteurl = props.siteurl
     const context = props.context
 
-     return (
+    const [idhidden,setIdhidden] = useState(true)
+    const idHandler = (e) => {
+      e.stopPropagation()
+      setIdhidden(!idhidden)
+    }  
 
-        <div>
+    //OTHER
+    const copyOnClick = (e) => {
+        e.stopPropagation()
+        navigator.clipboard.writeText(e.target.innerText)
+    }
+
+    //URL
+    const urlObject = new URL(siteurl);
+    const host = urlObject.hostname
+
+
+     return (
+        <div className={styles.itemBoxWrapper} >
+        <div className={styles.itemBox} >
+        <div className={styles.itemBoxTop}>
+            <div className={styles.itemBoxTopLeft}>
+              <div className={styles.idBoxWrapper}>
+                  <button className={styles.idBoxLabel} onClick={(e)=>idHandler(e)}>id</button>
+                  {!idhidden && <span className={styles.idBox} onClick={(e)=>copyOnClick(e)}>{list.id}</span>}   
+              </div>
+              <a className={styles.itemBoxSiteLink} href={`https://${host}/${list.url}`} title={`Go to https://${host}/${list.url}`}>{list.name}</a>
+          </div>
+          <div className={styles.itemBoxTopRight}>
+            <div className={`${styles.buttonBox} ${styles.buttonBoxList}`}>
+                <a className={`${styles.buttonMedium} ${styles.buttonMediumList}`}  href={`${siteurl}/_layouts/15/listedit.aspx?List={${list.id}}`} title="Library Settings"><Icon iconName="Settings"/></a>
+                <a className={`${styles.buttonMedium} ${styles.buttonMediumList}`}  href={`${siteurl}/_layouts/15/user.aspx?obj={${list.id}},doclib&List={${list.id}}`} title="Library Permissions"><Icon iconName="SecurityGroup"/></a>
+                <a className={`${styles.buttonMedium} ${styles.buttonMediumList}`} href={`${siteurl}/_layouts/15/storman.aspx?root=${list.url.split("/")[3]}`} title="List Storage"><Icon iconName="OfflineStorage"/></a>  
+            </div>
+          </div>   
+        </div>  
+        </div> 
+    </div> 
+    );
+  }
+
+  /*
+          <div className={styles.itemBoxWrapper} >
+            <div className={styles.itemBox} >
+            <div className={styles.itemBoxTop}>
+                <div className={styles.itemBoxTopLeft}>
+                  <div className={styles.idBoxWrapper}>
+                      <button className={styles.idBoxLabel} onClick={(e)=>idHandler(e)}>id</button>
+                      {!idhidden && <span className={styles.idBox} onClick={(e)=>copyOnClick(e)}>{list.id}</span>}   
+                  </div>
+                  <a className={styles.itemBoxSiteLink} href={`https://${host}/${list.url}`} title={`Go to https://${host}/${list.url}`}>{list.name}</a>
+              </div>
+              <div className={styles.itemBoxTopRight}>
+                <div className={`${styles.buttonBox} ${styles.buttonBoxLibrary}`}>
+                    <a className={`${styles.buttonMedium} ${styles.buttonMediumLibrary}`}  href={`${siteurl}/_layouts/15/listedit.aspx?List={${list.id}}`} title="Library Settings"><Icon iconName="Settings"/></a>
+                    <a className={`${styles.buttonMedium} ${styles.buttonMediumLibrary}`}  href={`${siteurl}/_layouts/15/user.aspx?obj={${list.id}},doclib&List={${list.id}}`} title="Library Permissions"><Icon iconName="SecurityGroup"/></a>
+                    <a className={`${styles.buttonMedium} ${styles.buttonMediumLibrary}`} href={`${siteurl}/_layouts/15/storman.aspx?root=${list.url.split("/")[3]}`} title="List Storage"><Icon iconName="OfflineStorage"/></a>  
+                </div>
+              </div>   
+            </div>  
+            </div> 
+        </div> 
+  
+
+            <div>
             <div className={styles.itemBoxTop}>
                 <div><a href={list.url} title={list.url}>{list.name}</a></div>
                 <div className={substyles.subsiteBoxBottom}>
@@ -37,7 +99,5 @@ export default function ListComponent (props) {
                 <div><span className={styles.idBox}>{list.id}</span></div>    
             </div>   
         </div> 
-    );
-  }
-
   
+  */

@@ -32,7 +32,7 @@
 }
 
 .overviewWrapper h1 a:active, .overviewWrapper h1 a:visited {
-  color: black
+  color: inherit
 }
 
 
@@ -103,6 +103,11 @@
   padding: 0;
 }
 
+.resultsWrapper ul li {
+  display: flex;
+  justify-content: center;
+}
+
 .resultsFilterInputBox {
   margin-bottom: 2px
 }
@@ -142,10 +147,6 @@
   transition: 0.2s;
 }
 
-.itemBoxHubsite:hover {
-  border: 1px solid orange
-}
-
 .itemBoxTop {
   min-height: 30px;
   display: flex;
@@ -165,6 +166,10 @@
   background-color: #fff2e1;
 }
 
+.itemBoxTop:hover .arrow {
+  color: #fcbd71 !important 
+}
+
 .itemBoxTopSelected {
   background-color: #fff2e1;
   box-shadow: 0px 2px 5px 1px rgba(0,0,0,0.2)
@@ -173,6 +178,16 @@
 .itemBoxTopLeft {
   display: flex;
   width: 500px
+}
+
+.itemBoxSiteLink {
+  transition: 0.2s;
+  padding: 1px 8px;
+  border-radius: 10px
+}
+
+.itemBoxSiteLink:hover{
+  background-color: rgb(255, 193, 78)
 }
 
 .itemBoxTopRight {
@@ -195,6 +210,10 @@
   cursor: pointer;
 }
 
+.arrow:hover {
+  color: #fcbd71;
+}
+
 .arrowOpened {
   transform: rotate(90deg) !important;
   font-size: 14px;
@@ -208,7 +227,7 @@
 }
 
 .itemBoxTop a:visited, .itemBoxTop a:active {
-  color: black
+  color: inherit
 }
 
 .itemBoxBottom {
@@ -268,12 +287,12 @@
 }
 
 .mainSiteBoxBottom a:hover, .mainSiteBoxBottom button:hover {
-  color: black;
-  background-color: rgb(253, 213, 163);
+  color: white !important;
+  background-color: #777;
 }
 
 .mainSiteBoxBottom a:visited, .mainSiteBoxBottom a:active {
-  color: black
+  color: inherit
 }  
 
 .idBoxWrapper{
@@ -372,12 +391,24 @@
   padding: 1px
 }
 
-.buttonBoxSubsite {
-  background-color: rgb(255, 235, 147);
-}
-
 .buttonBoxHubsite {
   background-color: rgb(253, 198, 130);
+}
+
+.buttonBoxSubsite {
+  background-color: rgb(255, 221, 147);
+}
+
+.buttonBoxPage {
+  background-color: rgb(255, 246, 165);
+}
+
+.buttonBoxLibrary {
+  background-color: rgb(221, 209, 255);
+}
+
+.buttonBoxList {
+  background-color: rgb(209, 238, 255);
 }
 
 .buttonMedium {
@@ -395,35 +426,32 @@
 }
 
 .buttonMedium:visited, .buttonMedium:active {
-  color: black
+  color: inherit
 }  
+
+.buttonMedium:hover {
+  color: white !important;
+  background-color: #777;
+}
 
 .buttonMediumSite {
   background-color: rgb(253, 198, 130);
 }
 
-.buttonMediumSite:hover {
-  background-color: orange
-}
-
-.buttonMediumSubsite:hover {
-  background-color: orange;
+.buttonMediumSubsite {
+  background-color: rgb(255, 221, 147);
 }
 
 .buttonMediumPage {
-  background-color: rgb(255, 235, 147);
+  background-color: rgb(255, 246, 165);
 }
 
 .buttonMediumLibrary {
-  background-color: rgb(209, 227, 255);
+  background-color: rgb(221, 209, 255);
 }
 
 .buttonMediumList {
-  background-color: rgb(221, 191, 255);
-}
-
-.buttonMediumList:hover {
-  background-color: rgb(255, 246, 167);
+  background-color: rgb(209, 238, 255);
 }
 
 

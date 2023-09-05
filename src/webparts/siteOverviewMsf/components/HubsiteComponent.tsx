@@ -106,12 +106,12 @@ const idHandler = (e) => {
             <button className={listsHidden ? styles.arrow : `${styles.arrow} ${styles.arrowOpened}`}>▶</button>
             <div className={styles.itemBox} >
               <div className={styles.itemBoxTop} >
-                    <div className={styles.itemBoxTopLeft}>
+                  <div className={styles.itemBoxTopLeft}>
                       <div className={styles.idBoxWrapper}>
                           <button className={styles.idBoxLabel} onClick={(e)=>idHandler(e)}>id</button>
                           {!idhidden && <span className={styles.idBox} onClick={(e)=>copyOnClick(e)}>{site_id}</span>}   
                       </div>
-                      <a href={hubsite.Url} title={hubsite.Url}>{hubsite.Title}</a>
+                      <a className={styles.itemBoxSiteLink} href={hubsite.Url} title={`Go to ${hubsite.Url}`}>{hubsite.Title}</a>
                   </div>
                   <div className={styles.itemBoxTopRight}>
                     <div className={`${styles.buttonBox} ${styles.buttonBoxHubsite}`}>

@@ -124,7 +124,7 @@ return (
             <input 
                 type="text" 
                 name="siteName" 
-                placeholder="Filter by site Title"
+                placeholder="Filter by user name"
                 onChange={e => usersFilterHandler(e.target.value)} 
                 /><span>({displayCount}/{usersfiltered.length})</span>
         </div>

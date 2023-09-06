@@ -77,6 +77,7 @@ export default class SiteOverviewMsfWebPart extends BaseClientSideWebPart<ISiteO
   }
 
   protected async onPropertyPaneFieldChanged(propertyPath: string, oldValue: any, newValue: any) {
+    console.log("triggered")
     if (propertyPath === 'site_url') {
       try {  
         this.siteID = await this.getID(this.properties.site_url)           
@@ -105,7 +106,7 @@ export default class SiteOverviewMsfWebPart extends BaseClientSideWebPart<ISiteO
 
                 PropertyPaneTextField('site_url', {
                   label: "Site url",
-                  value: this.context.pageContext.web.absoluteUrl
+                  //value: this.context.pageContext.web.absoluteUrl
                 }),
                 PropertyPaneLabel('site_url', {
                   text: `ID: ${this.siteID}`
@@ -120,8 +121,8 @@ export default class SiteOverviewMsfWebPart extends BaseClientSideWebPart<ISiteO
                 }),             
                 PropertyPaneToggle('expanded', {
                   label: "Fields Expanded/Collapsed?",
-                  offText: "Expanded",
-                  onText: "Collapsed"
+                  offText: "Collapsed",
+                  onText: "Expanded"
                 })
               ]
             }

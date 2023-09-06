@@ -116,9 +116,9 @@ async function getSubsiteLists(id) {
                     </div>
                     <div className={styles.itemBoxTopRight}>
                       <div className={`${styles.buttonBox} ${styles.buttonBoxSubsite}`}>
+                      <a className={`${styles.buttonMedium} ${styles.buttonMediumSubsite}`} href={`${site.Url}/_layouts/15/viewlsts.aspx?view=14`} title="Subsite Content"><Icon iconName="AllApps"/></a> 
                         <a className={`${styles.buttonMedium} ${styles.buttonMediumSubsite}`} href={`${site.Url}/_layouts/15/settings.aspx`} title="Subsite Settings"><Icon iconName="Settings"/></a>
                         <a className={`${styles.buttonMedium} ${styles.buttonMediumSubsite}`} href={`${site.Url}/_layouts/15/user.aspx`} title="Subsite Permissions"><Icon iconName="SecurityGroup"/></a>
-                        <a className={`${styles.buttonMedium} ${styles.buttonMediumSubsite}`} href={`${site.Url}/_layouts/15/viewlsts.aspx?view=14`} title="Subsite Content"><Icon iconName="AllApps"/></a> 
                         <a className={`${styles.buttonMedium} ${styles.buttonMediumSubsite}`} href={`${site.Url}/_layouts/15/siteanalytics.aspx?view=19`} title="Subsite Usage"><Icon iconName="LineChart"/></a> 
                         <a className={`${styles.buttonMedium} ${styles.buttonMediumSubsite}`} href={`${site.Url}/_layouts/15/storman.aspx`} title="Site Storage"><Icon iconName="OfflineStorage"/></a>  
                       </div>

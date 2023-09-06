@@ -1,8 +1,6 @@
 import * as React from 'react';
-import {useState, useEffect, useRef} from 'react';
-
+import {useState} from 'react';
 import styles from './SiteOverviewMsf.module.scss';
-import substyles from './SubsiteComponent.module.scss';
 
 import { Icon } from '@fluentui/react/lib/Icon';
 
@@ -27,7 +25,7 @@ export default function ListComponent (props) {
         navigator.clipboard.writeText(e.target.innerText)
     }
 
-    console.log(page)
+    //console.log(page)
 
      return (
         <div className={styles.itemBoxWrapper} >

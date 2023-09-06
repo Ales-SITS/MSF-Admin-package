@@ -102,7 +102,7 @@ const usersFilterHandler = (e) => {
     setDisplayCount(50)
 }
 
-const usersfiltered = users.filter( user => user.Title.toLowerCase().includes(usersFilter.toLowerCase()))
+const usersfiltered = usersFilter === "" ? users : users.filter( user => user.Title.toLowerCase().includes(usersFilter.toLowerCase()))
 const usersToDisplay = usersfiltered.slice(0, displayCount);
 
 const handleScroll = (event) => {

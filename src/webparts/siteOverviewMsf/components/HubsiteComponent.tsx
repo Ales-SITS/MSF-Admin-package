@@ -115,9 +115,9 @@ const idHandler = (e) => {
                   </div>
                   <div className={styles.itemBoxTopRight}>
                     <div className={`${styles.buttonBox} ${styles.buttonBoxHubsite}`}>
+                      <a className={`${styles.buttonMedium} ${styles.buttonMediumSite}`} href={`${hubsite.SPWebUrl}/_layouts/15/viewlsts.aspx?view=14`} title="Site Content"><Icon iconName="AllApps"/></a> 
                       <a className={`${styles.buttonMedium} ${styles.buttonMediumSite}`} href={`${hubsite.SPWebUrl}/_layouts/15/settings.aspx`} title="Site Settings"><Icon iconName="Settings"/></a>
                       <a className={`${styles.buttonMedium} ${styles.buttonMediumSite}`} href={`${hubsite.SPWebUrl}/_layouts/15/user.aspx`} title="Site Permissions"><Icon iconName="SecurityGroup"/></a>
-                      <a className={`${styles.buttonMedium} ${styles.buttonMediumSite}`} href={`${hubsite.SPWebUrl}/_layouts/15/viewlsts.aspx?view=14`} title="Site Content"><Icon iconName="AllApps"/></a> 
                       <a className={`${styles.buttonMedium} ${styles.buttonMediumSite}`} href={`${hubsite.SPWebUrl}/_layouts/15/siteanalytics.aspx?view=19`} title="Site Usage"><Icon iconName="LineChart"/></a> 
                       <a className={`${styles.buttonMedium} ${styles.buttonMediumSite}`} href={`${hubsite.SPWebUrl}/_layouts/15/storman.aspx`} title="Site Storage"><Icon iconName="OfflineStorage"/></a>  
                     </div>

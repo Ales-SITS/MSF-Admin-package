@@ -39,7 +39,6 @@ export default function LibraryComponent(props) {
     //URL
     const urlObject = new URL(siteurl);
     const host = urlObject.hostname
-    console.log(host)
 
      return (
         <div className={styles.itemBoxWrapper} >

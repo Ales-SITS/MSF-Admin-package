@@ -51,6 +51,8 @@ export default function SiteOverviewMsf (props) {
 
 
 
+
+
 //LOADERS      
     const [hubLoading,setHubLoading] = useState(true)
     const [subLoading,setSubLoading] = useState(true)
@@ -61,47 +63,31 @@ export default function SiteOverviewMsf (props) {
 //CONST
     const [siteTitle,setSiteTitle] = useState(context.pageContext.web.title)
         
-    const [siteURL,setSiteURL] = useState(
-        site_url === undefined || site_url === null || site_url === "" ? context.pageContext.site.absoluteUrl : site_url)
+    const siteURL = site_url === undefined || site_url === null || site_url === "" ? context.pageContext.site.absoluteUrl : site_url
+
     const [siteID,setSiteID] = useState(
         site_id === undefined || site_id === null || site_id === "" ? context.pageContext.site.id._guid : site_id)
 
+    const [tabSelected,setTabSelected] = useState(1)
+    const tabSelectedHandler = (tab) => {
+        setTabSelected(tab)
+    }
+    
 //CONST & HIDERS        
     const [hubsites, setHubsites] = useState([])
-    const [hubhide, setHubhide] = useState(expanded)
-    const hubhideHandler = () => {
-        setHubhide(!hubhide)
-    }
 
     const [subsites, setSubsites] = useState([]);
-    const [subhide, setSubhide] = useState(expanded)
-    const subhideHandler = () => {
-        setSubhide(!subhide)
-    }
 
     const [pages, setPages] = useState([])
-    const [pageshide, setPageshide] = useState(expanded)
-    const pageshideHandler = () => {
-        setPageshide(!pageshide)
-    }
-
-    //const [pagesfiltered, setPagesfiltered] = useState([])
-    //const pagesfiltered = pages.length === 0 ? [] : pages.filter( page => page.Title.includes(pageFilter))
-    //console.log(pages)
-    //console.log(pagesfiltered)
 
     const [lists,setLists] = useState([])
-    const [libhide,setLibhide] = useState(expanded)
-    const libhideHandler = () => {
-        setLibhide(!libhide)
+
+    const [expand, setExpand] = useState(expanded)
+    const expandHandler = () => {
+        setExpand(!expand)
     }
 
-    const [lishide,setLishide] = useState(expanded)
-    const lishideHandler = () => {
-        setLishide(!lishide)
-    }
-
-//GETTERS
+    //GETTERS
 
     async function getHub(id) {
         setHubLoading(true)
@@ -114,7 +100,7 @@ export default function SiteOverviewMsf (props) {
         return result
     }  
 
-    async function getSubsites(id) {   
+    async function getSubsites() {   
         setSubLoading(true)
         const sp = spfi().using(SPFxsp(context));     
         const site = Web([sp.web, `${siteURL}`])      
@@ -124,6 +110,7 @@ export default function SiteOverviewMsf (props) {
         return sites
     }   
 
+    /*
     async function getSiteCollectionLists(id) {
         setListsLoading(true)
         const graph = graphfi().using(SPFx(context))
@@ -132,7 +119,8 @@ export default function SiteOverviewMsf (props) {
         setListsLoading(false)
         return lists
     }   
-  
+  */
+
     async function getPages(id) {   
         setPagesLoading(true)
         const sp = spfi().using(SPFxsp(context));     
@@ -144,10 +132,11 @@ export default function SiteOverviewMsf (props) {
         return sites
     }   
 
-    async function getSubsiteLists(id) {
+    async function getLists() {
+       
         setListsLoading(true);
         const sp = spfi().using(SPFxsp(context));
-        const subsite = Web([sp.web, `${site_url}`]);
+        const subsite = Web([sp.web, `${siteURL}`]);
         const lists = await subsite.lists();
         setListsLoading(false);
       
@@ -175,37 +164,39 @@ export default function SiteOverviewMsf (props) {
 
 
     useEffect(() => {
-        getSubsites(siteID).then(result => {
-            setSubsites([]);
-            const arr:any = result
-            setSubsites(arr);
-        });
-
+        console.log("triggered")
         getHub(siteID).then(result => {
             setHubsites([]);
             const arr:any = result
             setHubsites(arr);
         });
 
-        getSiteCollectionLists(siteID).then(result => {
-            setLists([]);
+        getSubsites().then(result => {
+            setSubsites([]);
             const arr:any = result
-            setLists(arr);
+            setSubsites(arr);
         });
-
-        getSubsiteLists(site_id).then(result => {     
-            setLists([]);
-            const arr:any = result
-            setLists(arr);
-          })
 
         getPages(site_id).then(result => {     
             setPages([]);
             const arr:any = result
             setPages(arr);
-          })        
+        })  
 
-       }, [props.details, siteID]);
+/*
+        getSiteCollectionLists(siteID).then(result => {
+            setLists([]);
+            const arr:any = result
+            setLists(arr);
+        });
+*/
+        getLists().then(result => {     
+            setLists([]);
+            const arr:any = result
+            setLists(arr);
+          })
+
+       }, [site_id, site_url, siteID]);
 
        const copyOnClick = (e) => {
         navigator.clipboard.writeText(e.target.innerText)
@@ -232,32 +223,32 @@ export default function SiteOverviewMsf (props) {
     const searchSubFilter = (e) => {
            setSubFilter(e)
        }
-    const subsitesfiltered = subsites.filter( sub => sub.Title.toLowerCase().includes(subFilter.toLowerCase()))
+    const subsitesfiltered = subFilter === "" ? subsites : subsites.filter( sub => sub.Title.toLowerCase().includes(subFilter.toLowerCase()))
 
     const [hubFilter,setHubFilter] = useState("")
     const searchHubFilter = (e) => {
            setHubFilter(e)
        }    
-    const hubsitesfiltered = hubsites.filter( hub => hub.Title.toLowerCase().includes(hubFilter.toLowerCase()))
+    const hubsitesfiltered = hubFilter === "" ? hubsites : hubsites.filter( hub => hub.Title.toLowerCase().includes(hubFilter.toLowerCase()))
 
     const [pageFilter,setPageFilter] = useState("")
     const searchPageFilter = (e) => {
         setPageFilter(e)
     }
     //console.log(pages.length === 0)
-    const pagesfiltered = pages.length === 0 ? [] : pages.filter( page => page.Title.toLowerCase().includes(pageFilter.toLowerCase()))
+    const pagesfiltered = pages.length === 0 ? [] : pageFilter === "" ? pages : pages.filter( page => page.Title.toLowerCase().includes(pageFilter.toLowerCase()))
 
     const [libFilter,setLibFilter] = useState("")
     const searchLibFilter = (e) => {
         setLibFilter(e)
     }
-    const libfiltered = libraries.filter( lib => lib.name.includes(libFilter))
+    const libfiltered = libFilter === "" ? libraries : libraries.filter( lib => lib.name.includes(libFilter))
 
     const [listFilter,setListFilter] = useState("")
     const searchListFilter = (e) => {
         setListFilter(e)
     }
-    const listfiltered = genlist.filter( list => list.name.includes(listFilter))
+    const listfiltered = listFilter === "" ? genlist : genlist.filter( list => list.name.includes(listFilter))
 
 //MODALS   
 
@@ -273,35 +264,80 @@ export default function SiteOverviewMsf (props) {
         setPnpVis(!pnpVis)
     }
  
+    //console.log(pages)
+    console.log(pagesfiltered)
+    console.log(libfiltered)
+
      return (
         <div className={styles.overviewWrapper}>
             <div className={styles.mainSiteBox}>
                 <div className={styles.mainSiteBoxTop}>
                     <h1><a href={siteURL} title={siteURL}>{siteTitle}</a></h1>
-                    <span className={styles.idBox} onClick={(e)=>copyOnClick(e)}>{siteID}</span>
+                    <div>
+                        <span className={styles.idBox} onClick={(e)=>copyOnClick(e)}>{siteID}</span>
+                        <a href={siteURL} title={siteURL}>{siteURL}</a>
+                    </div>
                 </div>
                 <div className={styles.mainSiteBoxBottom}>
-                    <a href={`${siteURL}/_layouts/15/viewlsts.aspx?view=14`} title="Site Content"><Icon iconName="AllApps"/></a> 
-                    <a href={`${siteURL}/_layouts/15/settings.aspx`} title="Site Settings"><Icon iconName="Settings"/></a>
-                    <a href={`${siteURL}/_layouts/15/user.aspx`} title="Site Permissions"><Icon iconName="SecurityGroup"/></a>
-                    <a href={`${siteURL}/_layouts/15/siteanalytics.aspx?view=19`} title="Site Usage"><Icon iconName="LineChart"/></a>  
-                    <a href={`${siteURL}/_layouts/15/storman.aspx`} title="Site Storage"><Icon iconName="OfflineStorage"/></a> 
-                    <button onClick={pnpVisHandler} title="PnP Scripts" className="PnPScriptButton"><Icon iconName="PasteAsCode"/></button>
-                    <button onClick={permVisHandler} title="Permissions"><Icon iconName="PeopleAlert"/></button> 
+                    <div className={styles.mainSiteBoxBottomLeft}>
+                        <div className={styles.mainSiteBoxBottomLeft}>
+                            <a className={styles.buttonModern} href={`${siteURL}/_layouts/15/viewlsts.aspx?view=14`} title="Site Content"><Icon iconName="AllApps"/></a>
+                            <a className={styles.buttonClassic} href={`${siteURL}/_layouts/15/viewlsts.aspx`} title="Site Content (classic)"><Icon iconName="AllApps"/></a>  
+                        </div>
+                        <a href={`${siteURL}/_layouts/15/settings.aspx`} title="Site Settings"><Icon iconName="Settings"/></a>
+                        <a href={`${siteURL}/_layouts/15/user.aspx`} title="Site Permissions"><Icon iconName="SecurityGroup"/></a>
+                        <div className={styles.mainSiteBoxBottomLeft}>
+                            <a className={styles.buttonModern} href={`${siteURL}/_layouts/15/appStore.aspx`} title="App store"><Icon iconName="Puzzle"/></a>
+                            <a className={styles.buttonClassic} href={`${siteURL}/AppCatalog/Forms/AllItems.aspx`} title="Site App cataloge"><Icon iconName="Puzzle"/></a>
+                        </div>
+                        <a href={`${siteURL}/_layouts/15/siteanalytics.aspx?view=19`} title="Site Usage"><Icon iconName="LineChart"/></a>  
+                        <a href={`${siteURL}/_layouts/15/storman.aspx`} title="Site Storage"><Icon iconName="OfflineStorage"/></a> 
+                        <div className={styles.mainSiteBoxBottomLeft}>
+                            <a className={styles.buttonModern} href={`${siteURL}/_layouts/15/AdminRecycleBin.aspx`} title="Site Recycle Bin"><Icon iconName="RecycleBin"/></a>
+                            <a className={styles.buttonClassic} href={`${siteURL}/_layouts/15/AdminRecycleBin.aspx?View=2`} title="2nd stage Site Recycle Bin"><Icon iconName="EmptyRecycleBin"/></a> 
+                        </div>
+                        <button onClick={pnpVisHandler} title="PnP Scripts App" className="PnPScriptButton"><Icon iconName="PasteAsCode"/></button>
+                        <button onClick={permVisHandler} title="Permissions App"><Icon iconName="PeopleAlert"/></button> 
+                    </div>
+                    <button onClick={expandHandler} title={`${expand ? "Click to collapse" : "Click to expand"}`} 
+                            className={expand ? styles.mainSiteBoxBottomRight : `${styles.mainSiteBoxBottomRight} ${styles.mainSiteBoxBottomRightHidden} `}>
+                                ▲
+                    </button>
                 </div>
             </div>
             {permVis && <PermissionsComponent onCloseHandler={permVisHandler} context={context} url={siteURL}/>}
             {pnpVis && <PnP_Generator onCloseHandler={pnpVisHandler} type={"top_site"} siteurl={site_url}/>}
-            <div className={styles.detailsWrapper}>
-                <button className={styles.detailsWrapperButton} onClick={hubhideHandler}>
-                    <span>{hubhide ? "▶ " : "▼ "} Hub associated sites</span>
-                    {
-                    hubLoading ? 
-                    <div className={styles.loader}><div></div><div></div><div></div><div></div></div>:
-                    <span><span className={styles.displayedNum}>{hubsitesfiltered.length}/</span>{hubsites.length}</span>
-                     }
+            {expand && 
+            <>
+            <div className={styles.tabButtons}>
+                <button onClick={()=>tabSelectedHandler(1)} className={tabSelected === 1 && styles.tabSelected}>
+                    <span>Hub sites</span>
+                    {hubLoading ? <div className={styles.loaderWrapper}><div className={styles.loader}><div></div><div></div><div></div><div></div></div></div> :
+                    <span><span className={styles.displayedNum}>{hubsitesfiltered.length}/</span>{hubsites.length}</span>}
                 </button>
-                {!hubhide && 
+                <button onClick={()=>tabSelectedHandler(2)} className={tabSelected === 2 && styles.tabSelected}>
+                    <span>Subsites</span>
+                    {subLoading ? <div className={styles.loaderWrapper}><div className={styles.loader}><div></div><div></div><div></div><div></div></div></div> :
+                    <span><span className={styles.displayedNum}>{subsitesfiltered.length}/</span>{subsites.length}</span>}
+                </button>
+                <button onClick={()=>tabSelectedHandler(3)} className={tabSelected === 3 && styles.tabSelected}>
+                    <span>Pages </span>
+                    {pagesLoading ? <div className={styles.loaderWrapper}><div className={styles.loader}><div></div><div></div><div></div><div></div></div></div> :
+                    <span><span className={styles.displayedNum}>{pagesfiltered.length}/</span>{pages.length}</span>}
+                </button>
+                <button onClick={()=>tabSelectedHandler(4)} className={tabSelected === 4 && styles.tabSelected}>
+                    <span>Libraries</span> 
+                    {listsLoading ? <div className={styles.loaderWrapper}><div className={styles.loader}><div></div><div></div><div></div><div></div></div></div> :
+                    <span><span className={styles.displayedNum}>{libfiltered.length}/</span>{libraries.length}</span>}
+                </button>
+                <button onClick={()=>tabSelectedHandler(5)} className={tabSelected === 5 && styles.tabSelected}>
+                    <span>Lists</span>
+                    {listsLoading ? <div className={styles.loaderWrapper}><div className={styles.loader}><div></div><div></div><div></div><div></div></div></div> :
+                    <span><span className={styles.displayedNum}>{listfiltered.length}/</span>{genlist.length}</span>}
+                </button>
+            </div>
+            {tabSelected === 1 && 
+            <div className={styles.detailsWrapper}>
                     <div className={styles.resultsFilterInputBox}>
                         <input
                             className={styles.resultsFilterInput} 
@@ -311,8 +347,7 @@ export default function SiteOverviewMsf (props) {
                             onChange={e => searchHubFilter(e.target.value)} 
                             />
                     </div>
-                    }
-                {!hubhide &&
+          
                     <div className={styles.resultsWrapper}>
                         <ul>
                             {hubsitesfiltered.map((hubsite,idx)=>
@@ -321,20 +356,11 @@ export default function SiteOverviewMsf (props) {
                             </li>
                             )}
                         </ul>
-                    </div>
-                }
+                    </div>    
             </div>
-            <div className={styles.detailsWrapper}>
-                <button className={styles.detailsWrapperButton} onClick={subhideHandler}>
-                    <span>{subhide ? "▶ " : "▼ "} Subsites</span>
-                    {
-                    subLoading ? 
-                    <div className={styles.loader}><div></div><div></div><div></div><div></div></div>:
-                    <span><span className={styles.displayedNum}>{subsitesfiltered.length}/</span>{subsites.length}</span>
-                    }
-                    
-                </button>
-                {!subhide && 
+             }
+            {tabSelected === 2 && 
+            <div className={styles.detailsWrapper}>               
                     <div className={styles.resultsFilterInputBox}>
                         <input
                             className={styles.resultsFilterInput} 
@@ -344,8 +370,6 @@ export default function SiteOverviewMsf (props) {
                             onChange={e => searchSubFilter(e.target.value)} 
                             />
                     </div>
-                    }
-                {!subhide && 
                     <div className={styles.resultsWrapper}>
 
                         <ul>
@@ -356,18 +380,10 @@ export default function SiteOverviewMsf (props) {
                             )}
                         </ul>
                     </div>
-                }
             </div>
-            <div className={styles.detailsWrapper}>
-                <button className={styles.detailsWrapperButton} onClick={pageshideHandler}>
-                    <span>{pageshide ? "▶ " : "▼ "} Pages</span>
-                    {
-                    pagesLoading ? 
-                    <div className={styles.loader}><div></div><div></div><div></div><div></div></div>:
-                    <span><span className={styles.displayedNum}>{pagesfiltered.length}/</span>{pages.length}</span>
-                    }
-                </button>
-                {!pageshide && sitePages[0] !== undefined && 
+            }
+            {tabSelected === 3 && 
+            <div className={styles.detailsWrapper}>              
                     <div className={styles.resultsFilterInputBox}>
                         <input
                             className={styles.resultsFilterInput} 
@@ -376,9 +392,7 @@ export default function SiteOverviewMsf (props) {
                             placeholder="Filter by the page title"
                             onChange={e => searchPageFilter(e.target.value)} 
                             />
-                    </div>
-                    }
-                {!pageshide && sitePages[0] !== undefined &&
+                    </div>   
                     <div className={styles.resultsWrapper}>
                         <ul>
                             {pagesfiltered.map((page,idx)=>
@@ -388,18 +402,10 @@ export default function SiteOverviewMsf (props) {
                             )}
                         </ul>
                     </div>
-                }
             </div>
+            }
+            {tabSelected === 4 && 
             <div className={styles.detailsWrapper}>
-                <button className={styles.detailsWrapperButton} onClick={libhideHandler}>
-                    <span>{libhide ? "▶ " : "▼ "} Libraries</span>
-                    {
-                    listsLoading ? 
-                    <div className={styles.loader}><div></div><div></div><div></div><div></div></div>:
-                    <span><span className={styles.displayedNum}>{libfiltered.length}/</span>{libraries.length}</span>
-                    }
-                </button>
-                {!libhide && 
                     <div className={styles.resultsFilterInputBox}>
                         <input
                             className={styles.resultsFilterInput} 
@@ -409,8 +415,6 @@ export default function SiteOverviewMsf (props) {
                             onChange={e => searchLibFilter(e.target.value)} 
                             />
                     </div>
-                    }
-                {!libhide && 
                     <div className={styles.resultsWrapper}>
                         <ul>
                             {libfiltered.map((list,idx)=>
@@ -420,18 +424,10 @@ export default function SiteOverviewMsf (props) {
                             )}
                         </ul>
                     </div>
-                }
             </div>
+            }
+            {tabSelected === 5 && 
             <div className={styles.detailsWrapper}>
-                <button className={styles.detailsWrapperButton} onClick={lishideHandler}>
-                    <span>{lishide ? "▶ " : "▼ "} Lists</span>
-                    {
-                    listsLoading ? 
-                    <div className={styles.loader}><div></div><div></div><div></div><div></div></div>:
-                    <span><span className={styles.displayedNum}>{listfiltered.length}/</span>{genlist.length}</span>
-                    }
-                </button>
-                {!lishide && 
                     <div className={styles.resultsFilterInputBox}>
                         <input
                             className={styles.resultsFilterInput} 
@@ -441,8 +437,6 @@ export default function SiteOverviewMsf (props) {
                             onChange={e => searchListFilter(e.target.value)} 
                             />
                     </div>
-                    }
-                {!lishide && 
                     <div className={styles.resultsWrapper}>
                         <ul>
                             {listfiltered.map((list,idx)=>
@@ -452,8 +446,9 @@ export default function SiteOverviewMsf (props) {
                             )}
                         </ul>
                     </div>
-                }
             </div>
+            }
+            </>}
         </div>
     );
   }

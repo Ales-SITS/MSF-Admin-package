@@ -20,12 +20,13 @@ export interface ISiteOverviewMsfWebPartProps {
   header: string;
   site_id: string;
   site_url: string;
-  expanded: boolean
+  expanded: boolean;
 }
 
 export default class SiteOverviewMsfWebPart extends BaseClientSideWebPart<ISiteOverviewMsfWebPartProps> {
 
   private siteID:string = ""
+
 
   public async onInit(): Promise<void> {
     try {  
@@ -33,7 +34,8 @@ export default class SiteOverviewMsfWebPart extends BaseClientSideWebPart<ISiteO
       this.siteID = await this.getID(this.context.pageContext.web.absoluteUrl) : 
       this.siteID = await this.getID(this.properties.site_url)
 
-      return super.onInit();
+      return super.onInit()
+
     } catch (error) {
       console.error('Error in onInit:', error);
       return super.onInit();

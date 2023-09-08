@@ -1,12 +1,8 @@
 import * as React from 'react';
-import {useState, useEffect, useRef} from 'react';
-import { escape } from '@microsoft/sp-lodash-subset';
-import { SPFx, graphfi } from "@pnp/graph";
+import {useState} from 'react';
 
 import styles from './SiteOverviewMsf.module.scss';
-import substyles from './SubsiteComponent.module.scss';
 
-import { spfi, SPFx as SPFxsp} from "@pnp/sp";
 
 import "@pnp/sp/sites";
 import "@pnp/sp/webs";
@@ -29,6 +25,9 @@ export default function LibraryComponent(props) {
       e.stopPropagation()
       setIdhidden(!idhidden)
     }  
+
+    const [quickView,setQuickView] = useState(false)
+    
 
     //OTHER
     const copyOnClick = (e) => {
@@ -55,11 +54,21 @@ export default function LibraryComponent(props) {
                 <div className={`${styles.buttonBox} ${styles.buttonBoxLibrary}`}>
                     <a className={`${styles.buttonMedium} ${styles.buttonMediumLibrary}`}  href={`${siteurl}/_layouts/15/listedit.aspx?List={${list.id}}`} title="Library Settings"><Icon iconName="Settings"/></a>
                     <a className={`${styles.buttonMedium} ${styles.buttonMediumLibrary}`}  href={`${siteurl}/_layouts/15/user.aspx?obj={${list.id}},doclib&List={${list.id}}`} title="Library Permissions"><Icon iconName="SecurityGroup"/></a>
-                    <a className={`${styles.buttonMedium} ${styles.buttonMediumLibrary}`} href={`${siteurl}/_layouts/15/storman.aspx?root=${list.url.split("/")[3]}`} title="List Storage"><Icon iconName="OfflineStorage"/></a>  
+                    <a className={`${styles.buttonMedium} ${styles.buttonMediumLibrary}`} href={`${siteurl}/_layouts/15/storman.aspx?root=${list.url.split("/")[3]}`} title="Library Storage"><Icon iconName="OfflineStorage"/></a>
+                    <div 
+                    className={`${styles.buttonMedium} ${styles.buttonMediumLibrary}`}
+                    onMouseEnter={()=>setQuickView(true)}
+                    onMouseLeave={()=>setQuickView(false)}
+                    ><Icon iconName="RedEye"/></div>  
                 </div>
               </div>   
         </div>  
         </div> 
+        {quickView&&
+          <div className={styles.quickDisplay}>
+                    <div className={styles.quickDisplayBlocker}/>
+                    <iframe src={`https://${host}/${list.url}`}/>
+          </div>}
     </div> 
     );
   }

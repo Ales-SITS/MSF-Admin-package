@@ -1,7 +1,5 @@
 import * as React from 'react';
-import {useState, useEffect, useRef} from 'react';
-import { escape } from '@microsoft/sp-lodash-subset';
-import { SPFx, graphfi } from "@pnp/graph";
+import {useState, useEffect} from 'react';
 
 import styles from './SiteOverviewMsf.module.scss';
 import perstyles from './PermissionsComponent.module.scss';
@@ -21,10 +19,9 @@ import { Web } from "@pnp/sp/webs";
 
 import { Icon } from '@fluentui/react/lib/Icon';
 
-import { PermissionKind } from "@pnp/sp/security";
-import { PropertyPaneDescription } from 'SiteOverviewMsfWebPartStrings';
 
 export default function PermissionsComponent (props) {
+    const sp = props.sp
 
     const [everyone, setEveryone] = useState(false)
     const [users,setUsers] = useState([])
@@ -46,12 +43,16 @@ export default function PermissionsComponent (props) {
     } 
 
     const [groups,setGroups] = useState([])
-    async function getGroups() {   
-        const sp = spfi().using(SPFxsp(props.context));     
-        const site = Web([sp.web, `${props.url}`])      
-        const userGroups = await site.siteGroups()
-        return userGroups
-    }  
+    async function getGroup() {
+        
+        const site = Web([sp.web, `${props.url}`]) 
+        let membergroupid
+        await site.associatedMemberGroup().then(result => membergroupid = result.Id)
+        const members = await site.siteGroups.getById(5).users();
+         
+        console.log(members)
+        return members
+    }
 
 
     const [role,setRole] = useState(null)
@@ -80,6 +81,10 @@ export default function PermissionsComponent (props) {
             })
         });
  
+        getGroup().then(result => {
+            console.log(result)
+        })
+
         getRole().then(result => {
             setRole(result)
         })

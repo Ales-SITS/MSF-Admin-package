@@ -6,7 +6,7 @@ import styles from './SiteOverviewMsf.module.scss';
 import { Icon } from '@fluentui/react/lib/Icon';
 
 //API
-import { SPFx, graphfi } from "@pnp/graph";
+import { SPFx, graphfi} from "@pnp/graph";
 import { spfi, SPFx as SPFxsp} from "@pnp/sp";
 
 import "@pnp/sp/sites";
@@ -20,14 +20,22 @@ import "@pnp/graph/users";
 import "@pnp/graph/sites";
 import "@pnp/sp/hubsites";
 import "@pnp/graph/search";
-
+import "@pnp/sp/features";
+import "@pnp/sp/site-groups/web";
 import "@pnp/sp/items";
 import "@pnp/sp/items/get-all";
+
+import "@pnp/sp-admin";
 
 import { Web } from "@pnp/sp/webs";   
 
 import { SearchResults } from "@pnp/sp/search";
 import { Site } from "@pnp/graph/sites";
+
+/*
+import { MSGraphClient } from '@microsoft/sp-http';  
+import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';  
+*/
 
 //COMPONENTS
 import HubsiteComponent from "./HubsiteComponent"
@@ -39,6 +47,7 @@ import ListComponent from "./ListComponent"
 import PermissionsComponent from "./PermissionsComponent"
 import PnP_Generator from "../PnPScripts/PnP_Generator"
 
+
 export default function SiteOverviewMsf (props) {
 //PROPS
     const {
@@ -49,10 +58,8 @@ export default function SiteOverviewMsf (props) {
         context
       } = props.details;
 
-
-
-
-
+    const sp = props.sp//spfi().using(SPFxsp(context))
+    //console.log(context)
 //LOADERS      
     const [hubLoading,setHubLoading] = useState(true)
     const [subLoading,setSubLoading] = useState(true)
@@ -82,6 +89,8 @@ export default function SiteOverviewMsf (props) {
 
     const [lists,setLists] = useState([])
 
+    const [storage, setStorage] = useState(0)
+
     const [expand, setExpand] = useState(expanded)
     const expandHandler = () => {
         setExpand(!expand)
@@ -91,7 +100,6 @@ export default function SiteOverviewMsf (props) {
 
     async function getHub(id) {
         setHubLoading(true)
-        const sp = spfi().using(SPFxsp(context));
         const searchResults: SearchResults = await sp.search(
           `DepartmentId=${id} contentclass:sts_site -SiteId:${id}`
         );     
@@ -102,7 +110,6 @@ export default function SiteOverviewMsf (props) {
 
     async function getSubsites() {   
         setSubLoading(true)
-        const sp = spfi().using(SPFxsp(context));     
         const site = Web([sp.web, `${siteURL}`])      
         const sites = await site.webs()    
         setSubLoading(false)
@@ -110,32 +117,39 @@ export default function SiteOverviewMsf (props) {
         return sites
     }   
 
-    /*
-    async function getSiteCollectionLists(id) {
-        setListsLoading(true)
-        const graph = graphfi().using(SPFx(context))
-        const siteData = await graph.sites.getById(id)
-        const lists = await Site(siteData, "lists")();
-        setListsLoading(false)
-        return lists
-    }   
-  */
+    async function getAdvancedReport(id) {
+        console.log("triggered")
+        //const graph = graphfi().using(SPFx(context))
+        //const siteData = await graph.sites.getById(id)
+        //const report = await Site(siteData, "/reports/getSharePointSiteUsageStorage(period='D7')")();
+        const site = Web([sp.web, `${siteURL}`])    
+        //const features = await site.features()
+        //const allProps = await sp.admin.siteProperties.select("*")();
+    
+        const features = await site.features.select("DisplayName", "DefinitionId")();
 
+        return features
+    }  
+
+    async function getReport() {
+        const response = await fetch(`${siteURL}/_api/site/usage`);
+        const rawData = await response.text()
+        
+        return rawData
+    }   
+  
     async function getPages(id) {   
         setPagesLoading(true)
-        const sp = spfi().using(SPFxsp(context));     
         const site = Web([sp.web, `${siteURL}`])      
         const sites = await site.lists.getByTitle("Site Pages").items.select('FileLeafRef', 'Title', 'Id', 'GUID')()
         setPagesLoading(false)
-        //sites.length === 0 ? setPagesfiltered(pages) : setPagesfiltered(pages.filter( page => page.Title.includes(pageFilter)))
-
+        
         return sites
     }   
 
     async function getLists() {
        
         setListsLoading(true);
-        const sp = spfi().using(SPFxsp(context));
         const subsite = Web([sp.web, `${siteURL}`]);
         const lists = await subsite.lists();
         setListsLoading(false);
@@ -164,7 +178,7 @@ export default function SiteOverviewMsf (props) {
 
 
     useEffect(() => {
-        console.log("triggered")
+       
         getHub(siteID).then(result => {
             setHubsites([]);
             const arr:any = result
@@ -177,19 +191,29 @@ export default function SiteOverviewMsf (props) {
             setSubsites(arr);
         });
 
-        getPages(site_id).then(result => {     
+        getPages(siteID).then(result => {     
             setPages([]);
             const arr:any = result
             setPages(arr);
         })  
 
-/*
-        getSiteCollectionLists(siteID).then(result => {
-            setLists([]);
-            const arr:any = result
-            setLists(arr);
-        });
+        /*
+        getAdvancedReport(siteID).then(result => {
+            result.map(feature => console.log(feature))
+        }
+        )
 */
+        getReport().then(result => {
+            const parser = new DOMParser()
+            const xml = parser.parseFromString(result,"application/xhtml+xml")
+            const defaultNamespaceURI = 'http://schemas.microsoft.com/ado/2007/08/dataservices';
+            const elementName = 'Storage';
+            const storageElement = xml.getElementsByTagNameNS(defaultNamespaceURI, elementName)[0];         
+            const storage = Number(storageElement.textContent) / (1024 * 1024 * 1024)
+
+            setStorage(storage)
+        });
+
         getLists().then(result => {     
             setLists([]);
             const arr:any = result
@@ -265,8 +289,9 @@ export default function SiteOverviewMsf (props) {
     }
  
     //console.log(pages)
-    console.log(pagesfiltered)
-    console.log(libfiltered)
+    //console.log(pagesfiltered)
+    //console.log(libfiltered)
+
 
      return (
         <div className={styles.overviewWrapper}>
@@ -276,6 +301,7 @@ export default function SiteOverviewMsf (props) {
                     <div>
                         <span className={styles.idBox} onClick={(e)=>copyOnClick(e)}>{siteID}</span>
                         <a href={siteURL} title={siteURL}>{siteURL}</a>
+                        <span className={styles.storageWrapper}>storage used<span className={styles.storage}>{` ${storage.toFixed(3)} (GB)`}</span></span>
                     </div>
                 </div>
                 <div className={styles.mainSiteBoxBottom}>
@@ -300,12 +326,12 @@ export default function SiteOverviewMsf (props) {
                         <button onClick={permVisHandler} title="Permissions App"><Icon iconName="PeopleAlert"/></button> 
                     </div>
                     <button onClick={expandHandler} title={`${expand ? "Click to collapse" : "Click to expand"}`} 
-                            className={expand ? styles.mainSiteBoxBottomRight : `${styles.mainSiteBoxBottomRight} ${styles.mainSiteBoxBottomRightHidden} `}>
-                                ▲
+                                className={expand ? styles.mainSiteBoxBottomRight : `${styles.mainSiteBoxBottomRight} ${styles.mainSiteBoxBottomRightHidden} `}>
+                                    ▲
                     </button>
                 </div>
             </div>
-            {permVis && <PermissionsComponent onCloseHandler={permVisHandler} context={context} url={siteURL}/>}
+            {permVis && <PermissionsComponent onCloseHandler={permVisHandler} context={context} url={siteURL} sp={props.sp}/>}
             {pnpVis && <PnP_Generator onCloseHandler={pnpVisHandler} type={"top_site"} siteurl={site_url}/>}
             {expand && 
             <>

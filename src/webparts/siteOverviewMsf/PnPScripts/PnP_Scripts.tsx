@@ -1,6 +1,7 @@
 import * as React from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 
+
 export function PnPCollectionAdmin (props) {
     const copyOnClick = (e) => {
         navigator.clipboard.writeText(e.target.innerText)
@@ -10,12 +11,61 @@ export function PnPCollectionAdmin (props) {
 
 <SyntaxHighlighter language="powershell" onClick={(e)=>copyOnClick(e)}>
 {`
+#Returns a list of users who are admins of provided site. 
+#Documentation: https://pnp.github.io/powershell/cmdlets/Get-PnPSiteCollectionAdmin.html
+
 Connect-PnPOnline -URL "${props.siteurl}" -Interactive
 Get-PnPSiteCollectionAdmin
 `}
 </SyntaxHighlighter>
     );
 }
+
+export function PnPDeletedBy (props) {
+    const copyOnClick = (e) => {
+        navigator.clipboard.writeText(e.target.innerText)
+    }
+
+    return (
+<SyntaxHighlighter language="powershell" onClick={(e)=>copyOnClick(e)}>
+{`
+#Returns a list of files from the site recycle bin, which were deleted by user you specify. 
+#Documentation: https://pnp.github.io/powershell/cmdlets/Get-PnPRecycleBinItem.html
+
+Connect-PnPOnline -URL "${props.siteurl}" -Interactive
+Get-PnPRecycleBinItem | Where-Object { $_.DeletedByName -like "${props.user}*" } 
+`}
+</SyntaxHighlighter>
+    )
+}
+
+export function PnPRestoreFilesDeletedBy (props) {
+    const copyOnClick = (e) => {
+        navigator.clipboard.writeText(e.target.innerText)
+    }
+
+    return (
+<SyntaxHighlighter language="powershell" onClick={(e)=>copyOnClick(e)}>
+{`
+#Restores all files from the site recycle bin, which were deleted by user you specify. 
+#Check the list of files before restoring is recommended. (see 'Items deleted by' script) 
+#Documentation: https://pnp.github.io/powershell/cmdlets/Restore-PnPRecycleBinItem.html?q=restore-pnprecyc;e
+
+Connect-PnPOnline -URL "${props.siteurl}" -Interactive
+$itemsToRestore = Get-PnPRecycleBinItem | Where-Object { $_.DeletedByName -like "${props.user}*" } 
+
+foreach ($item in $itemsToRestore) {
+    
+    $it = $item.Id.toString()
+    Restore-PnPRecycleBinItem -Identity $it -Force
+}
+`}
+</SyntaxHighlighter>
+    )
+}
+
+
+
 
 export function PnPAllPermissions (props) {
     const copyOnClick = (e) => {
@@ -27,8 +77,7 @@ export function PnPAllPermissions (props) {
 <SyntaxHighlighter language="powershell" onClick={(e)=>copyOnClick(e)}>
 {`
 <#
-.SYNOPSIS
-    Creates a report CSV with all unique permissions in the SPO site down to a folder/file level
+Creates a report CSV with all unique permissions in the SPO site down to a folder/file level
 
 .NOTES
     Includes complete URL path, object title, sharing links

@@ -9,7 +9,7 @@ import { Icon } from '@fluentui/react/lib/Icon';
 import { Dropdown, IDropdownOption, IDropdownStyles } from '@fluentui/react/lib/Dropdown';
 import { TextField, ITextFieldStyles } from '@fluentui/react/lib/TextField';
 
-import {PnPCollectionAdmin, PnPAllPermissions} from './PnP_Scripts'
+import {PnPCollectionAdmin, PnPDeletedBy, PnPAllPermissions, PnPRestoreFilesDeletedBy} from './PnP_Scripts'
 
 
 export default function PnP_AllPermissions (props) {
@@ -20,7 +20,9 @@ export default function PnP_AllPermissions (props) {
 
   const topSiteScripts = [
         {key:"script1", text: "Get Admin"},
-        {key:"script2", text: "Full permissions report"}
+        {key:"script2", text: "Items deleted by"},
+        {key:"script3", text: "Restore items deleted by"},
+        {key:"script4", text: "Full permissions report"}
     ]
     
   const libraryScripts = [
@@ -117,9 +119,6 @@ export default function PnP_AllPermissions (props) {
         [],
       );
 
-
-    console.log(selectedScript)
-
     return (
         <div className={scriptstyles.scriptModal}>
             <div className={scriptstyles.scriptModalTop}>
@@ -145,7 +144,11 @@ export default function PnP_AllPermissions (props) {
                      <TextField 
                      label="Additional Input " 
                      onChange={inputValueHandler}
-                     placeholder={selectedScript.key === "script2" ? "Local path and file name, i.e: C:/Users/YourName/Desktop/Report.csv" : "?"}
+                     placeholder={
+                      selectedScript.key === "script2" ? "Type name of user, i.e.: Pepa Novak" : 
+                      selectedScript.key === "script3" ? "Type name of user, i.e.: Pepa Novak" : 
+                      selectedScript.key === "script4" ? "Local path and file name, i.e: C:/Users/YourName/Desktop/Report.csv" :
+                      "?"}
                      required
                      styles={textfieldStyles}
                      />
@@ -154,7 +157,9 @@ export default function PnP_AllPermissions (props) {
             </div>
             { 
             selectedScript.key === "script1" ? <PnPCollectionAdmin siteurl={props.siteurl} reportpath={inputValue}/> :
-            selectedScript.key === "script2" ? <PnPAllPermissions siteurl={props.siteurl} reportpath={inputValue}/> :
+            selectedScript.key === "script2" ? <PnPDeletedBy siteurl={props.siteurl} user={inputValue}/> :
+            selectedScript.key === "script3" ? <PnPRestoreFilesDeletedBy siteurl={props.siteurl} user={inputValue}/> :
+            selectedScript.key === "script4" ? <PnPAllPermissions siteurl={props.siteurl} reportpath={inputValue}/> :
             null
             }
         </div>

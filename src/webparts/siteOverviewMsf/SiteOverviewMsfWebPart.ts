@@ -79,7 +79,6 @@ export default class SiteOverviewMsfWebPart extends BaseClientSideWebPart<ISiteO
   }
 
   protected async onPropertyPaneFieldChanged(propertyPath: string, oldValue: any, newValue: any) {
-    console.log("triggered")
     if (propertyPath === 'site_url') {
       try {  
         this.siteID = await this.getID(this.properties.site_url)           

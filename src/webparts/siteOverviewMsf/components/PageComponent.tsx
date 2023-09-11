@@ -19,13 +19,19 @@ export default function ListComponent (props) {
       setIdhidden(!idhidden)
     }  
 
-  //OTHER
+    const [quickView,setQuickView] = useState(false)
+    const quickViewHandler = (event,status) => {
+        console.log(event)
+        setQuickView(status)
+    }
+
+//OTHER
     const copyOnClick = (e) => {
         e.stopPropagation()
         navigator.clipboard.writeText(e.target.innerText)
     }
 
-    //console.log(page)
+  
 
      return (
         <div className={styles.itemBoxWrapper} >
@@ -42,10 +48,20 @@ export default function ListComponent (props) {
                   <div className={styles.itemBoxTopRight}>
                     <div className={`${styles.buttonBox} ${styles.buttonBoxPage}`}>
                         <a className={`${styles.buttonMedium} ${styles.buttonMediumPage}`} href={`${siteurl}/_layouts/15/user.aspx?obj={${sitePages.id}},doclib&List={${sitePages.id}}`} title="Page Permissions"><Icon iconName="SecurityGroup"/></a>
+                        <div 
+                          className={`${styles.buttonMedium} ${styles.buttonMediumLibrary}`}
+                          onMouseEnter={(e)=>quickViewHandler(e,true)}
+                          onMouseLeave={(e)=>quickViewHandler(e,false)}
+                          ><Icon iconName="RedEye"/></div> 
                     </div>
                   </div>   
             </div>  
             </div> 
+            {quickView&&
+                      <div className={styles.quickDisplay}>
+                                <div className={styles.quickDisplayBlocker}/>
+                                <iframe src={`${siteurl}/SitePages/${page.FileLeafRef}`} loading="lazy"/>
+                      </div>}
         </div> 
     );
   }

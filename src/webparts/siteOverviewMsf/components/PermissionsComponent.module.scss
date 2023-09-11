@@ -4,7 +4,7 @@
   top: 10%;
   left: 50%;
   margin-left: -500px;
-  height: 80%;
+  height: 87%;
   border-radius: 5px;
   padding: 5px;
   z-index: 3;
@@ -55,20 +55,107 @@
   height: 30px
 }
 
-.permissionModalResults {
-  width: 95%;
-  height: 85%;
+.permissionModalMiddle {
+  height: 40%;
+  overflow-y: auto;
+}
+
+.groupsWrapper {
+  display:flex;
+  justify-content: space-between;
+}
+
+.groupBox {
+  display: flex;
+  flex-direction: column;
+ 
+}
+
+.groupBoxHeader {
+  font-weight: 500;
+  font-size: 14px
+}
+
+.groupBoxResults {
+  background-color: white;
+  box-shadow: 0 0 5px rgba(0,0,0,0.2);
+  height: fit-content;
+  width: 450px;
   border-radius: 5px;
+  margin: 5px 8px;
+  padding: 2px 15px 2px 5px;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+}
+
+.permissionModalBottom {
+  width: 95%;
+  height: 50%;
+  display: flex;
+
+}
+
+.permissionModalResults {
+  width: 48%;
+  height: 100%;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
   overflow-y: scroll;
 }
 
 .userPermBox {
-  height: 30px;
+  width: 390px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  transition: 0.2s;
+  padding: 2px 5px;
+  border-radius: 5px;
 }
 
-.userPermBox span {
-  width: 33%;
-  text-align: left;
+.userPermBox:hover {
+  background-color: rgb(252, 231, 193);
+}
+
+.userPermBox div{
+  display: flex;
+  flex-direction: column;
+}
+
+.permissionWarning {
+  color: rgb(255, 115, 0)
+}
+
+.userPermMail {
+  font-size: 10px;
+}
+
+.draggable{
+  border-bottom: 3px solid rgb(139, 139, 139);
+  cursor: row-resize;
+  height: 5px;
+  width: 100%;
+  transition: 0.2s;
+  margin-bottom: 5px;
+  position: relative;
+}
+
+.draggable:hover {
+  border-bottom: 3px solid orange
+}
+
+.draggable:before {
+  content:'';
+  position: absolute;
+  left:50%;
+  width: 10px;
+  height: 10px;
+  border-bottom:  3px solid rgb(139, 139, 139);
+}
+
+.draggable:hover .draggable:before{
+  border-bottom:  3px solid orange
 }

@@ -27,15 +27,18 @@ export default function LibraryComponent(props) {
     }  
 
     const [quickView,setQuickView] = useState(false)
-    
+    const quickViewHandler = (event,status) => {
+        console.log(event)
+        setQuickView(status)
+    }
 
-    //OTHER
+//OTHER
     const copyOnClick = (e) => {
         e.stopPropagation()
         navigator.clipboard.writeText(e.target.innerText)
     }
 
-    //URL
+//URL
     const urlObject = new URL(siteurl);
     const host = urlObject.hostname
 
@@ -57,18 +60,18 @@ export default function LibraryComponent(props) {
                     <a className={`${styles.buttonMedium} ${styles.buttonMediumLibrary}`} href={`${siteurl}/_layouts/15/storman.aspx?root=${list.url.split("/")[3]}`} title="Library Storage"><Icon iconName="OfflineStorage"/></a>
                     <div 
                     className={`${styles.buttonMedium} ${styles.buttonMediumLibrary}`}
-                    onMouseEnter={()=>setQuickView(true)}
-                    onMouseLeave={()=>setQuickView(false)}
-                    ><Icon iconName="RedEye"/></div>  
-                </div>
+                    onMouseEnter={(e)=>quickViewHandler(e,true)}
+                    onMouseLeave={(e)=>quickViewHandler(e,false)}
+                    ><Icon iconName="RedEye"/></div> 
+                   </div>
               </div>   
         </div>  
         </div> 
         {quickView&&
-          <div className={styles.quickDisplay}>
-                    <div className={styles.quickDisplayBlocker}/>
-                    <iframe src={`https://${host}/${list.url}`}/>
-          </div>}
+                      <div className={styles.quickDisplay}>
+                                <div className={styles.quickDisplayBlocker}/>
+                                <iframe src={`https://${host}/${list.url}`} loading="lazy"/>
+                      </div>}
     </div> 
     );
   }

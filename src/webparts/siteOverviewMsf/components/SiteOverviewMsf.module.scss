@@ -582,29 +582,39 @@
 
 .quickDisplay {
   position: fixed;
-  bottom:0;
-  right: 0;
-  height: 450px;
-  width: 450px;
+  bottom:30px;
+  left: 30px;
+  height: 600px;
+  width: 600px;
+  border-radius: 5px;
+  overflow: hidden;
   box-shadow: 0 0 5px rgba(0,0,0,0.5);
   z-index: 3;
-  background-color: red;
+  background-color: white;
 }
 
 .quickDisplayBlocker {
   position:absolute;
   top:0;
   left:0;
-  width: 450px;
-  height: 450px;
+  width: 600px;
+  height: 600px;
   background-color: rgba(0,0,0,0.1);
 }
 
 .quickDisplay iframe {
-  width: 900px;
-  height: 900px;
-  transform: scale(0.5)
+  width: 2400px;
+  height: 2400px;
+  zoom: 0.5;
+  -moz-transform: scale(0.5);
+  -moz-transform-origin: 0 0;
+  -o-transform: scale(0.5);
+  -o-transform-origin: 0 0;
+  -webkit-transform: scale(0.5);
+  -webkit-transform-origin: 0 0;
 }
+
+
 
 @keyframes loader1 {
   0% {

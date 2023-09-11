@@ -287,11 +287,6 @@ export default function SiteOverviewMsf (props) {
         setPermVis(false)
         setPnpVis(!pnpVis)
     }
- 
-    //console.log(pages)
-    //console.log(pagesfiltered)
-    //console.log(libfiltered)
-
 
      return (
         <div className={styles.overviewWrapper}>
@@ -332,7 +327,7 @@ export default function SiteOverviewMsf (props) {
                 </div>
             </div>
             {permVis && <PermissionsComponent onCloseHandler={permVisHandler} context={context} url={siteURL} sp={props.sp}/>}
-            {pnpVis && <PnP_Generator onCloseHandler={pnpVisHandler} type={"top_site"} siteurl={site_url}/>}
+            {pnpVis && <PnP_Generator onCloseHandler={pnpVisHandler} type={"top_site"} siteurl={siteURL}/>}
             {expand && 
             <>
             <div className={styles.tabButtons}>
@@ -444,7 +439,7 @@ export default function SiteOverviewMsf (props) {
                     <div className={styles.resultsWrapper}>
                         <ul>
                             {libfiltered.map((list,idx)=>
-                                <li key={idx}>
+                                <li key={idx} style={{zIndex:'1'}}>
                                     <LibraryComponent list={list} siteurl={siteURL}/>
                                 </li>
                             )}

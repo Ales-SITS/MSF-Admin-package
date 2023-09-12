@@ -194,10 +194,13 @@
   z-index: 2;
   border-radius: 5px;
   padding: 2px;
-  //box-shadow: 0 0 2px rgba(0,0,0,0.5);
   transition: 0.2s;
   background-color: white;
   cursor: pointer
+}
+
+.itemBoxTopSmall {
+  background-color: rgba(255,255,255,0.1);
 }
 
 .itemBoxTop:hover {
@@ -222,6 +225,10 @@
   transition: 0.2s;
   padding: 1px 8px;
   border-radius: 10px
+}
+
+.itemBoxSiteLinkSmall {
+  font-size: 12px !important
 }
 
 .itemBoxSiteLink:hover{
@@ -409,6 +416,11 @@
   color: inherit
 }  
 
+.buttonModernToClassic{
+  position:relative;
+  height: 27px;
+}
+
 .idBoxWrapper{
   width: fit-content;
   height: 20px;
@@ -551,6 +563,20 @@
   transition: 0.2s;
 }
 
+.buttonSmall {
+  text-decoration: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 20px;
+  line-height: 20px;
+  font-size: 12px;
+  margin: 0 2px;
+  text-align: center;
+  color: black;
+  background-color: rgba(0,0,0,0);
+  transition: 0.2s;
+}
+
 .buttonMedium:visited, .buttonMedium:active {
   color: inherit
 }  
@@ -572,11 +598,11 @@
   background-color: rgb(255, 246, 165);
 }
 
-.buttonMediumLibrary {
+.buttonLibrary {
   background-color: rgb(221, 209, 255);
 }
 
-.buttonMediumList {
+.buttonList {
   background-color: rgb(209, 238, 255);
 }
 

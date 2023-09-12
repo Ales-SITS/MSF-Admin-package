@@ -3,16 +3,7 @@ import {useState} from 'react';
 
 import styles from './SiteOverviewMsf.module.scss';
 
-
-import "@pnp/sp/sites";
-import "@pnp/sp/webs";
-import "@pnp/sp/site-groups/web";
-
-import "@pnp/graph/users";
-import "@pnp/graph/sites";
-
 import { Icon } from '@fluentui/react/lib/Icon';
-
 
 export default function LibraryComponent(props) {
 
@@ -25,13 +16,6 @@ export default function LibraryComponent(props) {
       e.stopPropagation()
       setIdhidden(!idhidden)
     }  
-
-    const [quickView,setQuickView] = useState(false)
-    const quickViewHandler = (event,status) => {
-        console.log(event)
-        setQuickView(status)
-    }
-
 //OTHER
     const copyOnClick = (e) => {
         e.stopPropagation()
@@ -55,23 +39,15 @@ export default function LibraryComponent(props) {
               </div>
               <div className={styles.itemBoxTopRight}>
                 <div className={`${styles.buttonBox} ${styles.buttonBoxLibrary}`}>
-                    <a className={`${styles.buttonMedium} ${styles.buttonMediumLibrary}`}  href={`${siteurl}/_layouts/15/listedit.aspx?List={${list.id}}`} title="Library Settings"><Icon iconName="Settings"/></a>
-                    <a className={`${styles.buttonMedium} ${styles.buttonMediumLibrary}`}  href={`${siteurl}/_layouts/15/user.aspx?obj={${list.id}},doclib&List={${list.id}}`} title="Library Permissions"><Icon iconName="SecurityGroup"/></a>
-                    <a className={`${styles.buttonMedium} ${styles.buttonMediumLibrary}`} href={`${siteurl}/_layouts/15/storman.aspx?root=${list.url.split("/")[3]}`} title="Library Storage"><Icon iconName="OfflineStorage"/></a>
-                    <div 
-                    className={`${styles.buttonMedium} ${styles.buttonMediumLibrary}`}
-                    onMouseEnter={(e)=>quickViewHandler(e,true)}
-                    onMouseLeave={(e)=>quickViewHandler(e,false)}
-                    ><Icon iconName="RedEye"/></div> 
+                    <a className={`${styles.buttonMedium} ${styles.buttonLibrary}`}  href={`${siteurl}/_layouts/15/listedit.aspx?List={${list.id}}`} title="Library Settings"><Icon iconName="Settings"/></a>
+                    <a className={`${styles.buttonMedium} ${styles.buttonLibrary}`}  href={`${siteurl}/_layouts/15/user.aspx?obj={${list.id}},doclib&List={${list.id}}`} title="Library Permissions"><Icon iconName="SecurityGroup"/></a>
+                    <a className={`${styles.buttonMedium} ${styles.buttonLibrary}`} href={`${siteurl}/_layouts/15/storman.aspx?root=${list.url.split("/")[3]}`} title="Library Storage"><Icon iconName="OfflineStorage"/></a>
+                    
                    </div>
               </div>   
         </div>  
         </div> 
-        {quickView&&
-                      <div className={styles.quickDisplay}>
-                                <div className={styles.quickDisplayBlocker}/>
-                                <iframe src={`https://${host}/${list.url}`} loading="lazy"/>
-                      </div>}
+      
     </div> 
     );
   }

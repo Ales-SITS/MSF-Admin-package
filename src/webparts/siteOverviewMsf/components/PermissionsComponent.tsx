@@ -6,48 +6,62 @@ import perstyles from './PermissionsComponent.module.scss';
 
 import { spfi, SPFx as SPFxsp} from "@pnp/sp";
 
+//PNP/SP
+import { Web } from "@pnp/sp/webs";   
 import "@pnp/sp/sites";
 import "@pnp/sp/webs";
 import "@pnp/sp/site-groups/web";
 import "@pnp/sp/site-users/web";
 import "@pnp/sp/security";
 
+//GRAPH
+import { SPFx, graphfi } from "@pnp/graph";
+import "@pnp/graph/groups";
+import "@pnp/graph/members";
 import "@pnp/graph/users";
 import "@pnp/graph/sites";
-
-import { Web } from "@pnp/sp/webs";   
 
 import { Icon } from '@fluentui/react/lib/Icon';
 
 
-async function getGroups(web,url) {
+//FUNCTIONS
+async function getGroups(web,url):Promise<any> {
     const site = Web([web, `${url}`]) 
     const groups = await site.siteGroups()
     return groups
  }
 
-async function getOwners(web,url) {
+async function getGroupUsers(context,id):Promise<any>{
+    const graph = graphfi().using(SPFx(context))
+
+    const owners = await graph.groups.getById(id).owners()
+    const members = await graph.groups.getById(id).members()
+
+    return [owners,members]
+}
+
+async function getOwners(web,url):Promise<any> {
     const site = Web([web, `${url}`]) 
     const groupid = await site.associatedOwnerGroup().then(result => {return result.Id})
     const owners = await site.siteGroups.getById(groupid).users();
     return owners
  }
 
- async function getMembers(web,url) {
+ async function getMembers(web,url):Promise<any> {
     const site = Web([web, `${url}`]) 
     const groupid = await site.associatedMemberGroup().then(result => {return result.Id})
     const owners = await site.siteGroups.getById(groupid).users();
     return owners
  }
 
- async function getVisitors(web,url) {
+ async function getVisitors(web,url):Promise<any> {
     const site = Web([web, `${url}`]) 
     const groupid = await site.associatedVisitorGroup().then(result => {return result.Id})
     const owners = await site.siteGroups.getById(groupid).users();
     return owners
  }
 
-
+//COMPONENT
 export default function PermissionsComponent (props) {
     const sp = props.sp
     const [everyone, setEveryone] = useState(false)
@@ -61,7 +75,7 @@ export default function PermissionsComponent (props) {
     }
     
     const [userGroup,setUserGroup] = useState([])
-    async function getUserGroup(id) {   
+    async function getUserGroup(id):Promise<any> {   
         const sp = spfi().using(SPFxsp(props.context));     
         const site = Web([sp.web, `${props.url}`])      
         const users = await site.siteUsers.getById(id).groups()    
@@ -74,7 +88,7 @@ export default function PermissionsComponent (props) {
     const [visitors,setVisitors] = useState([])
 
     const [role,setRole] = useState(null)
-    async function getRole() {   
+    async function getRole():Promise<any> {   
         const sp = spfi().using(SPFxsp(props.context));     
         const web = Web([sp.web, `${props.url}`])      
         const users = await web.roleAssignments()
@@ -102,6 +116,7 @@ export default function PermissionsComponent (props) {
         getMembers(sp.web,props.url).then(result => setMembers(result))
         getVisitors(sp.web,props.url).then(result => setVisitors(result))
 
+        getGroupUsers(props.context,"314fa36a-0777-469f-84f3-3efb9bb8508c").then(result => console.log(result))
         //getGroups(sp.web,props.url).then(result => console.log(result.filter(group => !group.LoginName.includes("SharingLinks"))))
         //getRole()
 
@@ -109,19 +124,26 @@ export default function PermissionsComponent (props) {
 
 
 //VISUAL
-const closeHandler = () => {
+const closeHandler = ():void => {
     props.onCloseHandler()
 }
 
 
 //FILTERED
-const [displayCount, setDisplayCount] = useState(30);
+const [displayCountAll, setDisplayCountAll] = useState(30);
+const [displayCountExternal, setDisplayCountExternal] = useState(30);
 
 const [usersFilter,setUsersFilter] = useState("")
-const usersFilterHandler = (e) => {
+const usersFilterHandler = (e):void => {
     setUsersFilter(e)
-    setDisplayCount(50)
 }
+
+const handleScroll = (event,scroll):void => {
+    console.log(event)
+    if(scroll===1) event.currentTarget.scrollTop + event.currentTarget.offsetHeight >= event.currentTarget.scrollHeight ? setDisplayCountAll(displayCountAll + 30) : null
+    if(scroll===2) event.currentTarget.scrollTop + event.currentTarget.offsetHeight >= event.currentTarget.scrollHeight ? setDisplayCountExternal(displayCountExternal + 30) : null
+}
+
 
 
 const admins = users.filter(user => user.IsSiteAdmin === true)
@@ -144,50 +166,34 @@ const internal = users.filter (user => user.IsShareByEmailGuestUser === false)
 const internalfiltered = usersFilter === "" ? internal :
       internal.filter( user => user.Title.toLowerCase().includes(usersFilter.toLowerCase())     
       )
-const internalToDisplay = internalfiltered.slice(0, displayCount);
+const internalToDisplay = internalfiltered.slice(0, displayCountAll);
 
 const external = users.filter(user => user.IsShareByEmailGuestUser === true)
 const externalfiltered = usersFilter === "" ? external :
       external.filter( user => user.Title.toLowerCase().includes(usersFilter.toLowerCase())     
       )
-const externalToDisplay = externalfiltered.slice(0, displayCount);
+const externalToDisplay = externalfiltered.slice(0, displayCountExternal);
 
-const handleScroll = (event) => {
-    event.currentTarget.scrollTop + event.currentTarget.offsetHeight >= event.currentTarget.scrollHeight ? setDisplayCount(displayCount + 30) : null
-}
 
 //console.log(internalToDisplay)
 
 //RESIZE
 const [initialPos, setInitialPos] = useState(null);
 const [initialSize, setInitialSize] = useState(null);
-//const [initialPosBottom, setInitialPosBottom] = useState(null);
-//const [initialSizeBottom, setInitialSizeBottom] = useState(null);
 
-console.log(initialPos) //689
-console.log(initialSize) //443
-//console.log(initialPosBottom) //560
-//console.log(initialSizeBottom) //684
 
-const initial = (e) => {
-    let resizable = document.getElementById('Resizable'); 
-    //let resizableBottom = document.getElementById('ResizableBottom'); 
+const initial = (e):void => {
+    let resizable = document.getElementById('Resizable');
     setInitialPos(e.clientY);
-    setInitialSize(resizable.offsetHeight);   
-    //setInitialPosBottom(e.clientY);
-    //setInitialSizeBottom(resizableBottom.offsetHeight); 
+    setInitialSize(resizable.offsetHeight); 
 }
 
-const resize = (e) => {
-    
-    console.log(e.clientY)
+const resize = (e):void => {
     let resizable = document.getElementById('Resizable'); 
-    //let resizableBottom = document.getElementById('ResizableBottom');
     resizable.style.height =  `${parseInt(initialSize) + parseInt(`${e.clientY - initialPos}`)}px` 
-    //resizableBottom.style.height =  `${parseInt(initialSizeBottom) - parseInt(`${e.clientY - initialPosBottom}`)}px` 
-    //console.log(resizable.style.height)
-    //console.log(resizableBottom.style.height)
 }
+
+
 
 return (
         <div className={perstyles.permissionModal}>
@@ -204,9 +210,10 @@ return (
                 name="siteName" 
                 placeholder="Filter by user name"
                 onChange={e => usersFilterHandler(e.target.value)} 
-                /><span>({displayCount}/{internalToDisplay.length})</span>
+                />
         </div>
-        <div className={perstyles.permissionModalMiddle} id = 'Resizable'>
+
+        <div className={perstyles.permissionModalMiddle} id="Resizable">
             <div className={perstyles.groupsWrapper}>
                 <div className={perstyles.groupBox}>
                     <span className={perstyles.groupBoxHeader}>Admins</span>
@@ -255,34 +262,31 @@ return (
                 </div>
             </div>
         </div>
-
-        <div className={perstyles.draggable} id = 'Draggable'
-                draggable   = 'true'
-                onDragStart = {initial} 
-                onDrag      = {resize}
-            />
-
-
-        <div className={perstyles.permissionModalBottom} id = 'ResizableBottom'>
-            <div className={perstyles.groupsWrapper} onScroll={handleScroll}>
+        <div className={perstyles.draggable} 
+             draggable   = 'true'
+             onDragStart = {initial}
+             onDrag      = {resize}
+        />
+        <div className={perstyles.permissionModalBottom}>
+            <div className={perstyles.groupsWrapper}>
                 <div className={perstyles.groupBox}>
-                    <span className={perstyles.groupBoxHeader}>MSF users ({internal.length})</span>
-                    <div className={perstyles.groupBoxResults}> 
+                    <span className={perstyles.groupBoxHeader}>MSF users ({displayCountAll}/{internal.length})</span>
+                    <div className={perstyles.groupBoxResults} onScroll={(e)=>handleScroll(e,1)}> 
                         <ul>
                             {internalToDisplay.map((user,idx) =>
-                            <PersonPermissions key={idx} user={user} context={props.context} url={props.url}/>
+                            <PersonPermissions key={idx} user={user} context={props.context} url={props.url} group={"all"}/>
                             )}
                         </ul>
                     </div>
                 </div>
             </div>
-            <div className={perstyles.groupsWrapper} onScroll={handleScroll}>
+            <div className={perstyles.groupsWrapper}>
                 <div className={perstyles.groupBox}>
-                    <span className={perstyles.groupBoxHeader}>Non-MSF users ({external.length})</span>
-                    <div className={perstyles.groupBoxResults}> 
+                    <span className={perstyles.groupBoxHeader}>Non-MSF users ({displayCountExternal}/{external.length})</span>
+                    <div className={perstyles.groupBoxResults} onScroll={(e)=>handleScroll(e,2)}> 
                         <ul>
                             {externalToDisplay.map((user,idx) =>
-                            <PersonPermissions key={idx} user={user} context={props.context} url={props.url}/>
+                            <PersonPermissions key={idx} user={user} context={props.context} url={props.url} group={"external"}/>
                             )}
                         </ul>
                     </div>
@@ -300,6 +304,12 @@ return (
     const user = props.user
     
     const [up,setUp] = useState(null)
+    const [owners, setOwners] = useState([])
+    const [members, setMembers] = useState([])
+
+    const M365 = props.user.LoginName.startsWith("c:0o.c")&&!props.user.LoginName.endsWith("_o")&&!props.user.Email.endsWith("@msf.org")
+    const M365o = props.user.LoginName.startsWith("c:0o.c")&&props.user.LoginName.endsWith("_o")&&!props.user.Email.endsWith("@msf.org")
+
     async function getUp(loginName) {  
         const sp = spfi().using(SPFxsp(props.context));     
         const site = Web([sp.web, `${props.url}`])      
@@ -321,25 +331,51 @@ return (
             result === '0' ? setUp("No access") :
             setUp("Other")
         });
- 
+
+        if(M365||M365o) {
+            console.log(props.user)
+            const groupID = props.user.LoginName.split("|")[2].replace("_o","") 
+            getGroupUsers(props.context,groupID).then(result => {
+                setOwners(result[0])
+                setMembers(result[1])
+            })
+        }
         },[props]);
 
+        const[M365visible,setM365visible] = useState(false)
+
+  
 
     return (
         <li>    
             <div className={perstyles.userPermBox}>
                 <div>
                     <span className={user.Title === "Everyone except external users" || user.Title === "Everyone" ? perstyles.permissionWarning : ""}>
-                        {user.Title} {user.Title === "Everyone except external users" || user.Title === "Everyone" ? <Icon iconName="WarningSolid"/> : null}
+                        {user.Title} {M365o}{user.Title === "Everyone except external users" || user.Title === "Everyone" ? <Icon iconName="WarningSolid"/> : null}
                     </span>
                     <span className={perstyles.userPermMail}>
                         {user.LoginName}
                     </span> 
                 </div>
-                <span>
-                    {up}
-                </span>  
-            </div>        
+                <div className={perstyles.userPerm}>
+                    <span>
+                        {up}
+                    </span> 
+                    {M365===true || M365o === true ? 
+                    <button onClick={()=>setM365visible(!M365visible)}>M365 group</button>
+                    : null}
+                </div> 
+            </div>
+            {M365o&&M365visible&&
+                <ul>
+                    {owners.map(user => <li>{user.displayName}</li>)}
+                </ul>
+            }
+            {M365&&M365visible&& 
+                <ul>
+                    {members.map(user => <li>{user.displayName}</li>)}
+                </ul>
+         }     
         </li>
     )
   }

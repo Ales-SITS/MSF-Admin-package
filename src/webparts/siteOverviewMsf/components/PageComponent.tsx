@@ -10,28 +10,24 @@ export default function ListComponent (props) {
     const page = props.page
     const sitePages = props.sitePages
     const siteurl = props.siteurl
-    const context = props.context
-
 
     const [idhidden,setIdhidden] = useState(true)
-    const idHandler = (e) => {
+    const idHandler = (e):void => {
       e.stopPropagation()
       setIdhidden(!idhidden)
     }  
 
     const [quickView,setQuickView] = useState(false)
-    const quickViewHandler = (event,status) => {
+    const quickViewHandler = (event,status):void => {
         console.log(event)
         setQuickView(status)
     }
 
 //OTHER
-    const copyOnClick = (e) => {
+    const copyOnClick = (e):void => {
         e.stopPropagation()
         navigator.clipboard.writeText(e.target.innerText)
-    }
-
-  
+    } 
 
      return (
         <div className={styles.itemBoxWrapper} >
@@ -49,7 +45,7 @@ export default function ListComponent (props) {
                     <div className={`${styles.buttonBox} ${styles.buttonBoxPage}`}>
                         <a className={`${styles.buttonMedium} ${styles.buttonMediumPage}`} href={`${siteurl}/_layouts/15/user.aspx?obj={${sitePages.id}},doclib&List={${sitePages.id}}`} title="Page Permissions"><Icon iconName="SecurityGroup"/></a>
                         <div 
-                          className={`${styles.buttonMedium} ${styles.buttonMediumLibrary}`}
+                          className={`${styles.buttonMedium} ${styles.buttonLibrary}`}
                           onMouseEnter={(e)=>quickViewHandler(e,true)}
                           onMouseLeave={(e)=>quickViewHandler(e,false)}
                           ><Icon iconName="RedEye"/></div> 

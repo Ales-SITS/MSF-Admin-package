@@ -6,8 +6,8 @@ import styles from './SiteOverviewMsf.module.scss';
 import { Icon } from '@fluentui/react/lib/Icon';
 
 //API
-import { SPFx, graphfi} from "@pnp/graph";
-import { spfi, SPFx as SPFxsp} from "@pnp/sp";
+//import { SPFx, graphfi} from "@pnp/graph";
+//import { spfi, SPFx as SPFxsp} from "@pnp/sp";
 
 import "@pnp/sp/sites";
 import "@pnp/sp/webs";
@@ -131,14 +131,14 @@ export default function SiteOverviewMsf (props) {
         return features
     }  
 
-    async function getReport() {
+    async function getReport():Promise<any> {
         const response = await fetch(`${siteURL}/_api/site/usage`);
         const rawData = await response.text()
         
         return rawData
     }   
   
-    async function getPages(id) {   
+    async function getPages():Promise<any> {   
         setPagesLoading(true)
         const site = Web([sp.web, `${siteURL}`])      
         const sites = await site.lists.getByTitle("Site Pages").items.select('FileLeafRef', 'Title', 'Id', 'GUID')()
@@ -147,7 +147,7 @@ export default function SiteOverviewMsf (props) {
         return sites
     }   
 
-    async function getLists() {
+    async function getLists():Promise<any> {
        
         setListsLoading(true);
         const subsite = Web([sp.web, `${siteURL}`]);
@@ -191,7 +191,7 @@ export default function SiteOverviewMsf (props) {
             setSubsites(arr);
         });
 
-        getPages(siteID).then(result => {     
+        getPages().then(result => {     
             setPages([]);
             const arr:any = result
             setPages(arr);
@@ -244,46 +244,45 @@ export default function SiteOverviewMsf (props) {
     const sitePages = lists.filter(lib => lib.template === 119 )   
 
     const [subFilter,setSubFilter] = useState("")
-    const searchSubFilter = (e) => {
+    const searchSubFilter = (e):void => {
            setSubFilter(e)
        }
     const subsitesfiltered = subFilter === "" ? subsites : subsites.filter( sub => sub.Title.toLowerCase().includes(subFilter.toLowerCase()))
 
     const [hubFilter,setHubFilter] = useState("")
-    const searchHubFilter = (e) => {
+    const searchHubFilter = (e):void => {
            setHubFilter(e)
        }    
     const hubsitesfiltered = hubFilter === "" ? hubsites : hubsites.filter( hub => hub.Title.toLowerCase().includes(hubFilter.toLowerCase()))
 
     const [pageFilter,setPageFilter] = useState("")
-    const searchPageFilter = (e) => {
+    const searchPageFilter = (e):void => {
         setPageFilter(e)
     }
     //console.log(pages.length === 0)
     const pagesfiltered = pages.length === 0 ? [] : pageFilter === "" ? pages : pages.filter( page => page.Title.toLowerCase().includes(pageFilter.toLowerCase()))
 
     const [libFilter,setLibFilter] = useState("")
-    const searchLibFilter = (e) => {
+    const searchLibFilter = (e):void => {
         setLibFilter(e)
     }
     const libfiltered = libFilter === "" ? libraries : libraries.filter( lib => lib.name.includes(libFilter))
 
     const [listFilter,setListFilter] = useState("")
-    const searchListFilter = (e) => {
+    const searchListFilter = (e):void => {
         setListFilter(e)
     }
     const listfiltered = listFilter === "" ? genlist : genlist.filter( list => list.name.includes(listFilter))
 
 //MODALS   
-
+    const [pnpVis,setPnpVis] = useState(false)
     const [permVis,setPermVis] = useState(false)
-    const permVisHandler = () =>{
+    const permVisHandler = ():void =>{
         setPnpVis(false)
         setPermVis(!permVis)
     }
  
-    const [pnpVis,setPnpVis] = useState(false)
-    const pnpVisHandler = () =>{
+    const pnpVisHandler = ():void =>{
         setPermVis(false)
         setPnpVis(!pnpVis)
     }

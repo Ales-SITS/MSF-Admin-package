@@ -18,9 +18,6 @@ import { Web } from "@pnp/sp/webs";
 
 import { Icon } from '@fluentui/react/lib/Icon';
 
-import { Site } from "@pnp/graph/sites";
-
-
 export default function SubsiteComponent (props) {
 
     const hubsite = props.hubsite
@@ -35,7 +32,7 @@ export default function SubsiteComponent (props) {
     const [listsHidden, setListsHidden] = useState(true)
 
 //DATA
-async function getSubsiteLists(id) {
+async function getSubsiteLists():Promise<any> {
   setListsLoading(true);
   const sp = spfi().using(SPFxsp(context));
   const subhubsite = Web([sp.web, `${hubsite.Path}`]);
@@ -65,9 +62,9 @@ async function getSubsiteLists(id) {
 }
 
 //HIDDERS
-const listHandler = () => {
+const listHandler = ():void => {
     setListsHidden(!listsHidden)
-    getSubsiteLists(site_id).then(result => {
+    getSubsiteLists().then(result => {
 
       setLists([]);
       const arr:any = result
@@ -91,14 +88,11 @@ const idHandler = (e) => {
       const filteredLibs = lists.filter( lib => lib.template === 101)
 
 //OTHER
-      const copyOnClick = (e) => {
+      const copyOnClick = (e):void => {
           e.stopPropagation()
           navigator.clipboard.writeText(e.target.innerText)
           }
-          
-    //console.log(site_id)
-    //console.log(hubsite)
-      
+
     return (
         <div className={styles.itemBoxWrapper} onClick={listHandler}>
             <button className={listsHidden ? styles.arrow : `${styles.arrow} ${styles.arrowOpened}`}>▶</button>

@@ -417,8 +417,9 @@
 }  
 
 .buttonModernToClassic{
-  position:relative;
-  height: 27px;
+  display: flex;
+  position: relative;
+  height: 25px;
 }
 
 .idBoxWrapper{
@@ -639,7 +640,6 @@
   -webkit-transform: scale(0.5);
   -webkit-transform-origin: 0 0;
 }
-
 
 
 @keyframes loader1 {

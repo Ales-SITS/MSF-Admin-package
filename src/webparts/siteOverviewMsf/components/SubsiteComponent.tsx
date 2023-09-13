@@ -115,7 +115,10 @@ async function getSubsiteLists(id):Promise<any> {
                     </div>
                     <div className={styles.itemBoxTopRight}>
                       <div className={`${styles.buttonBox} ${styles.buttonBoxSubsite}`}>
-                        <a className={`${styles.buttonMedium} ${styles.buttonMediumSubsite}`} href={`${site.Url}/_layouts/15/viewlsts.aspx?view=14`} title="Subsite Content"><Icon iconName="AllApps"/></a> 
+                        <div className={`${styles.buttonModernToClassic}`}>
+                            <a className={`${styles.buttonMedium} ${styles.buttonMediumSubsite} ${styles.buttonModern}`} href={`${site.Url}/_layouts/15/viewlsts.aspx?view=14`} title="Subsite Content"><Icon iconName="AllApps"/></a>
+                            <a className={`${styles.buttonMedium} ${styles.buttonClassic}`}  href={`${site.Url}/_layouts/15/viewlsts.aspx`} title="Subsite Content (Classic)"><Icon iconName="AllApps"/></a>
+                        </div>
                         <a className={`${styles.buttonMedium} ${styles.buttonMediumSubsite}`} href={`${site.Url}/_layouts/15/settings.aspx`} title="Subsite Settings"><Icon iconName="Settings"/></a>
                         <a className={`${styles.buttonMedium} ${styles.buttonMediumSubsite}`} href={`${site.Url}/_layouts/15/user.aspx`} title="Subsite Permissions"><Icon iconName="SecurityGroup"/></a>
                         <a className={`${styles.buttonMedium} ${styles.buttonMediumSubsite}`} href={`${site.Url}/_layouts/15/siteanalytics.aspx?view=19`} title="Subsite Usage"><Icon iconName="LineChart"/></a> 
@@ -124,7 +127,6 @@ async function getSubsiteLists(id):Promise<any> {
                             <a className={`${styles.buttonMedium} ${styles.buttonMediumSubsite} ${styles.buttonModern}`} href={`${site.Url}/_layouts/15/AdminRecycleBin.aspx`} title="Site Recycle Bin"><Icon iconName="RecycleBin"/></a>
                             <a className={`${styles.buttonMedium} ${styles.buttonClassic}`} href={`${site.Url}/_layouts/15/AdminRecycleBin.aspx?View=2`} title="2nd stage Site Recycle Bin"><Icon iconName="EmptyRecycleBin"/></a> 
                         </div>
-                      
                       </div>
                     </div>
               </div>           

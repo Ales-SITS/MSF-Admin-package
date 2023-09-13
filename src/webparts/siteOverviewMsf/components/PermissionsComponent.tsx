@@ -2,9 +2,14 @@ import * as React from 'react';
 import {useState, useEffect} from 'react';
 
 import styles from './SiteOverviewMsf.module.scss';
+import '../CSS/styles.css';
+
 import perstyles from './PermissionsComponent.module.scss';
 
 import { spfi, SPFx as SPFxsp} from "@pnp/sp";
+
+//VISUAL
+import { Resizable,ResizableBox } from 'react-resizable';
 
 //PNP/SP
 import { Web } from "@pnp/sp/webs";   
@@ -64,6 +69,12 @@ async function getOwners(web,url):Promise<any> {
 //COMPONENT
 export default function PermissionsComponent (props) {
     const sp = props.sp
+
+    const [topSize,setTopSize] = useState(300)
+    const onResize = (event, {node, size, handle}) => {
+        setTopSize(size.height);
+      };
+
     const [everyone, setEveryone] = useState(false)
     const [users,setUsers] = useState([])
     async function getUsers() {   
@@ -139,7 +150,7 @@ const usersFilterHandler = (e):void => {
 }
 
 const handleScroll = (event,scroll):void => {
-    console.log(event)
+    //console.log(event)
     if(scroll===1) event.currentTarget.scrollTop + event.currentTarget.offsetHeight >= event.currentTarget.scrollHeight ? setDisplayCountAll(displayCountAll + 30) : null
     if(scroll===2) event.currentTarget.scrollTop + event.currentTarget.offsetHeight >= event.currentTarget.scrollHeight ? setDisplayCountExternal(displayCountExternal + 30) : null
 }
@@ -175,26 +186,6 @@ const externalfiltered = usersFilter === "" ? external :
 const externalToDisplay = externalfiltered.slice(0, displayCountExternal);
 
 
-//console.log(internalToDisplay)
-
-//RESIZE
-const [initialPos, setInitialPos] = useState(null);
-const [initialSize, setInitialSize] = useState(null);
-
-
-const initial = (e):void => {
-    let resizable = document.getElementById('Resizable');
-    setInitialPos(e.clientY);
-    setInitialSize(resizable.offsetHeight); 
-}
-
-const resize = (e):void => {
-    let resizable = document.getElementById('Resizable'); 
-    resizable.style.height =  `${parseInt(initialSize) + parseInt(`${e.clientY - initialPos}`)}px` 
-}
-
-
-
 return (
         <div className={perstyles.permissionModal}>
         <div className={perstyles.permissionModalTop}>
@@ -211,89 +202,91 @@ return (
                 placeholder="Filter by user name"
                 onChange={e => usersFilterHandler(e.target.value)} 
                 />
+            <ResizableBox height={200} axis={'y'} handleSize={[12, 12]} className={perstyles.resBox}>
+                <div className={perstyles.checkPermissionWrapper}>
+                    <iframe className={perstyles.checkPermissionIframe} src={`${props.url}/_layouts/15/chkperm.aspx?obj=https%3a%2f%2fmsfintl.sharepoint.com%2fsites%2fmsfintlcommunities%2cWEB&IsDlg=1`}></iframe>
+                </div>
+            </ResizableBox>
         </div>
-
-        <div className={perstyles.permissionModalMiddle} id="Resizable">
-            <div className={perstyles.groupsWrapper}>
-                <div className={perstyles.groupBox}>
-                    <span className={perstyles.groupBoxHeader}>Admins</span>
+        <ResizableBox height={200} axis={'y'} handleSize={[12, 12]} className={perstyles.resBox}>
+            <div className={perstyles.permissionModalMiddle}>
+                <div className={perstyles.groupsWrapper}>
+                    <div className={perstyles.groupBox}>
+                        <span className={perstyles.groupBoxHeader}>Admins</span>
+                            <div className={perstyles.groupBoxResults}>
+                                    <ul>
+                                        {adminfiltered.map((user,idx) => 
+                                            <PersonPermissions key={idx} user={user} context={props.context} url={props.url}/>
+                                        )}
+                                    </ul>                  
+                            </div>
+                    </div>
+                    <div className={perstyles.groupBox}>
+                        <span className={perstyles.groupBoxHeader}>Owners</span>
                         <div className={perstyles.groupBoxResults}>
-                                <ul>
-                                    {adminfiltered.map((user,idx) => 
-                                        <PersonPermissions key={idx} user={user} context={props.context} url={props.url}/>
-                                    )}
-                                </ul>                  
+                            <ul>
+                                {ownersfiltered.map((user,idx) => 
+                                    <PersonPermissions key={idx} user={user} context={props.context} url={props.url}/>
+                                )}
+                            </ul>                    
                         </div>
+
+                    </div>
                 </div>
-                <div className={perstyles.groupBox}>
-                    <span className={perstyles.groupBoxHeader}>Owners</span>
-                    <div className={perstyles.groupBoxResults}>
-                        <ul>
-                            {ownersfiltered.map((user,idx) => 
+                <div className={perstyles.groupsWrapper}>
+                    <div className={perstyles.groupBox}>
+                        <span className={perstyles.groupBoxHeader}>Members</span>
+                        <div className={perstyles.groupBoxResults}>
+                            <ul>
+                                {membersfiltered.map((user,idx) => 
+                                    <PersonPermissions key={idx} user={user} context={props.context} url={props.url}/>
+                                )}
+                            </ul>
+                        </div>
+
+                    </div>
+                    <div className={perstyles.groupBox}>
+                        <span className={perstyles.groupBoxHeader}>Visitors</span>
+                        <div className={perstyles.groupBoxResults}>
+                            <ul >
+                            {visitorsfiltered.map((user,idx) => 
                                 <PersonPermissions key={idx} user={user} context={props.context} url={props.url}/>
                             )}
-                        </ul>                    
-                    </div>
+                            </ul>
+                        </div>
 
-                </div>
-            </div>
-            <div className={perstyles.groupsWrapper}>
-                <div className={perstyles.groupBox}>
-                    <span className={perstyles.groupBoxHeader}>Members</span>
-                    <div className={perstyles.groupBoxResults}>
-                        <ul>
-                            {membersfiltered.map((user,idx) => 
-                                <PersonPermissions key={idx} user={user} context={props.context} url={props.url}/>
-                            )}
-                        </ul>
-                    </div>
-
-                </div>
-                <div className={perstyles.groupBox}>
-                    <span className={perstyles.groupBoxHeader}>Visitors</span>
-                    <div className={perstyles.groupBoxResults}>
-                        <ul >
-                        {visitorsfiltered.map((user,idx) => 
-                            <PersonPermissions key={idx} user={user} context={props.context} url={props.url}/>
-                        )}
-                        </ul>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-        <div className={perstyles.draggable} 
-             draggable   = 'true'
-             onDragStart = {initial}
-             onDrag      = {resize}
-        />
-        <div className={perstyles.permissionModalBottom}>
-            <div className={perstyles.groupsWrapper}>
-                <div className={perstyles.groupBox}>
-                    <span className={perstyles.groupBoxHeader}>MSF users ({displayCountAll}/{internal.length})</span>
-                    <div className={perstyles.groupBoxResults} onScroll={(e)=>handleScroll(e,1)}> 
-                        <ul>
-                            {internalToDisplay.map((user,idx) =>
-                            <PersonPermissions key={idx} user={user} context={props.context} url={props.url} group={"all"}/>
-                            )}
-                        </ul>
                     </div>
                 </div>
             </div>
-            <div className={perstyles.groupsWrapper}>
-                <div className={perstyles.groupBox}>
-                    <span className={perstyles.groupBoxHeader}>Non-MSF users ({displayCountExternal}/{external.length})</span>
-                    <div className={perstyles.groupBoxResults} onScroll={(e)=>handleScroll(e,2)}> 
-                        <ul>
-                            {externalToDisplay.map((user,idx) =>
-                            <PersonPermissions key={idx} user={user} context={props.context} url={props.url} group={"external"}/>
-                            )}
-                        </ul>
+        </ResizableBox>
+        <ResizableBox height={200} axis={'y'} handleSize={[12, 12]} className={perstyles.resBox}>
+            <div className={perstyles.permissionModalBottom}>
+                <div className={perstyles.groupsWrapper}>
+                    <div className={perstyles.groupBox}>
+                        <span className={perstyles.groupBoxHeader}>MSF users ({displayCountAll}/{internal.length})</span>
+                        <div className={perstyles.groupBoxResults} onScroll={(e)=>handleScroll(e,1)}> 
+                            <ul>
+                                {internalToDisplay.map((user,idx) =>
+                                <PersonPermissions key={idx} user={user} context={props.context} url={props.url} group={"all"}/>
+                                )}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div className={perstyles.groupsWrapper}>
+                    <div className={perstyles.groupBox}>
+                        <span className={perstyles.groupBoxHeader}>Non-MSF users ({displayCountExternal}/{external.length})</span>
+                        <div className={perstyles.groupBoxResults} onScroll={(e)=>handleScroll(e,2)}> 
+                            <ul>
+                                {externalToDisplay.map((user,idx) =>
+                                <PersonPermissions key={idx} user={user} context={props.context} url={props.url} group={"external"}/>
+                                )}
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-
+        </ResizableBox>
     </div>
         
     );
@@ -344,7 +337,7 @@ return (
 
         const[M365visible,setM365visible] = useState(false)
 
-  
+  //console.log(members)
 
     return (
         <li>    

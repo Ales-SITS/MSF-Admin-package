@@ -255,6 +255,9 @@ export default function SiteOverviewMsf (props) {
        }    
     const hubsitesfiltered = hubFilter === "" ? hubsites : hubsites.filter( hub => hub.Title.toLowerCase().includes(hubFilter.toLowerCase()))
 
+    //console.log(hubsites)
+    //console.log(hubsitesfiltered)
+    
     const [pageFilter,setPageFilter] = useState("")
     const searchPageFilter = (e):void => {
         setPageFilter(e)
@@ -300,10 +303,8 @@ export default function SiteOverviewMsf (props) {
                 </div>
                 <div className={styles.mainSiteBoxBottom}>
                     <div className={styles.mainSiteBoxBottomLeft}>
-                        <div className={styles.mainSiteBoxBottomLeft}>
-                            <a className={styles.buttonModern} href={`${siteURL}/_layouts/15/viewlsts.aspx?view=14`} title="Site Content"><Icon iconName="AllApps"/></a>
-                            <a className={styles.buttonClassic} href={`${siteURL}/_layouts/15/viewlsts.aspx`} title="Site Content (classic)"><Icon iconName="AllApps"/></a>  
-                        </div>
+                        <a className={styles.buttonModern} href={`${siteURL}/_layouts/15/viewlsts.aspx?view=14`} title="Site Content"><Icon iconName="AllApps"/></a>
+                       
                         <a href={`${siteURL}/_layouts/15/settings.aspx`} title="Site Settings"><Icon iconName="Settings"/></a>
                         <a href={`${siteURL}/_layouts/15/user.aspx`} title="Site Permissions"><Icon iconName="SecurityGroup"/></a>
                         <div className={styles.mainSiteBoxBottomLeft}>

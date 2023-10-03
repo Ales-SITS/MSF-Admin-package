@@ -13,7 +13,7 @@ import "@pnp/sp/site-groups/web";
 import "@pnp/graph/users";
 import "@pnp/graph/sites";
 
-
+import HubsiteComponentDetails from "./HubsiteComponentDetails"
 import { Web } from "@pnp/sp/webs";  
 
 import { Icon } from '@fluentui/react/lib/Icon';
@@ -84,7 +84,7 @@ const idHandler = (e) => {
     const host = urlObject.hostname
 
 //FILTERED VALUES
-      const filteredLists = lists.filter( list => list.template === 100 && list.name!=="DO_NOT_DELETE_SPLIST_SITECOLLECTION_AGGREGATED_CONTENTTYPES")
+      const filteredLists = lists.filter( list => list.template === 100 && list.name!=="DO_NOT_DELETE_SPLIST_SITECOLLECTION_AGGREGATED_CONTENTTYPES" && !list.name.includes("@thread.skype_wiki"))
       const filteredLibs = lists.filter( lib => lib.template === 101)
 
 //OTHER
@@ -92,7 +92,7 @@ const idHandler = (e) => {
           e.stopPropagation()
           navigator.clipboard.writeText(e.target.innerText)
           }
-
+      //console.log(hubsite)
     return (
         <div className={styles.itemBoxWrapper} onClick={listHandler}>
             <button className={listsHidden ? styles.arrow : `${styles.arrow} ${styles.arrowOpened}`}>▶</button>
@@ -103,7 +103,7 @@ const idHandler = (e) => {
                           <button className={styles.idBoxLabel} onClick={(e)=>idHandler(e)}>id</button>
                           {!idhidden && <span className={styles.idBox} onClick={(e)=>copyOnClick(e)}>{site_id}</span>}   
                       </div>
-                      <a className={styles.itemBoxSiteLink} href={hubsite.Url} title={`Go to ${hubsite.Url}`}>{hubsite.Title}</a>
+                      <a className={styles.itemBoxSiteLink} href={hubsite.SPWebUrl} title={`Go to ${hubsite.SPWebUrl}`}>{hubsite.Title}</a>
                   </div>
                   <div className={styles.itemBoxTopRight}>
                     <div className={`${styles.buttonBox} ${styles.buttonBoxHubsite}`}>
@@ -117,6 +117,35 @@ const idHandler = (e) => {
               </div>   
               {!listsHidden &&
                 <div className={styles.itemBoxBottom}>
+                {listsLoading? 
+                <div className={styles.loaderWrapper}><div className={styles.loader}><div></div><div></div><div></div><div></div></div></div>:     
+                <HubsiteComponentDetails libraries={filteredLibs} lists={filteredLists} site={hubsite.Path}/>
+                }   
+            </div>
+              }
+              </div>            
+        </div>
+
+    );
+}
+
+
+
+/*
+         
+              {!listsHidden &&
+                <div className={styles.itemBoxBottom}>
+                  {listsLoading? 
+                  <div className={styles.loaderWrapper}><div className={styles.loader}><div></div><div></div><div></div><div></div></div></div>:     
+                  <SubsiteComponentDetails libraries={filteredLibs} lists={filteredLists} site={site.Url}/>
+                  }   
+              </div>
+              }
+*/
+
+
+/*
+<div className={styles.itemBoxBottom}>
                   {listsLoading? 
                   <div className={styles.loaderWrapper}><div className={styles.loader}><div></div><div></div><div></div><div></div></div></div>:     
                     <div>
@@ -152,9 +181,6 @@ const idHandler = (e) => {
                     </div>
                   }   
               </div>
-              }
-              </div>            
-        </div>
 
-    );
-}
+
+*/

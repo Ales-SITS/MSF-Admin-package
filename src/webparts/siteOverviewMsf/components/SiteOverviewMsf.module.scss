@@ -578,6 +578,15 @@
   transition: 0.2s;
 }
 
+.buttonSmall:visited, .buttonSmall:active {
+  color: inherit
+}  
+
+.buttonSmall:hover {
+  color: white !important;
+  background-color: #777;
+}
+
 .buttonMedium:visited, .buttonMedium:active {
   color: inherit
 }  
@@ -610,7 +619,7 @@
 .quickDisplay {
   position: fixed;
   bottom:30px;
-  left: 30px;
+  left: 50px;
   height: 600px;
   width: 600px;
   border-radius: 5px;

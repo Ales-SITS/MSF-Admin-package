@@ -19,7 +19,7 @@ export default function ListComponent (props) {
 
     const [quickView,setQuickView] = useState(false)
     const quickViewHandler = (event,status):void => {
-        console.log(event)
+        //console.log(event)
         setQuickView(status)
     }
 

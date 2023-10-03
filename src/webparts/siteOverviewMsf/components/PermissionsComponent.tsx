@@ -141,8 +141,8 @@ const closeHandler = ():void => {
 
 
 //FILTERED
-const [displayCountAll, setDisplayCountAll] = useState(30);
-const [displayCountExternal, setDisplayCountExternal] = useState(30);
+const [displayCountAll, setDisplayCountAll] = useState(25);
+const [displayCountExternal, setDisplayCountExternal] = useState(25);
 
 const [usersFilter,setUsersFilter] = useState("")
 const usersFilterHandler = (e):void => {
@@ -151,8 +151,8 @@ const usersFilterHandler = (e):void => {
 
 const handleScroll = (event,scroll):void => {
     //console.log(event)
-    if(scroll===1) event.currentTarget.scrollTop + event.currentTarget.offsetHeight >= event.currentTarget.scrollHeight ? setDisplayCountAll(displayCountAll + 30) : null
-    if(scroll===2) event.currentTarget.scrollTop + event.currentTarget.offsetHeight >= event.currentTarget.scrollHeight ? setDisplayCountExternal(displayCountExternal + 30) : null
+    if(scroll===1) event.currentTarget.scrollTop + event.currentTarget.offsetHeight >= event.currentTarget.scrollHeight ? setDisplayCountAll(displayCountAll + 25) : null
+    if(scroll===2) event.currentTarget.scrollTop + event.currentTarget.offsetHeight >= event.currentTarget.scrollHeight ? setDisplayCountExternal(displayCountExternal + 25) : null
 }
 
 
@@ -195,21 +195,22 @@ return (
             </div>
             <button onClick={closeHandler}><Icon iconName="ChromeClose"/></button>
         </div>
-        <div className={perstyles.permissionModalInput}>
-            <input 
+        <input 
+                className={perstyles.permissionModalInput}
                 type="text" 
                 name="siteName" 
                 placeholder="Filter by user name"
                 onChange={e => usersFilterHandler(e.target.value)} 
                 />
-            <ResizableBox height={200} axis={'y'} handleSize={[12, 12]} className={perstyles.resBox}>
-                <div className={perstyles.checkPermissionWrapper}>
+        <h3>Sigle user search</h3>
+        <ResizableBox height={150} axis={'y'} className={perstyles.resBox} resizeHandles={['s']}>
+                <div className={perstyles.permissionModalInside}>
                     <iframe className={perstyles.checkPermissionIframe} src={`${props.url}/_layouts/15/chkperm.aspx?obj=https%3a%2f%2fmsfintl.sharepoint.com%2fsites%2fmsfintlcommunities%2cWEB&IsDlg=1`}></iframe>
                 </div>
-            </ResizableBox>
-        </div>
-        <ResizableBox height={200} axis={'y'} handleSize={[12, 12]} className={perstyles.resBox}>
-            <div className={perstyles.permissionModalMiddle}>
+        </ResizableBox>
+        <h3>Top groups</h3>
+        <ResizableBox height={400} axis={'y'} className={perstyles.resBox} resizeHandles={['s']}>
+            <div className={perstyles.permissionModalInside}>
                 <div className={perstyles.groupsWrapper}>
                     <div className={perstyles.groupBox}>
                         <span className={perstyles.groupBoxHeader}>Admins</span>
@@ -259,8 +260,9 @@ return (
                 </div>
             </div>
         </ResizableBox>
-        <ResizableBox height={200} axis={'y'} handleSize={[12, 12]} className={perstyles.resBox}>
-            <div className={perstyles.permissionModalBottom}>
+        <h3>All users</h3>
+        <ResizableBox height={400} axis={'y'} className={perstyles.resBox} resizeHandles={['s']}>
+            <div className={perstyles.permissionModalInside}>
                 <div className={perstyles.groupsWrapper}>
                     <div className={perstyles.groupBox}>
                         <span className={perstyles.groupBoxHeader}>MSF users ({displayCountAll}/{internal.length})</span>
@@ -326,7 +328,7 @@ return (
         });
 
         if(M365||M365o) {
-            console.log(props.user)
+            //console.log(props.user)
             const groupID = props.user.LoginName.split("|")[2].replace("_o","") 
             getGroupUsers(props.context,groupID).then(result => {
                 setOwners(result[0])

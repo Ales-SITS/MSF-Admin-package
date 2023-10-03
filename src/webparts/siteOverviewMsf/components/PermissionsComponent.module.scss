@@ -9,11 +9,20 @@
   padding: 5px;
   z-index: 3;
   box-shadow: 0 0 8px rgba(0,0,0,0.3);
-  background-color: white;
+  background-color: rgba(100, 100, 100, 0.95);
   display: flex;
   flex-direction: column;
   align-items: center;
 
+}
+
+.permissionModal h2 {
+  margin: 0;
+  color: orange
+}
+
+.permissionModal h3 {
+  color: orange;
 }
 
 .permissionModalTop {
@@ -26,13 +35,14 @@
   width: 98%;
 }
 
-.permissionModalTop h2 {
-  margin: 0
+.permissionModalTop span{
+  color: white;
 }
 
 .permissionModalTop button {
   outline: none;
   border: none;
+  color: white;
   background-color: rgba(0,0,0,0);
   cursor: pointer;
 }
@@ -48,16 +58,14 @@
   height: fit-content;
   width: 95%;
   margin-bottom: 5px;
-}
-
-.permissionModalInput input {
   width: 50%;
-  height: 30px
+  height: 30px;
+  border-radius: 5px;
+  border: none
 }
 
 .checkPermissionWrapper {
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   height: calc(100% - 30px);
   padding: 15px;
   border-radius: 5px;
@@ -69,7 +77,6 @@
   height: 1000px;
   border: none;
   outline: none;
-
 }
 
 .permissionModalMiddle {
@@ -79,6 +86,7 @@
 .groupsWrapper {
   display:flex;
   justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 .groupBox {
@@ -96,13 +104,38 @@
   background-color: white;
   box-shadow: 0 0 5px rgba(0,0,0,0.2);
   height: fit-content;
-  width: 450px;
+  width: 430px;
+  max-height: 800px;
   border-radius: 5px;
   margin: 5px 8px;
   padding: 2px 15px 2px 5px;
   overflow-y: auto;
   overflow-x: hidden;
+}
 
+.groupBoxResults ul {
+  padding-left: 10px;
+  list-style-type: none;
+}
+.groupBoxResults ul li {
+  position: relative;
+}
+
+.groupBoxResults ul li:before {
+  content: '・';
+  position: absolute;
+  top:25%;
+  left:-10px;
+  color: orange
+}
+
+.permissionModalInside {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .permissionModalBottom {
@@ -167,35 +200,17 @@
   background-color: rgb(252, 189, 113);
 }
 
-.draggable{
-  border-bottom: 3px solid rgb(139, 139, 139);
-  cursor: row-resize;
-  height: 5px;
-  width: 100%;
-  transition: 0.2s;
-  margin-bottom: 15px;
-  position: relative;
-}
-
-.draggable:hover {
-  border-bottom: 3px solid orange
-}
-
-.draggable:before {
-  content:'';
-  position: absolute;
-  left:50%;
-  width: 10px;
-  height: 10px;
-  border-bottom:  3px solid rgb(139, 139, 139);
-}
-
-.draggable:hover:before{
-  border-bottom:  3px solid orange
-}
 
 .resBox {
-  width: 100%;
+  width: 95%;
   height: 33%;
+  margin: 5px 0;
+  padding: 5px 10px;
+  display: flex;
+  justify-content: center;
   background-color: white;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  overflow-y: auto;
+  overflow: hidden;
 }

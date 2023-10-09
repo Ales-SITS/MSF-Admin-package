@@ -13,6 +13,9 @@
   },
   "dependencies": {
     "@fluentui/react": "^8.110.14",
+    "@microsoft/mgt-react": "^3.1.2",
+    "@microsoft/mgt-sharepoint-provider": "^3.1.2",
+    "@microsoft/mgt-spfx-utils": "^3.1.2",
     "@microsoft/sp-core-library": "1.16.1",
     "@microsoft/sp-lodash-subset": "1.16.1",
     "@microsoft/sp-office-ui-fabric-core": "1.16.1",

@@ -29,9 +29,12 @@ import "@pnp/sp-admin";
 
 import { Web } from "@pnp/sp/webs";   
 
+import { SPFx, graphfi } from "@pnp/graph";
+
 import { SearchResults } from "@pnp/sp/search";
 import { Site } from "@pnp/graph/sites";
-
+import "@pnp/graph/groups";
+import { GroupType } from '@pnp/graph/groups';
 /*
 import { MSGraphClient } from '@microsoft/sp-http';  
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';  
@@ -97,7 +100,6 @@ export default function SiteOverviewMsf (props) {
     }
 
     //GETTERS
-
     async function getHub(id) {
         setHubLoading(true)
         const searchResults: SearchResults = await sp.search(
@@ -318,7 +320,7 @@ export default function SiteOverviewMsf (props) {
                             <a className={styles.buttonClassic} href={`${siteURL}/_layouts/15/AdminRecycleBin.aspx?View=2`} title="2nd stage Site Recycle Bin"><Icon iconName="EmptyRecycleBin"/></a> 
                         </div>
                         <button onClick={pnpVisHandler} title="PnP Scripts App" className="PnPScriptButton"><Icon iconName="PasteAsCode"/></button>
-                        <button onClick={permVisHandler} title="Permissions App"><Icon iconName="PeopleAlert"/></button> 
+                        <button onClick={permVisHandler} title="Permissions App"><Icon iconName="PeopleAlert"/></button>
                     </div>
                     <button onClick={expandHandler} title={`${expand ? "Click to collapse" : "Click to expand"}`} 
                                 className={expand ? styles.mainSiteBoxBottomRight : `${styles.mainSiteBoxBottomRight} ${styles.mainSiteBoxBottomRightHidden} `}>

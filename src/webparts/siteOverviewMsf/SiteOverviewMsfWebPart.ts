@@ -10,7 +10,7 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 
 import * as strings from 'SiteOverviewMsfWebPartStrings';
-import ClassWrapper from './components/ClassWrapper';
+import ClassWrapperOverview from './components/ClassWrapperOverview';
 import { ISiteOverviewMsfProps } from './components/ISiteOverviewMsfProps';
 
 //GRAPH
@@ -45,7 +45,7 @@ export default class SiteOverviewMsfWebPart extends BaseClientSideWebPart<ISiteO
 
   public render(): void {
     const element: React.ReactElement<ISiteOverviewMsfProps> = React.createElement(
-      ClassWrapper,
+      ClassWrapperOverview,
       {
         header: this.properties.header,
         site_id: this.siteID,

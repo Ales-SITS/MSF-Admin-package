@@ -1,0 +1,22 @@
+@import '~@fluentui/react/dist/sass/References.scss';
+
+.m365_wrapper{
+  display: flex;
+  width: 100%;
+}
+
+.form_wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  padding: 2px;
+  box-sizing: border-box;
+}
+
+.result_wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  padding: 2px;
+  box-sizing: border-box;
+}

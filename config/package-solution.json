@@ -3,7 +3,7 @@
   "solution": {
     "name": "msf-admin-package-client-side-solution",
     "id": "087c5348-5903-491e-b90c-03233fc57c28",
-    "version": "1.1.1.6",
+    "version": "2.0.0.0",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "webApiPermissionRequests": [
@@ -14,6 +14,14 @@
       {
         "resource": "Microsoft Graph",
         "scope": "Reports.Read.All"
+      },
+      {
+        "resource": "Microsoft Graph",
+        "scope": "Group.Create"
+      },
+      {
+        "resource": "Microsoft Graph",
+        "scope": "Application.Read.All"
       }
     ],
     "isDomainIsolated": false,
@@ -40,12 +48,11 @@
         "title": "msf-admin-package Feature",
         "description": "The feature that activates elements of the msf-admin-package solution.",
         "id": "97999a72-c8fa-409e-9d0e-19527b72c0ea",
-        "version": "1.1.1.6"
+        "version": "2.0.0.0"
       }
     ]
   },
   "paths": {
     "zippedPackage": "solution/msf-admin-package.sppkg"
   }
-  
 }

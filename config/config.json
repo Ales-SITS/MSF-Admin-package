@@ -9,11 +9,19 @@
           "manifest": "./src/webparts/siteOverviewMsf/SiteOverviewMsfWebPart.manifest.json"
         }
       ]
+    },
+    "site-creator-msf-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/siteCreatorMsf/SiteCreatorMsfWebPart.js",
+          "manifest": "./src/webparts/siteCreatorMsf/SiteCreatorMsfWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
   "localizedResources": {
-    "SiteOverviewMsfWebPartStrings": "lib/webparts/siteOverviewMsf/loc/{locale}.js"
-
+    "SiteOverviewMsfWebPartStrings": "lib/webparts/siteOverviewMsf/loc/{locale}.js",
+    "SiteCreatorMsfWebPartStrings": "lib/webparts/siteCreatorMsf/loc/{locale}.js"
   }
 }

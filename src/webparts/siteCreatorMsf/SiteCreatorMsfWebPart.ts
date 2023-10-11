@@ -17,6 +17,8 @@ import { customElementHelper } from '@microsoft/mgt-element/dist/es6/components/
 import { SharePointProvider } from '@microsoft/mgt-sharepoint-provider/dist/es6/SharePointProvider';
 //import { lazyLoadComponent } from '@microsoft/mgt-spfx-utils';
 
+import { IDigestCache, DigestCache } from '@microsoft/sp-http';
+
 export interface ISiteCreatorMsfWebPartProps {
   description: string;
 }
@@ -33,12 +35,11 @@ export default class SiteCreatorMsfWebPart extends BaseClientSideWebPart<ISiteCr
 
     ReactDom.render(element, this.domElement);
   }
-
   protected async onInit(): Promise<void> {
     if (!Providers.globalProvider) {
       Providers.globalProvider = new SharePointProvider(this.context);
     }
-
+    
     //return super.onInit();
   }
 

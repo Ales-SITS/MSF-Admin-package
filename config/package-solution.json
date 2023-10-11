@@ -3,7 +3,7 @@
   "solution": {
     "name": "msf-admin-package-client-side-solution",
     "id": "087c5348-5903-491e-b90c-03233fc57c28",
-    "version": "2.0.0.0",
+    "version": "2.0.0.1",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "webApiPermissionRequests": [
@@ -48,7 +48,7 @@
         "title": "msf-admin-package Feature",
         "description": "The feature that activates elements of the msf-admin-package solution.",
         "id": "97999a72-c8fa-409e-9d0e-19527b72c0ea",
-        "version": "2.0.0.0"
+        "version": "2.0.0.1"
       }
     ]
   },

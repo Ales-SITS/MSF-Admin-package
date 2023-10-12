@@ -20,7 +20,7 @@ import { SPFx, graphfi } from "@pnp/graph";
 import "@pnp/graph/users";
 
 
-export default function M365 (props) {
+export default function NonM365 (props) {
 
   //API
   const context = props.context
@@ -46,7 +46,8 @@ export default function M365 (props) {
   const [members,setMembers] = useState([])
 
   const addOwners = (e) => {
-    const ownersMails = e.detail.map(owner => `https://graph.microsoft.com/v1.0/users/${owner.id}`)
+    console.log(e.detail)
+    const ownersMails = e.detail.map(owner => `${owner.mail}`)
     setOwners([...ownersMails])
   }
 
@@ -136,13 +137,6 @@ export default function M365 (props) {
       console.log("Design found")
    }
 
-  //Privacy state
-  const [privacy, setPrivacy] = useState("Private")
-
-  const onPrivacyChange = e => {
-    setPrivacy(e.target.value)
-  }
-
   //Sharing state
   const [sharingId, setSharingId] = useState("123ac0ed-b076-4507-82e4-de444923a4b5")
   const [sharing, setSharing] = useState("New and existing guest")
@@ -163,48 +157,38 @@ export default function M365 (props) {
 // Site design (team site)
 // 123ac0ed-b076-4507-82e4-de444923a4b5
 
-
 //SITE CREATION
-  const createSite = (e) => {
+  const createSite = async (e) => {
     e.preventDefault()
-     const group = {
-      description: 'For API testing purposes',
-      displayName: `GRP-${domain}-${title}`,
-      groupTypes: ['Unified'],
-      mailEnabled: true,
-      securityEnabled: false,
-      visibility: `${privacy}`,
-      mailNickname: `GRP-${domain}-${title}`
+     const siteProps = {
+      Owner: `ales.bachtik@sits.msf.org`,
+      Title: `${domain}-${title}`,
+      Url: `https://msfintl.sharepoint.com/sites/${domain}-${title}`,
+      WebTemplate: "STS#3",
     };
 
-    if (members.length > 0) {
-      group['members@odata.bind'] = [...members];
+    if (hub !== "") {
+      siteProps['hubSiteId'] = `${hub}`
     }
 
-    if (owners.length > 0) {
-      group['owners@odata.bind'] = [...owners];
+    if (siteDesign !== "") {
+      siteProps['siteDesignId']
     }
-
     // Log the current operation
-    setProgress("Creating Team site (M365) ...");
+    setProgress("Creating Team site ...");
   
-    context.msGraphClientFactory
-      .getClient('3')
-      .then((client: MSGraphClientV3) => {
-        client.api('/groups')
-	      .post(group) 
-        .then(() => { 
-          siteExists(`https://msfintl.sharepoint.com/sites/GRP-${domain}-${title}`)      
-        })
-      .catch((error: any) => {
-          setError(`Error when creating site: ${error}`);
-      });
-      })    
+    try {
+        await sp.site.createCommunicationSiteFromProps(siteProps);
+    } catch (error) {
+        console.log(`Creating site error: ${error}`)
+    }
+
+    siteExists(`https://msfintl.sharepoint.com/sites/${domain}-${title}`)
   };
 
   const siteExistsChecker = async(titlecheck) => {
       try {
-        const exists = await sp.site.exists(`https://msfintl.sharepoint.com/sites/GRP-${domain}-${titlecheck}`)
+        const exists = await sp.site.exists(`https://msfintl.sharepoint.com/sites/${domain}-${titlecheck}`)
         setTitleExist(exists)
       } catch (error) {
         console.error('Site exists:', error);
@@ -221,26 +205,11 @@ export default function M365 (props) {
         }
       }
       
-      setProgress("Team site (M365) created. Preparing other settings ...");
+      setProgress("Team site created. Preparing other settings ...");
       await new Promise((resolve) => setTimeout(resolve, 10000));
-
-      await applySharing(siteUrl);
-      hub !== "" && hubChecker ? await associateToHub(siteUrl) : null
-      siteDesign !== "" && designChecker ? await applyScript(siteUrl) : null
+      siteDesign === "" ? setProgress("Team site created") :
+      designChecker ? await applyScript(siteUrl) : null
   }
-
-  async function applySharing(siteUrl) {
-    setProgress("Applying sharing settings ...");
-    try {
-        await sp.siteDesigns.applySiteDesign(
-          `${sharingId}`,
-          `${siteUrl}`
-        );
-        setProgress("Other settings and scripts applied")
-      } catch (error) {
-        setError(`Error when applying sharing settings: ${error}`);
-      }
-  } 
 
   async function applyScript(siteUrl) {
         setProgress("Applying site design ...");
@@ -254,17 +223,6 @@ export default function M365 (props) {
             setError(`Error when applying site design: ${error}`);
           }
   } 
-
-  async function associateToHub (siteUrl) {
-      setProgress("Associating with hub ...");
-        const newsp = spfi(siteUrl).using(SPFxsp(context))
-        try {
-          await newsp.site.joinHubSite(`${hub}`)
-          setProgress("Finished")
-        } catch (error) {
-          setError(`Error when associating to hub: ${error}`);
-        }
-  }
 
   async function getAdmin(){
     
@@ -285,31 +243,6 @@ export default function M365 (props) {
           <PeoplePicker defaultSelectedUserIds={adminId} selectionMode="multiple" selectionChanged={addOwners}/>
           <span>Members</span>
           <PeoplePicker selectionMode="multiple" selectionChanged={addMembers}/>
-          <div className={styles.selection_box}>
-            <h4>Privacy</h4>
-            <span>
-                <input
-                    type="radio"
-                    name="privacy"
-                    value= "Private"
-                    id="Private"
-                    checked={privacy === "Private"}
-                    onChange={onPrivacyChange}
-                />
-                <label htmlFor="Private">Private</label>
-            </span>
-            <span>
-                <input
-                    type="radio"
-                    name="privacy"
-                    value= "Public"
-                    id="Public"
-                    checked={privacy === "Public"}
-                    onChange={onPrivacyChange}
-                />
-                <label htmlFor="Public">Public</label>
-            </span>
-          </div>
           <div className={styles.selection_box}>
             <h4>External sharing <a target="_blank" href="https://learn.microsoft.com/en-US/sharepoint/change-external-sharing-site?WT.mc_id=365AdminCSH_inproduct#which-option-to-select">?</a></h4>
               <span>
@@ -384,17 +317,16 @@ export default function M365 (props) {
       </form>
       <div className={styles.result_wrapper}>
         <div className={styles.result_list}>
-          <p>You will create a site with M365 group, which includes planner, teams etc. Your site will have the following properties:</p>
-          <h3>GRP-{domain}-{title}</h3>
-          <span>Url: https://msfintl.sharepoint.com/sites/GRP-{domain}-{title}</span>
-          <span>Privacy: {privacy}</span>
+          <p>You will create a site without M365 group. Your site will have the following properties:</p>
+          <h3>3 {domain}-{title}</h3>
+          <span>Url: https://msfintl.sharepoint.com/sites/{domain}-{title}</span>
           <span>Sharing: {sharing}</span>
           <span>Site design: {siteDesignTitle}</span>
           <span>Associate with hub: {hubTitle}</span>
         </div>
         <div className={styles.result_progress}>
           {progress === "Finished" ? 
-          <a target="_blank" href={`https://msfintl.sharepoint.com/sites/GRP-${domain}-${title}`}>Finished - click to open</a> :
+          <a target="_blank" href={`https://msfintl.sharepoint.com/sites/${domain}-${title}`}>Finished - click to open</a> :
           <span>{progress}</span>
           }
           {error}      

@@ -3,6 +3,8 @@ import {useState, useEffect} from 'react'
 import styles from './SiteCreatorMsf.module.scss';
 
 import M365 from './M365'
+import NonM365 from './NonM365'
+import Declined from './Declined'
 
 //API
 import { SPFx,graphfi } from "@pnp/graph";
@@ -19,6 +21,7 @@ export default function SiteCreatorMsf (props) {
   }
 
   const [isAdmin, setIsAdmin] = useState(false)
+  const [loader,setLoader] = useState(true)
 
   useEffect(()=>{
     getAdminGroup()
@@ -28,16 +31,12 @@ export default function SiteCreatorMsf (props) {
     const admin = await graph.me();
     const admingroups = await graph.me.memberOf();
     const allowgroup = await graph.groups.getById("d35fc400-84f4-40c1-956f-c0532a976d1f").members();
-    
-    console.log(admin)
-    console.log(admingroups)
-    console.log(allowgroup)
-
     for (const grpA of admingroups) {
       if (allowgroup.some(grpB => grpA.id === grpB.id)) {
         setIsAdmin(true)
       }   
     }
+    setLoader(false)
   }
 
   return (
@@ -48,8 +47,11 @@ export default function SiteCreatorMsf (props) {
         <button onClick={()=>selectedTypeHandler(2)} className={selectedType === 2 && styles.selected_site_type}>Team site without M365</button>
         <button onClick={()=>selectedTypeHandler(3)} className={selectedType === 3 && styles.selected_site_type}>Communication site</button>
       </div>
-      {isAdmin ? 
-        <M365 context ={props.context}/> : <h1>You cannot create a site with this account</h1>}
+      {!isAdmin ? <Declined context={props.context} loader={loader}/> :
+       selectedType === 1 ? <M365 context={props.context}/> :
+       selectedType === 2 ? <NonM365 context={props.context}/> : 
+       null
+      }
     </div>
   )
 }

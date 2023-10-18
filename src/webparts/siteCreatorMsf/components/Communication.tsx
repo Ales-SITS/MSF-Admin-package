@@ -27,7 +27,7 @@ import "@pnp/graph/users";
 
 
 
-export default function NonM365 (props) {
+export default function Communication (props) {
 
   //API
   const context = props.context
@@ -157,48 +157,48 @@ export default function NonM365 (props) {
    }
 
   //Sharing state
-  const [sharingId, setSharingId] = useState("71d64c0f-d378-476f-a8bb-ed924c403fa8")
+  const [sharingId, setSharingId] = useState("1de7f8a5-b635-42a9-b8c0-32ae09e26765")
   const [sharing, setSharing] = useState("New and existing guest")
   const onSharingChange = e => {
     setSharing(e.target.value)
     e.target.value === "Anyone" ?
-    setSharingId("0760ff30-1ac3-440e-9391-9c2e15533f33") :
+    setSharingId("6ddcd576-4e03-449c-bdf6-fa555a460674") :
     e.target.value === "New and existing guest" ?
-    setSharingId("71d64c0f-d378-476f-a8bb-ed924c403fa8") :
+    setSharingId("1de7f8a5-b635-42a9-b8c0-32ae09e26765") :
     e.target.value === "Existing guest only" ?
-    setSharingId("88cdcd9a-a286-4e1f-861c-6063dc873f0f") :
-    setSharingId("3e060900-198c-4a1b-a6ad-5e4f597c4726")
+    setSharingId("9251bc06-7392-4889-bf50-275a42d63699") :
+    setSharingId("8759e9ce-6309-4d33-b499-0c06dbc141a0")
   }
 
 
-//SCRIPTS
-/*
-Id                  : 3e060900-198c-4a1b-a6ad-5e4f597c4726 OK
-Title               :  External sharing Disabled (Team Site without Group)
-WebTemplate         : 1
+
+ //SCRIPTS
+ /*
+Id                  : 8759e9ce-6309-4d33-b499-0c06dbc141a0 OK
+Title               :  External sharing Disabled (Communication Site)
+WebTemplate         : 68
 SiteScriptIds       : {721f126f-a657-4f38-8e44-4ddca33bb8be}
-Description         : Sets External sharing to Disabled (Team Site without Group)
+Description         : Sets External sharing to Disabled (Communication Site)
 
-Id                  : 88cdcd9a-a286-4e1f-861c-6063dc873f0f
-Title               :  External sharing ExistingExternalUserSharingOnly (Team Site without Group)
-WebTemplate         : 1
+Id                  : 9251bc06-7392-4889-bf50-275a42d63699
+Title               :  External sharing ExistingExternalUserSharingOnly (Communication Site)
+WebTemplate         : 68
 SiteScriptIds       : {f5ce4b3c-7b29-44e5-9a8d-cdd8ad2db50b}
-Description         : Sets External sharing to ExistingExternalUserSharingOnly (Team Site without Group)
+Description         : Sets External sharing to ExistingExternalUserSharingOnly (Communication Site)
 
-Id                  : 71d64c0f-d378-476f-a8bb-ed924c403fa8
-Title               :  External sharing ExternalUserSharingOnly (Team Site without Group)
-WebTemplate         : 1
+Id                  : 1de7f8a5-b635-42a9-b8c0-32ae09e26765 
+Title               :  External sharing ExternalUserSharingOnly (Communication Site)
+WebTemplate         : 68
 SiteScriptIds       : {6563274d-f5fe-451d-a916-f91e488c86eb}
-Description         : Sets External sharing to ExternalUserSharingOnly (Team Site without Group)
+Description         : Sets External sharing to ExternalUserSharingOnly (Communication Site)
 
-Id                  : 0760ff30-1ac3-440e-9391-9c2e15533f33 OK
-Title               :  External sharing ExternalUserAndGuestSharing (Team Site without Group)
-WebTemplate         : 1
+Id                  : 6ddcd576-4e03-449c-bdf6-fa555a460674 OK
+Title               :  External sharing ExternalUserAndGuestSharing (Communication Site)
+WebTemplate         : 68
 SiteScriptIds       : {3897ba25-22bd-40ad-9fb3-a2df5132c928}
-Description         : Sets External sharing to ExternalUserAndGuestSharing (Team Site without Group)
+Description         : Sets External sharing to ExternalUserSharingOnly (Communication Site)
 
-*/
-
+*/ 
 
 
 
@@ -209,8 +209,8 @@ Description         : Sets External sharing to ExternalUserAndGuestSharing (Team
       Owner: `${owners[0]}`,
       Title: `${domain}-${title}`,
       Url: `https://msfintl.sharepoint.com/sites/${domain}-${title}`,
-      WebTemplate: "STS#3",
-      SiteDesignId: `${sharingId}`
+      WebTemplate: "SITEPAGEPUBLISHING#0"
+      
     };
 
     if (hub !== "") {
@@ -221,7 +221,7 @@ Description         : Sets External sharing to ExternalUserAndGuestSharing (Team
       siteProps['siteDesignId']
     }
     // Log the current operation
-    setProgress("Creating Team site ...");
+    setProgress("Creating Communication site ...");
   
     try {
         await sp.site.createCommunicationSiteFromProps(siteProps);
@@ -251,13 +251,15 @@ Description         : Sets External sharing to ExternalUserAndGuestSharing (Team
         }
       }
       
-      setProgress("Team site created. Preparing other settings ...");
+      setProgress("Communication site created. Preparing other settings ...");
       await new Promise((resolve) => setTimeout(resolve, 10000));
-      siteDesign === "" ? setProgress("Team site created") :
+      siteDesign === "" ? setProgress("Communication site created") :
       designChecker ? await applyScript(siteUrl) : null
+      await applyScript(siteUrl)
       owners.length !== 0 && await addSiteOwners(siteUrl)
       members.length !== 0 && await addSiteMembers(siteUrl)
       visitors.length !== 0 && await addSiteVisitors(siteUrl)
+      setProgress("Communication site created")
   }
 
   const applyScript = async(siteUrl) => {
@@ -265,7 +267,7 @@ Description         : Sets External sharing to ExternalUserAndGuestSharing (Team
         const newsp = spfi(siteUrl).using(SPFxsp(context))
         try {
             await newsp.siteDesigns.applySiteDesign(
-              `${siteDesign}`,
+              `${sharingId}`,
               `${siteUrl}`
             );
             setProgress("Other settings and scripts applied")
@@ -330,20 +332,6 @@ Description         : Sets External sharing to ExternalUserAndGuestSharing (Team
         }
       }
 
-
-      const denyScripts = async(siteUrl) => {
-        setProgress("Setting denyScript ...");
-
-        const site = Web([sp.web, `${siteUrl}`]);
-        try {    
-          const status = await site()
-          console.log(status)
-    
-        } catch (error) {
-          setError(`Error when changing script: ${error}`);
-        }
-        
-      }
 
 
   const disabled = title === "" || titleExist || !hubChecker || !designChecker ? true : false
@@ -434,10 +422,11 @@ Description         : Sets External sharing to ExternalUserAndGuestSharing (Team
       </form>
       <div className={styles.result_wrapper}>
         <div className={styles.result_list}>
-          <p>You will create a site without M365 group. Your site will have the following properties:</p>
+          <p>You will create a communication sote. Your site will have the following properties:</p>
           <h3>{domain}-{title}</h3>
           <span>Url: https://msfintl.sharepoint.com/sites/{domain}-{title}</span>
           <span>Sharing: {sharing}</span>
+          <span>SharingId: {sharingId}</span>
           <span>Site design: {siteDesignTitle}</span>
           <span>Associate with hub: {hubTitle}</span>
         </div>

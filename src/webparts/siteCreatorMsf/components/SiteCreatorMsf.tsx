@@ -4,6 +4,7 @@ import styles from './SiteCreatorMsf.module.scss';
 
 import M365 from './M365'
 import NonM365 from './NonM365'
+import Communication from './Communication'
 import Declined from './Declined'
 
 //API
@@ -50,8 +51,40 @@ export default function SiteCreatorMsf (props) {
       {!isAdmin ? <Declined context={props.context} loader={loader}/> :
        selectedType === 1 ? <M365 context={props.context}/> :
        selectedType === 2 ? <NonM365 context={props.context}/> : 
-       null
+       <Communication context={props.context}/>
       }
     </div>
   )
 }
+
+
+/*
+Id                  : f5ce4b3c-7b29-44e5-9a8d-cdd8ad2db50b
+Title               : External sharing ExistingExternalUserSharingOnly
+Description         : Sets External sharing to ExistingExternalUserSharingOnly 
+Content             : 
+Version             : 1
+IsSiteScriptPackage : False
+
+Id                  : 721f126f-a657-4f38-8e44-4ddca33bb8be
+Title               : External sharing Disabled
+Description         : Sets External sharing to Disabled
+Content             : 
+Version             : 1
+IsSiteScriptPackage : False
+
+Id                  : 6563274d-f5fe-451d-a916-f91e488c86eb
+Title               : External sharing ExternalUserSharingOnly
+Description         : Sets External sharing to ExternalUserSharingOnly
+Content             : 
+Version             : 1
+IsSiteScriptPackage : False
+
+Id                  : 3897ba25-22bd-40ad-9fb3-a2df5132c928
+Title               : External sharing ExternalUserAndGuestSharing
+Description         : Sets External sharing to ExternalUserAndGuestSharing
+Content             : 
+Version             : 1
+IsSiteScriptPackage : False
+
+*/

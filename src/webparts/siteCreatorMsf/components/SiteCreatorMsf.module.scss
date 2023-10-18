@@ -25,6 +25,8 @@
   font-size: 1rem;
   border-bottom: 1px solid #ffae4b;
   cursor: pointer;
+  position: relative;
+  top: 1px;
   transition: 0.2s;
 }
 
@@ -40,7 +42,6 @@
   border-bottom: none !important;
   height: 31px !important;
   position: relative;
-  top: 1px;
   font-weight: 500;
 }
 

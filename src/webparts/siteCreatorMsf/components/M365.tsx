@@ -149,20 +149,40 @@ export default function M365 (props) {
   const onSharingChange = e => {
     setSharing(e.target.value)
     e.target.value === "Anyone" ?
-    setSharingId("123ac0ed-b076-4507-82e4-de444923a4b5") :
+    setSharingId("004bbf35-ed4a-45e6-9199-cc9881aeba64") :
     e.target.value === "New and existing guest" ?
     setSharingId("123ac0ed-b076-4507-82e4-de444923a4b5") :
     e.target.value === "Existing guest only" ?
-    setSharingId("123ac0ed-b076-4507-82e4-de444923a4b5") :
-    setSharingId("123ac0ed-b076-4507-82e4-de444923a4b5")
+    setSharingId("513beb79-9027-4297-a38d-db7cbfb83b07") :
+    setSharingId("3b0ffe11-9840-4561-96a9-c6c417976db9")
   }
 
-// Site script externalsharing disabled 
-// de32b387-f7af-4d9f-8e82-40ad7fa23500
+// SCRIPT
+/*
+Id                  : 3b0ffe11-9840-4561-96a9-c6c417976db9 OK
+Title               :  External sharing Disabled (Team Site)
+WebTemplate         : 64
+SiteScriptIds       : {721f126f-a657-4f38-8e44-4ddca33bb8be}
+Description         : Sets External sharing to Disabled (Team Site)
 
-// Site design (team site)
-// 123ac0ed-b076-4507-82e4-de444923a4b5
+Id                  : 6bf7f2ba-2f3f-4449-9c7d-596f22e9cb83
+Title               :  External sharing ExistingExternalUserSharingOnly (Team Site)
+WebTemplate         : 64
+SiteScriptIds       : {f5ce4b3c-7b29-44e5-9a8d-cdd8ad2db50b}
+Description         : Sets External sharing to ExistingExternalUserSharingOnly (Team Site)
 
+Id                  : 513beb79-9027-4297-a38d-db7cbfb83b07 OK
+Title               :  External sharing ExternalUserSharingOnly (Team Site)
+WebTemplate         : 64
+SiteScriptIds       : {6563274d-f5fe-451d-a916-f91e488c86eb}
+Description         : Sets External sharing to ExternalUserSharingOnly (Team Site)
+
+Id                  : 004bbf35-ed4a-45e6-9199-cc9881aeba64 OK
+Title               :  External sharing ExternalUserAndGuestSharing (Team Site)
+WebTemplate         : 64
+SiteScriptIds       : {3897ba25-22bd-40ad-9fb3-a2df5132c928}
+Description         : Sets External sharing to ExternalUserSharingOnly (Team Site)
+*/
 
 //SITE CREATION
   const createSite = (e) => {
@@ -280,10 +300,10 @@ export default function M365 (props) {
       <form className={styles.form_wrapper} onSubmit={createSite}>
           <label htmlFor='siteTitle'>Site name</label>
           <input id="siteTitle" type="text" onChange={addTitle}/>
-          <span className={styles.input_comment}>{title === "" ? "Type a site title" : titleExist ? "A site with this title already exists" : "OK"}</span>
-          <span>Owners</span>
+          <span className={styles.input_comment}>{title === "" ? "Type a site title" : titleExist ? `NG, GRP-${domain}-${title} already exists` : "OK"}</span>
+          <span>M365 group Owners</span>
           <PeoplePicker defaultSelectedUserIds={adminId} selectionMode="multiple" selectionChanged={addOwners}/>
-          <span>Members</span>
+          <span>M365 group Members</span>
           <PeoplePicker selectionMode="multiple" selectionChanged={addMembers}/>
           <div className={styles.selection_box}>
             <h4>Privacy</h4>

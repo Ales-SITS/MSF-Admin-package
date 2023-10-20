@@ -25,7 +25,7 @@ import "@pnp/sp/features";
 import "@pnp/sp/site-groups/web";
 import "@pnp/sp/items";
 import "@pnp/sp/items/get-all";
-
+import { IHubSiteInfo } from  "@pnp/sp/hubsites";
 import "@pnp/sp-admin";
 
 import { Web } from "@pnp/sp/webs";   
@@ -75,9 +75,9 @@ export default function SiteOverviewMsf (props) {
  
 //CONST
     const [siteTitle,setSiteTitle] = useState(context.pageContext.web.title)
-        
-    const [siteURL,setSiteUrl] = useState(
-        site_url === undefined || site_url === null || site_url === "" ? context.pageContext.site.absoluteUrl : site_url)
+      
+    const siteURLfromProp = site_url === undefined || site_url === null || site_url === "" ? context.pageContext.site.absoluteUrl : site_url
+    const [siteURL,setSiteUrl] = useState(siteURLfromProp)
 
     const [siteID,setSiteID] = useState(
         site_id === undefined || site_id === null || site_id === "" ? context.pageContext.site.id._guid : site_id)
@@ -88,10 +88,12 @@ export default function SiteOverviewMsf (props) {
     }
     
     const searchDynamicSite = (url):void => {
-        url === "" ? setSiteUrl(context.pageContext.site.absoluteUrl) : setSiteUrl(url)
+        url === "" ? setSiteUrl(siteURLfromProp) : setSiteUrl(url)
     }
 
-//CONST & HIDERS        
+//CONST & HIDERS 
+    const [test, setTest] = useState()
+
     const [hubsites, setHubsites] = useState([])
 
     const [subsites, setSubsites] = useState([]);
@@ -108,6 +110,75 @@ export default function SiteOverviewMsf (props) {
     }
 
     //GETTERS
+    async function getSite():Promise<any> {  
+        console.log(siteURL)
+        console.log(siteURLfromProp)
+        const site = Web([sp.web, `${siteURL}`])      
+        const siteInfo = await site()           
+        setSiteTitle(siteInfo.Title)
+
+        try {
+            const site_ID = await getSiteID()
+            setSiteID(site_ID)
+        } catch (error) {
+            console.log(error)
+        }
+
+        try {
+            const hub = await getHub(siteID)
+            setHubsites(hub)
+        } catch (error) {
+            console.log(error)
+        }
+
+        try {
+            const sub = await getSubsites()
+            setSubsites(sub)
+        } catch (error) {
+            console.log(error)
+        }
+
+        try {      
+        const pages = await getPages()
+        setPages(pages)
+        } catch (error) {
+            console.log(error)
+        }
+
+        try {
+            const lists = await getLists()
+            setLists(lists)
+        } catch (error) {
+            console.log(error)
+        }
+
+
+        const storageReport = await getReport().then(result => {
+            const parser = new DOMParser()
+            const xml = parser.parseFromString(result,"application/xhtml+xml")
+            const defaultNamespaceURI = 'http://schemas.microsoft.com/ado/2007/08/dataservices';
+            const elementName = 'Storage';
+            const storageElement = xml.getElementsByTagNameNS(defaultNamespaceURI, elementName)[0];         
+            const storage = Number(storageElement.textContent) / (1024 * 1024 * 1024)
+
+            return storage      
+        });
+
+        setStorage(storageReport)
+
+    }
+
+    async function getSiteID() {
+        const urlObject = new URL(siteURL);
+        const host = urlObject.hostname
+        const path = urlObject.pathname;
+        const graph = graphfi().using(SPFx(context))
+        const idstring = await graph.sites.getByUrl(host,path)()
+        const id = idstring.id.split(",")[1]   
+        
+        return id
+    }
+
     async function getHub(id) {
         setHubLoading(true)
         const searchResults: SearchResults = await sp.search(
@@ -134,10 +205,8 @@ export default function SiteOverviewMsf (props) {
         //const report = await Site(siteData, "/reports/getSharePointSiteUsageStorage(period='D7')")();
         const site = Web([sp.web, `${siteURL}`])    
         //const features = await site.features()
-        //const allProps = await sp.admin.siteProperties.select("*")();
-    
+        //const allProps = await sp.admin.siteProperties.select("*")();  
         const features = await site.features.select("DisplayName", "DefinitionId")();
-
         return features
     }  
 
@@ -157,8 +226,7 @@ export default function SiteOverviewMsf (props) {
         return sites
     }   
 
-    async function getLists():Promise<any> {
-       
+    async function getLists():Promise<any> {  
         setListsLoading(true);
         const subsite = Web([sp.web, `${siteURL}`]);
         const lists = await subsite.lists();
@@ -186,61 +254,14 @@ export default function SiteOverviewMsf (props) {
         });
       }    
 
+    useEffect(() => {  
+        getSite()
+       }, [siteID, siteURL]);
 
     useEffect(() => {
-       
-        getHub(siteID).then(result => {
-            setHubsites([]);
-            const arr:any = result
-            setHubsites(arr);
-        });
+        setSiteUrl(siteURLfromProp)
+    },[site_url])
 
-        getSubsites().then(result => {
-            setSubsites([]);
-            const arr:any = result
-            setSubsites(arr);
-        });
-
-        getPages().then(result => {     
-            setPages([]);
-            const arr:any = result
-            setPages(arr);
-        })  
-
-        /*
-        getAdvancedReport(siteID).then(result => {
-            result.map(feature => console.log(feature))
-        }
-        )
-*/
-        getReport().then(result => {
-            const parser = new DOMParser()
-            const xml = parser.parseFromString(result,"application/xhtml+xml")
-            const defaultNamespaceURI = 'http://schemas.microsoft.com/ado/2007/08/dataservices';
-            const elementName = 'Storage';
-            const storageElement = xml.getElementsByTagNameNS(defaultNamespaceURI, elementName)[0];         
-            const storage = Number(storageElement.textContent) / (1024 * 1024 * 1024)
-
-            setStorage(storage)
-        });
-
-        getLists().then(result => {     
-            setLists([]);
-            const arr:any = result
-            setLists(arr);
-          })
-
-       }, [site_id, site_url, siteID]);
-
-       const copyOnClick = (e) => {
-        navigator.clipboard.writeText(e.target.innerText)
-       }
-
-    useEffect(()=>{
-        site_id === undefined || site_id === null || site_id === "" ? 
-        setSiteID(context.pageContext.site.id._guid) :
-        setSiteID(site_id)
-    },[site_id])
 
     useEffect(()=>{
         header === undefined || header === null || header === "" ? 
@@ -296,6 +317,11 @@ export default function SiteOverviewMsf (props) {
         setPermVis(false)
         setPnpVis(!pnpVis)
     }
+
+//UX
+const copyOnClick = (e) => {
+    navigator.clipboard.writeText(e.target.innerText)
+   }
 
      return (
         <div className={styles.overviewWrapper}>

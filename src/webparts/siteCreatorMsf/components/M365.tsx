@@ -33,7 +33,10 @@ export default function M365 (props) {
   const graph = graphfi().using(SPFx(context))
 
   //General
-  const domain = context.pageContext.user.email?.split("@")[1]?.split(".")[0]?.toUpperCase()
+  const domainList = {
+    sits : "SITS"
+  }
+  const domain = domainList[`${context.pageContext.user.email?.split("@")[1]?.split(".")[0].toLowerCase()}`]
 
   const [progress, setProgress] = useState("Not run yet")
   const [error, setError] = useState ("")

@@ -5,5 +5,6 @@ export interface ISiteOverviewMsfProps {
   site_id: string;
   site_url: string;
   expanded: boolean;
-  context: WebPartContext
+  context: WebPartContext;
+  dynamic_url: boolean
 }

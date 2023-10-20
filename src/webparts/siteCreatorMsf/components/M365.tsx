@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {useState, useEffect} from 'react'
 import styles from './SiteCreatorMsf.module.scss';
-import { ISiteCreatorMsfProps } from './ISiteCreatorMsfProps';
 import {  PeoplePicker } from '@microsoft/mgt-react';
 
 //API
@@ -9,11 +8,17 @@ import { MSGraphClientV3  } from "@microsoft/sp-http";
 
 //PNP SP
 import { spfi, SPFx as SPFxsp} from "@pnp/sp";
-import "@pnp/sp/site-designs"
-import "@pnp/sp/sites";
-
+import { Web } from "@pnp/sp/webs";  
 import { IHubSiteInfo } from  "@pnp/sp/hubsites";
 import "@pnp/sp/hubsites";
+import "@pnp/sp/sites";
+import "@pnp/sp/user-custom-actions";
+import "@pnp/sp/webs";
+import "@pnp/sp/site-users/web";
+import "@pnp/sp/site-groups/web";
+import "@pnp/sp/site-designs";
+import "@pnp/sp/features";
+
 
 //PNP GRAPH
 import { SPFx, graphfi } from "@pnp/graph";
@@ -44,6 +49,10 @@ export default function M365 (props) {
   const[adminId,setAdminId] =useState([])
   const [owners,setOwners] = useState([])
   const [members,setMembers] = useState([])
+  const [siteOwners,setSiteOwners] = useState([])
+  const [siteMembers,setSiteMembers] = useState([])
+  const [siteVisitors,setSiteVisitors] = useState([])
+
 
   const addOwners = (e) => {
     const ownersMails = e.detail.map(owner => `https://graph.microsoft.com/v1.0/users/${owner.id}`)
@@ -54,6 +63,22 @@ export default function M365 (props) {
     const membersMails = e.detail.map(member => `https://graph.microsoft.com/v1.0/users/${member.id}`)
     setMembers(membersMails)
   }
+
+  const addSiteOwners = (e) => {
+    const owners = e.detail.map(owner =>  `i:0#.f|membership|${owner.userPrincipalName.toLowerCase()}`)
+    setSiteOwners([...owners])
+  }
+
+  const addSiteMembers = (e) => {
+    const members = e.detail.map(member => `i:0#.f|membership|${member.userPrincipalName.toLowerCase()}`)
+    setSiteMembers(members)
+  }
+
+  const addSiteVisitors = (e) => {
+    const visitors = e.detail.map(member => `i:0#.f|membership|${member.userPrincipalName.toLowerCase()}`)
+    setSiteVisitors(visitors)
+  }
+
 
   //Admin check
   useEffect(()=>{
@@ -246,7 +271,12 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Team Sit
 
       await applySharing(siteUrl);
       hub !== "" && hubChecker ? await associateToHub(siteUrl) : null
-      siteDesign !== "" && designChecker ? await applyScript(siteUrl) : null
+      siteDesign === "" ? setProgress("Team site created") :
+      designChecker ? await applyScript(siteUrl) : null
+      siteOwners.length !== 0 && await addSiteOwnersCall(siteUrl)
+      siteMembers.length !== 0 && await addSiteMembersCall(siteUrl)
+      siteVisitors.length !== 0 && await addSiteVisitorsCall(siteUrl)
+      setProgress("Finished")
   }
 
   async function applySharing(siteUrl) {
@@ -293,6 +323,63 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Team Sit
     return admin
   }
 
+  const addSiteOwnersCall = async(siteUrl) => {
+    setProgress("Adding site owners ...");
+    
+    const site = Web([sp.web, `${siteUrl}`]);
+    siteOwners.forEach((user) => {
+      addSiteOwner(user,site)
+    })
+    setProgress("Site owners added ...")
+  }
+
+    const addSiteOwner = async(user, site) =>{
+          try {    
+            const usersVisitors = await site.associatedOwnerGroup.users
+            await usersVisitors.add(`${user}`);
+          } catch (error) {
+            setError(`Error when adding members: ${error}`);
+          }
+      }
+
+  const addSiteMembersCall = async(siteUrl) => {
+    setProgress("Adding site members ...");
+    
+    const site = Web([sp.web, `${siteUrl}`]);
+    siteMembers.forEach((user) => {
+      addSiteMember(user,site)
+    })
+    setProgress("Site members added ...")
+  }
+
+    const addSiteMember = async(user, site) =>{
+          try {    
+            const usersVisitors = await site.associatedMemberGroup.users
+            await usersVisitors.add(`${user}`);
+          } catch (error) {
+            setError(`Error when adding members: ${error}`);
+          }
+      }
+
+  const addSiteVisitorsCall = async(siteUrl) => {
+    setProgress("Adding site visitors ...");  
+    const site = Web([sp.web, `${siteUrl}`]);
+    siteVisitors.forEach((user) => {
+      addSitevisitor(user,site)
+    })
+    setProgress("Site visitors added ....")
+  }
+      const addSitevisitor = async(user, site) =>{
+        try {    
+          const usersVisitors = await site.associatedVisitorGroup.users
+          await usersVisitors.add(`${user}`)
+        } catch (error) {
+          setError(`Error when adding users: ${error}`);
+        }
+      }
+
+
+
   const disabled = title === "" || titleExist || !hubChecker || !designChecker ? true : false
 
   return (
@@ -301,10 +388,19 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Team Sit
           <label htmlFor='siteTitle'>Site name</label>
           <input id="siteTitle" type="text" onChange={addTitle}/>
           <span className={styles.input_comment}>{title === "" ? "Type a site title" : titleExist ? `NG, GRP-${domain}-${title} already exists` : "OK"}</span>
+          <span className={styles.group_header}>M365 Group users</span>
           <span>M365 group Owners</span>
           <PeoplePicker defaultSelectedUserIds={adminId} selectionMode="multiple" selectionChanged={addOwners}/>
           <span>M365 group Members</span>
           <PeoplePicker selectionMode="multiple" selectionChanged={addMembers}/>
+          <span className={styles.group_header}>Site only users</span>
+          <span className={styles.group_header_comment}>M365 Group users will be added automatically</span>
+          <span>Site Owners</span>
+          <PeoplePicker selectionMode="multiple" selectionChanged={addSiteOwners}/>
+          <span>Site Members</span>
+          <PeoplePicker selectionMode="multiple" selectionChanged={addSiteMembers}/>
+          <span>Site Visitors</span>
+          <PeoplePicker selectionMode="multiple" selectionChanged={addSiteVisitors}/>
           <div className={styles.selection_box}>
             <h4>Privacy</h4>
             <span>

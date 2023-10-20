@@ -1,12 +1,7 @@
 import * as React from 'react';
 import {useState, useEffect} from 'react'
 import styles from './SiteCreatorMsf.module.scss';
-import { ISiteCreatorMsfProps } from './ISiteCreatorMsfProps';
 import {  PeoplePicker } from '@microsoft/mgt-react';
-
-//API
-import { MSGraphClientV3  } from "@microsoft/sp-http";
-import { HttpClient, IHttpClientOptions, HttpClientResponse } from '@microsoft/sp-http';
 
 //PNP SP
 import { spfi, SPFx as SPFxsp} from "@pnp/sp";
@@ -68,7 +63,6 @@ export default function Communication (props) {
     setVisitors(visitors)
   }
 
-
   //Admin check
   useEffect(()=>{
     getAdmin().then(result => {
@@ -85,7 +79,7 @@ export default function Communication (props) {
 
   //Hub states
   const [hub,setHub] = useState("")
-  const [hubTitle,setHubTitle] = useState("")
+  const [hubTitle,setHubTitle] = useState("None")
   const [hubOwner, setHubOwner] = useState(false)
   const [hubChecker,setHubChecker] = useState(false)
 
@@ -97,6 +91,7 @@ export default function Communication (props) {
   useEffect(()=> {
     if (hub === "") {
       setHubChecker(true)
+      setHubTitle("None")
     } else {
     const hubcheck = hub.split("-")
     hubcheck.length != 5 || 
@@ -110,7 +105,9 @@ export default function Communication (props) {
   },[hub])
 
   useEffect(()=>{
-    hubChecker && getHub(hub)
+    hubChecker && hub === "" ? setHubTitle("None") :
+    hubChecker && hub !== "" ? getHub(hub) :
+    setHubTitle("None")
   },[hubChecker,hub])
 
   async function getHub (hubID) {
@@ -122,7 +119,7 @@ export default function Communication (props) {
 
   //Design states
   const [siteDesign, setSiteDesign] = useState("")
-  const [siteDesignTitle, setSiteDesignTitle] = useState("")
+  const [siteDesignTitle, setSiteDesignTitle] = useState("None")
   const [designChecker,setDesignChecker] = useState(false)
 
   const addDesign = (e) => {
@@ -134,6 +131,7 @@ export default function Communication (props) {
   useEffect(()=> {
     if (siteDesign === "") {
       setDesignChecker(true)
+      setSiteDesignTitle("None") 
     } else {
     const designcheck = siteDesign.split("-")
     designcheck.length != 5 || 
@@ -147,11 +145,13 @@ export default function Communication (props) {
   },[siteDesign])
 
   useEffect(()=>{
-    designChecker && siteDesign === "" ? null : designChecker && siteDesign !== "" ? getDesign(siteDesign) : null
+    designChecker && siteDesign === "" ? setSiteDesignTitle("None") : 
+    designChecker && siteDesign !== "" ? getDesign(siteDesign) : 
+    setSiteDesignTitle("None")
   },[designChecker, siteDesign])
 
   async function getDesign (designID) {
-       const design = await sp.siteDesigns.getSiteDesignMetadata(designID)
+      const design = await sp.siteDesigns.getSiteDesignMetadata(designID)
       setSiteDesignTitle(design.Title)
       console.log("Design found")
    }
@@ -220,7 +220,6 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Communic
     if (siteDesign !== "") {
       siteProps['siteDesignId']
     }
-    // Log the current operation
     setProgress("Creating Communication site ...");
   
     try {
@@ -253,26 +252,25 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Communic
       
       setProgress("Communication site created. Preparing other settings ...");
       await new Promise((resolve) => setTimeout(resolve, 10000));
-      siteDesign === "" ? setProgress("Communication site created") :
-      designChecker ? await applyScript(siteUrl) : null
-      await applyScript(siteUrl)
+      await applyScript(siteUrl,sharingId, 1)
       owners.length !== 0 && await addSiteOwners(siteUrl)
       members.length !== 0 && await addSiteMembers(siteUrl)
       visitors.length !== 0 && await addSiteVisitors(siteUrl)
-      setProgress("Communication site created")
+      siteDesign !== "" && designChecker ? await applyScript(siteUrl,siteDesign, 0) : null
+      setProgress("Finished")
   }
 
-  const applyScript = async(siteUrl) => {
-        setProgress("Applying site design ...");
+  const applyScript = async(siteUrl,designId,type) => {
+        type === 1 ? setProgress("Applying external sharing settings ...") : setProgress("Applying site design ...")
         const newsp = spfi(siteUrl).using(SPFxsp(context))
         try {
             await newsp.siteDesigns.applySiteDesign(
-              `${sharingId}`,
+              `${designId}`,
               `${siteUrl}`
             );
-            setProgress("Other settings and scripts applied")
+            type === 1 ? setProgress("External sharing set ...") : setProgress("Site design applied ...")
           } catch (error) {
-            setError(`Error when applying site design: ${error}`);
+            type === 1 ? setError(`Error when setting External sharing: ${error}`) : setError(`Error when applying site design: ${error}`)
           }
   } 
  
@@ -302,7 +300,7 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Communic
     members.forEach((user) => {
       addSiteMember(user,site)
     })
-    setProgress("Members added ....")
+    setProgress("Members added ...")
   }
 
     const addSiteMember = async(user, site) =>{
@@ -320,7 +318,7 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Communic
     visitors.forEach((user) => {
       addSitevisitor(user,site)
     })
-    setProgress("Visitors added ....")
+    setProgress("Visitors added ...")
   }
 
       const addSitevisitor = async(user, site) =>{
@@ -342,6 +340,7 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Communic
           <label htmlFor='siteTitle'>Site name</label>
           <input id="siteTitle" type="text" onChange={addTitle}/>
           <span className={styles.input_comment}>{title === "" ? "Type a site title" : titleExist ? `NG, ${domain}-${title} already exists!` : "OK"}</span>
+          <span className={styles.group_header}>Site users</span>
           <span>Site Owners</span>
           <PeoplePicker defaultSelectedUserIds={adminId} selectionMode="multiple" selectionChanged={addOwners}/>
           <span>Site Members</span>
@@ -427,15 +426,15 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Communic
           <span>Url: https://msfintl.sharepoint.com/sites/{domain}-{title}</span>
           <span>Sharing: {sharing}</span>
           <span>SharingId: {sharingId}</span>
-          <span>Site design: {siteDesignTitle}</span>
-          <span>Associate with hub: {hubTitle}</span>
+          <span>Site design: {siteDesignTitle} {siteDesign !== "" && designChecker ? "RUN" : "DONT RUN"}</span>
+          <span>Associated with hub: {hubTitle}</span>
         </div>
         <div className={styles.result_progress}>
-          {progress === "Finished" ? 
-          <a target="_blank" href={`https://msfintl.sharepoint.com/sites/${domain}-${title}`}>Finished - click to open</a> :
+          {
+          error !== "" ? <span>{error}</span> :
+          progress === "Finished" ? <a target="_blank" href={`https://msfintl.sharepoint.com/sites/${domain}-${title}`}>Finished - click to open</a> :
           <span>{progress}</span>
           }
-          {error}      
         </div>
       </div>
     </div>

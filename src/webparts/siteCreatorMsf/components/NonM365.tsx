@@ -1,12 +1,7 @@
 import * as React from 'react';
 import {useState, useEffect} from 'react'
 import styles from './SiteCreatorMsf.module.scss';
-import { ISiteCreatorMsfProps } from './ISiteCreatorMsfProps';
 import {  PeoplePicker } from '@microsoft/mgt-react';
-
-//API
-import { MSGraphClientV3  } from "@microsoft/sp-http";
-import { HttpClient, IHttpClientOptions, HttpClientResponse } from '@microsoft/sp-http';
 
 //PNP SP
 import { spfi, SPFx as SPFxsp} from "@pnp/sp";
@@ -85,7 +80,7 @@ export default function NonM365 (props) {
 
   //Hub states
   const [hub,setHub] = useState("")
-  const [hubTitle,setHubTitle] = useState("")
+  const [hubTitle,setHubTitle] = useState("None")
   const [hubOwner, setHubOwner] = useState(false)
   const [hubChecker,setHubChecker] = useState(false)
 
@@ -97,6 +92,7 @@ export default function NonM365 (props) {
   useEffect(()=> {
     if (hub === "") {
       setHubChecker(true)
+      setHubTitle("None")
     } else {
     const hubcheck = hub.split("-")
     hubcheck.length != 5 || 
@@ -110,7 +106,9 @@ export default function NonM365 (props) {
   },[hub])
 
   useEffect(()=>{
-    hubChecker && getHub(hub)
+    hubChecker && hub === "" ? setHubTitle("None") :
+    hubChecker && hub !== "" ? getHub(hub) :
+    setHubTitle("None")
   },[hubChecker,hub])
 
   async function getHub (hubID) {
@@ -122,7 +120,7 @@ export default function NonM365 (props) {
 
   //Design states
   const [siteDesign, setSiteDesign] = useState("")
-  const [siteDesignTitle, setSiteDesignTitle] = useState("")
+  const [siteDesignTitle, setSiteDesignTitle] = useState("None")
   const [designChecker,setDesignChecker] = useState(false)
 
   const addDesign = (e) => {
@@ -198,8 +196,6 @@ SiteScriptIds       : {3897ba25-22bd-40ad-9fb3-a2df5132c928}
 Description         : Sets External sharing to ExternalUserAndGuestSharing (Team Site without Group)
 
 */
-
-
 
 
 //SITE CREATION
@@ -354,6 +350,7 @@ Description         : Sets External sharing to ExternalUserAndGuestSharing (Team
           <label htmlFor='siteTitle'>Site name</label>
           <input id="siteTitle" type="text" onChange={addTitle}/>
           <span className={styles.input_comment}>{title === "" ? "Type a site title" : titleExist ? `NG, ${domain}-${title} already exists!` : "OK"}</span>
+          <span className={styles.group_header}>Site users</span>
           <span>Site Owners</span>
           <PeoplePicker defaultSelectedUserIds={adminId} selectionMode="multiple" selectionChanged={addOwners}/>
           <span>Site Members</span>

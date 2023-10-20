@@ -11,6 +11,7 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 
 import * as strings from 'SiteOverviewMsfWebPartStrings';
 import ClassWrapperOverview from './components/ClassWrapperOverview';
+import SiteOverviewMsf from './components/SiteOverviewMsf'
 import { ISiteOverviewMsfProps } from './components/ISiteOverviewMsfProps';
 
 //GRAPH
@@ -21,6 +22,7 @@ export interface ISiteOverviewMsfWebPartProps {
   site_id: string;
   site_url: string;
   expanded: boolean;
+  dynamic_url: boolean
 }
 
 export default class SiteOverviewMsfWebPart extends BaseClientSideWebPart<ISiteOverviewMsfWebPartProps> {
@@ -45,12 +47,13 @@ export default class SiteOverviewMsfWebPart extends BaseClientSideWebPart<ISiteO
 
   public render(): void {
     const element: React.ReactElement<ISiteOverviewMsfProps> = React.createElement(
-      ClassWrapperOverview,
+      SiteOverviewMsf,
       {
         header: this.properties.header,
         site_id: this.siteID,
         site_url: this.properties.site_url,
         expanded: this.properties.expanded,
+        dynamic_url: this.properties.dynamic_url,
         context: this.context
         }
     );
@@ -124,6 +127,11 @@ export default class SiteOverviewMsfWebPart extends BaseClientSideWebPart<ISiteO
                   label: "Fields Expanded/Collapsed?",
                   offText: "Collapsed",
                   onText: "Expanded"
+                }),
+                PropertyPaneToggle('dynamic_url', {
+                  label: "Dynamic site URL field?",
+                  offText: "Hidden",
+                  onText: "Visible"
                 })
               ]
             }

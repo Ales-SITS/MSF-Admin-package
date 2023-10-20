@@ -104,6 +104,16 @@
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0,0,0,0.2);
 }
+    .group_header {
+      margin-top: 15px;
+      margin-bottom: 2px;
+      font-size: 1.1rem;
+      font-weight: 600;   
+    }
+
+    .group_header_comment {
+      font-size: 0.8rem;
+    }
 
     .input_comment {
       font-size: 0.8rem;

@@ -9,6 +9,7 @@ import { Icon } from '@fluentui/react/lib/Icon';
 //import { SPFx, graphfi} from "@pnp/graph";
 //import { spfi, SPFx as SPFxsp} from "@pnp/sp";
 
+import { spfi, SPFx as SPFxsp} from "@pnp/sp";
 import "@pnp/sp/sites";
 import "@pnp/sp/webs";
 
@@ -58,11 +59,13 @@ export default function SiteOverviewMsf (props) {
         site_id,
         site_url,
         expanded,
+        dynamic_url,
         context
-      } = props.details;
+      } = props;
 
-    const sp = props.sp//spfi().using(SPFxsp(context))
-    //console.log(context)
+    const sp = spfi().using(SPFxsp(context))
+    //const sp = props.sp//spfi().using(SPFxsp(context))
+
 //LOADERS      
     const [hubLoading,setHubLoading] = useState(true)
     const [subLoading,setSubLoading] = useState(true)
@@ -73,7 +76,8 @@ export default function SiteOverviewMsf (props) {
 //CONST
     const [siteTitle,setSiteTitle] = useState(context.pageContext.web.title)
         
-    const siteURL = site_url === undefined || site_url === null || site_url === "" ? context.pageContext.site.absoluteUrl : site_url
+    const [siteURL,setSiteUrl] = useState(
+        site_url === undefined || site_url === null || site_url === "" ? context.pageContext.site.absoluteUrl : site_url)
 
     const [siteID,setSiteID] = useState(
         site_id === undefined || site_id === null || site_id === "" ? context.pageContext.site.id._guid : site_id)
@@ -83,6 +87,10 @@ export default function SiteOverviewMsf (props) {
         setTabSelected(tab)
     }
     
+    const searchDynamicSite = (url):void => {
+        url === "" ? setSiteUrl(context.pageContext.site.absoluteUrl) : setSiteUrl(url)
+    }
+
 //CONST & HIDERS        
     const [hubsites, setHubsites] = useState([])
 
@@ -257,14 +265,11 @@ export default function SiteOverviewMsf (props) {
        }    
     const hubsitesfiltered = hubFilter === "" ? hubsites : hubsites.filter( hub => hub.Title.toLowerCase().includes(hubFilter.toLowerCase()))
 
-    //console.log(hubsites)
-    //console.log(hubsitesfiltered)
     
     const [pageFilter,setPageFilter] = useState("")
     const searchPageFilter = (e):void => {
         setPageFilter(e)
     }
-    //console.log(pages.length === 0)
     const pagesfiltered = pages.length === 0 ? [] : pageFilter === "" ? pages : pages.filter( page => page.Title.toLowerCase().includes(pageFilter.toLowerCase()))
 
     const [libFilter,setLibFilter] = useState("")
@@ -295,6 +300,15 @@ export default function SiteOverviewMsf (props) {
      return (
         <div className={styles.overviewWrapper}>
             <div className={styles.mainSiteBox}>
+               {dynamic_url &&
+                            <input
+                            className={styles.resultsFilterInput} 
+                            type="text" 
+                            name="siteName" 
+                            placeholder="Site URL"
+                            onChange={e => searchDynamicSite(e.target.value)} 
+                            />
+                }
                 <div className={styles.mainSiteBoxTop}>
                     <h1><a href={siteURL} title={siteURL}>{siteTitle}</a></h1>
                     <div>

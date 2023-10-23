@@ -185,6 +185,10 @@ const externalfiltered = usersFilter === "" ? external :
       )
 const externalToDisplay = externalfiltered.slice(0, displayCountExternal);
 
+const[selected,setSelected] = useState(1)
+const selectedHandler = (val) => {
+    setSelected(val)
+}
 
 return (
         <div className={perstyles.permissionModal}>
@@ -202,15 +206,18 @@ return (
                 placeholder="Filter by user name"
                 onChange={e => usersFilterHandler(e.target.value)} 
                 />
-        <h3>Sigle user search</h3>
-        <ResizableBox height={150} axis={'y'} className={perstyles.resBox} resizeHandles={['s']}>
-                <div className={perstyles.permissionModalInside}>
-                    <iframe className={perstyles.checkPermissionIframe} src={`${props.url}/_layouts/15/chkperm.aspx?obj=https%3a%2f%2fmsfintl.sharepoint.com%2fsites%2fmsfintlcommunities%2cWEB&IsDlg=1`}></iframe>
-                </div>
-        </ResizableBox>
-        <h3>Top groups</h3>
-        <ResizableBox height={400} axis={'y'} className={perstyles.resBox} resizeHandles={['s']}>
-            <div className={perstyles.permissionModalInside}>
+        <div className={perstyles.permissionModalNav}>
+            <button type="button" onClick={()=>selectedHandler(1)} className={selected === 1 ? perstyles.selectedButton : null}>Sigle user search</button>
+            <button type="button" onClick={()=>selectedHandler(2)} className={selected === 2 ? perstyles.selectedButton : null}>Top groups</button>
+            <button type="button" onClick={()=>selectedHandler(3)} className={selected === 3 ? perstyles.selectedButton : null}>All users</button>
+        </div>
+        {selected === 1 && 
+        <div className={perstyles.permissionModalInside}>
+            <iframe className={perstyles.checkPermissionIframe} src={`${props.url}/_layouts/15/chkperm.aspx?obj=https%3a%2f%2fmsfintl.sharepoint.com%2fsites%2fmsfintlcommunities%2cWEB&IsDlg=1`}></iframe>
+        </div>
+        }
+        {selected === 2 && 
+        <div className={perstyles.permissionModalInside}>
                 <div className={perstyles.groupsWrapper}>
                     <div className={perstyles.groupBox}>
                         <span className={perstyles.groupBoxHeader}>Admins</span>
@@ -258,11 +265,10 @@ return (
 
                     </div>
                 </div>
-            </div>
-        </ResizableBox>
-        <h3>All users</h3>
-        <ResizableBox height={400} axis={'y'} className={perstyles.resBox} resizeHandles={['s']}>
-            <div className={perstyles.permissionModalInside}>
+        </div>
+        }
+        {selected === 3 &&
+        <div className={perstyles.permissionModalInside}>
                 <div className={perstyles.groupsWrapper}>
                     <div className={perstyles.groupBox}>
                         <span className={perstyles.groupBoxHeader}>MSF users ({displayCountAll}/{internal.length})</span>
@@ -287,8 +293,8 @@ return (
                         </div>
                     </div>
                 </div>
-            </div>
-        </ResizableBox>
+        </div>
+        }
     </div>
         
     );
@@ -342,7 +348,7 @@ return (
   //console.log(members)
 
     return (
-        <li>    
+        <li className={perstyles.userPerm}>    
             <div className={perstyles.userPermBox}>
                 <div>
                     <span className={user.Title === "Everyone except external users" || user.Title === "Everyone" ? perstyles.permissionWarning : ""}>

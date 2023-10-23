@@ -368,7 +368,7 @@ const copyOnClick = (e) => {
                     </button>
                 </div>
             </div>
-            {permVis && <PermissionsComponent onCloseHandler={permVisHandler} context={context} url={siteURL} sp={props.sp}/>}
+            {permVis && <PermissionsComponent onCloseHandler={permVisHandler} context={context} url={siteURL} sp={sp}/>}
             {pnpVis && <PnP_Generator onCloseHandler={pnpVisHandler} type={"top_site"} siteurl={siteURL}/>}
             {expand && 
             <>

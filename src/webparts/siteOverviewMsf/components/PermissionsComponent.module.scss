@@ -13,7 +13,36 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+}
 
+.permissionModalNav {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.permissionModalNav button {
+  outline: none;
+  border: none;
+  color: orange;
+  background-color: rgba(0,0,0,0);
+  width: 33.3%;
+  padding: 5px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  border-radius: 3px 3px 0 0;
+  transition: 0.2s;
+}
+
+.permissionModalNav button:hover {
+  background-color: rgb(252, 231, 193);
+  color: black
+}
+
+.selectedButton {
+  background-color: rgba(255, 255, 255, 0.9) !important;
 }
 
 .permissionModal h2 {
@@ -21,9 +50,6 @@
   color: orange
 }
 
-.permissionModal h3 {
-  color: orange;
-}
 
 .permissionModalTop {
   display: flex;
@@ -85,8 +111,9 @@
 
 .groupsWrapper {
   display:flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
 }
 
 .groupBox {
@@ -105,7 +132,6 @@
   box-shadow: 0 0 5px rgba(0,0,0,0.2);
   height: fit-content;
   width: 430px;
-  max-height: 800px;
   border-radius: 5px;
   margin: 5px 8px;
   padding: 2px 15px 2px 5px;
@@ -121,21 +147,28 @@
   position: relative;
 }
 
-.groupBoxResults ul li:before {
-  content: '・';
-  position: absolute;
-  top:25%;
-  left:-10px;
-  color: orange
+.userPerm ul {
+  list-style-type: none;
+}
+
+.userPerm ul li:before {
+  content: '\2022';
+  color: orange;
+  display: inline-block; 
+  margin-right: 10px
 }
 
 .permissionModalInside {
   width: 100%;
+  box-sizing: border-box;
   display: flex;
   justify-content: center;
+  padding: 10px 5px;
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 0 0 5px 5px;
 }
 
 .permissionModalBottom {
@@ -191,7 +224,7 @@
 .userPerm button {
   outline: none;
   border: none;
-  font-size: 9px;
+  font-size: 10px;
   cursor: pointer;
   transition: 0.2s;
 }

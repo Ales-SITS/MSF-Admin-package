@@ -14,6 +14,7 @@
 .app_navigation {
   display: flex;
   width: 100%;
+  justify-content: space-between;
 }
 
 .app_navigation button {
@@ -22,7 +23,7 @@
   border-radius: 5px 5px 0 0;
   width: 33.3%;
   height: 30px;
-  font-size: 1rem;
+  font-size: 1.05rem;
   border-bottom: 1px solid #ffae4b;
   cursor: pointer;
   position: relative;
@@ -159,11 +160,24 @@
   height: 60%;
 }
 
+.result_list_details {
+  display: flex;
+  flex-direction: column;
+}
+
+.result_list_details span:nth-child(odd) {
+  margin-top: 10px;
+  font-weight: 600;
+}
+
 .result_progress {
   display: flex;
   justify-content: center;
-  align-self: start;
+  align-items: center;
   height: 40%;
+  width: 100%;
+  font-size: 1.2rem;
+  color: grey
 }
 
 

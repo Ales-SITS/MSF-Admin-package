@@ -205,17 +205,9 @@ Description         : Sets External sharing to ExternalUserAndGuestSharing (Team
       Owner: `${owners[0]}`,
       Title: `${domain}-${title}`,
       Url: `https://msfintl.sharepoint.com/sites/${domain}-${title}`,
-      WebTemplate: "STS#3",
-      SiteDesignId: `${sharingId}`
+      WebTemplate: "STS#3"
     };
 
-    if (hub !== "") {
-      siteProps['hubSiteId'] = `${hub}`
-    }
-
-    if (siteDesign !== "") {
-      siteProps['siteDesignId']
-    }
     // Log the current operation
     setProgress("Creating Team site ...");
   
@@ -249,26 +241,28 @@ Description         : Sets External sharing to ExternalUserAndGuestSharing (Team
       
       setProgress("Team site created. Preparing other settings ...");
       await new Promise((resolve) => setTimeout(resolve, 10000));
-      siteDesign === "" ? setProgress("Team site created") :
-      designChecker ? await applyScript(siteUrl) : null
+      await applyScript(siteUrl,sharingId, 1)
       owners.length !== 0 && await addSiteOwners(siteUrl)
       members.length !== 0 && await addSiteMembers(siteUrl)
       visitors.length !== 0 && await addSiteVisitors(siteUrl)
+      siteDesign !== "" && designChecker ? await applyScript(siteUrl,siteDesign, 0) : null
+      hub !== "" && hubChecker ? await associateToHub(siteUrl) : null
+      setProgress("Finished")
   }
 
-  const applyScript = async(siteUrl) => {
-        setProgress("Applying site design ...");
-        const newsp = spfi(siteUrl).using(SPFxsp(context))
-        try {
-            await newsp.siteDesigns.applySiteDesign(
-              `${siteDesign}`,
-              `${siteUrl}`
-            );
-            setProgress("Other settings and scripts applied")
-          } catch (error) {
-            setError(`Error when applying site design: ${error}`);
-          }
-  } 
+  const applyScript = async(siteUrl,designId,type) => {
+    type === 1 ? setProgress("Applying external sharing settings ...") : setProgress("Applying site design ...")
+    const newsp = spfi(siteUrl).using(SPFxsp(context))
+    try {
+        await newsp.siteDesigns.applySiteDesign(
+          `${designId}`,
+          `${siteUrl}`
+        );
+        type === 1 ? setProgress("External sharing set ...") : setProgress("Site design applied ...")
+      } catch (error) {
+        type === 1 ? setError(`Error when setting External sharing: ${error}`) : setError(`Error when applying site design: ${error}`)
+      }
+} 
  
   const addSiteOwners = async(siteUrl) => {
     setProgress("Adding owners ...");
@@ -326,6 +320,16 @@ Description         : Sets External sharing to ExternalUserAndGuestSharing (Team
         }
       }
 
+async function associateToHub (siteUrl) {
+        setProgress("Associating with hub ...");
+          const newsp = spfi(siteUrl).using(SPFxsp(context))
+          try {
+            await newsp.site.joinHubSite(`${hub}`)
+            setProgress("Associated with the hub ...")
+          } catch (error) {
+            setError(`Error when associating to hub: ${error}`);
+          }
+    }
 
       const denyScripts = async(siteUrl) => {
         setProgress("Setting denyScript ...");
@@ -433,10 +437,19 @@ Description         : Sets External sharing to ExternalUserAndGuestSharing (Team
         <div className={styles.result_list}>
           <p>You will create a site without M365 group. Your site will have the following properties:</p>
           <h3>{domain}-{title}</h3>
-          <span>Url: https://msfintl.sharepoint.com/sites/{domain}-{title}</span>
-          <span>Sharing: {sharing}</span>
-          <span>Site design: {siteDesignTitle}</span>
-          <span>Associate with hub: {hubTitle}</span>
+          <div className={styles.result_list_details}>
+            <span>Url:</span>
+            <span>https://msfintl.sharepoint.com/sites/{domain}-{title}</span>
+
+            <span>Sharing:</span>
+            <span>{sharing}</span>
+
+            <span>Site design:</span>
+            <span>{siteDesignTitle === "" ? "—" : `${siteDesignTitle}`}</span>
+
+            <span>Associated with hub:</span>
+            <span>{hubTitle === "" ? "—" : `${hubTitle}`}</span>
+          </div>
         </div>
         <div className={styles.result_progress}>
           {progress === "Finished" ? 

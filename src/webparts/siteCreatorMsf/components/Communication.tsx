@@ -37,6 +37,7 @@ export default function Communication (props) {
   const [title,setTitle] = useState("")
   const [titleExist, setTitleExist] = useState(false)
   const addTitle = (e) => {
+    setProgress("Not run yet")
     setTitle(e.target.value)
     siteExistsChecker(e.target.value)
   }
@@ -209,17 +210,13 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Communic
       Owner: `${owners[0]}`,
       Title: `${domain}-${title}`,
       Url: `https://msfintl.sharepoint.com/sites/${domain}-${title}`,
-      WebTemplate: "SITEPAGEPUBLISHING#0"
-      
+      WebTemplate: "SITEPAGEPUBLISHING#0"    
     };
-
-    if (hub !== "") {
-      siteProps['hubSiteId'] = `${hub}`
-    }
 
     if (siteDesign !== "") {
       siteProps['siteDesignId']
     }
+
     setProgress("Creating Communication site ...");
   
     try {
@@ -257,6 +254,7 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Communic
       members.length !== 0 && await addSiteMembers(siteUrl)
       visitors.length !== 0 && await addSiteVisitors(siteUrl)
       siteDesign !== "" && designChecker ? await applyScript(siteUrl,siteDesign, 0) : null
+      hub !== "" && hubChecker ? await associateToHub(siteUrl) : null
       setProgress("Finished")
   }
 
@@ -330,7 +328,16 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Communic
         }
       }
 
-
+  async function associateToHub (siteUrl) {
+        setProgress("Associating with hub ...");
+          const newsp = spfi(siteUrl).using(SPFxsp(context))
+          try {
+            await newsp.site.joinHubSite(`${hub}`)
+            setProgress("Associated with the hub ...")
+          } catch (error) {
+            setError(`Error when associating to hub: ${error}`);
+          }
+    }
 
   const disabled = title === "" || titleExist || !hubChecker || !designChecker ? true : false
 
@@ -423,11 +430,20 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Communic
         <div className={styles.result_list}>
           <p>You will create a communication sote. Your site will have the following properties:</p>
           <h3>{domain}-{title}</h3>
-          <span>Url: https://msfintl.sharepoint.com/sites/{domain}-{title}</span>
-          <span>Sharing: {sharing}</span>
-          <span>SharingId: {sharingId}</span>
-          <span>Site design: {siteDesignTitle} {siteDesign !== "" && designChecker ? "RUN" : "DONT RUN"}</span>
-          <span>Associated with hub: {hubTitle}</span>
+          <div className={styles.result_list_details}>
+            <span>Url:</span>
+            <span>https://msfintl.sharepoint.com/sites/{domain}-{title}</span>
+
+            <span>Sharing:</span>
+            <span>{sharing}</span>
+
+            <span>Site design:</span>
+            <span>{siteDesignTitle === "" ? "—" : `${siteDesignTitle}`}</span>
+
+            <span>Associated with hub:</span>
+            <span>{hubTitle === "" ? "—" : `${hubTitle}`}</span>
+          </div>
+
         </div>
         <div className={styles.result_progress}>
           {

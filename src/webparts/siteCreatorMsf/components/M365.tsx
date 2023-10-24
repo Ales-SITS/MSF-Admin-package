@@ -505,11 +505,23 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Team Sit
         <div className={styles.result_list}>
           <p>You will create a site with M365 group, which includes planner, teams etc. Your site will have the following properties:</p>
           <h3>GRP-{domain}-{title}</h3>
-          <span>Url: https://msfintl.sharepoint.com/sites/GRP-{domain}-{title}</span>
-          <span>Privacy: {privacy}</span>
-          <span>Sharing: {sharing}</span>
-          <span>Site design: {siteDesignTitle}</span>
-          <span>Associate with hub: {hubTitle}</span>
+          <div className={styles.result_list_details}>
+            <span>Url:</span>
+            <span>https://msfintl.sharepoint.com/sites/{domain}-{title}</span>
+
+            <span>Privacy:</span>
+            <span>{privacy}</span>
+
+            <span>Sharing:</span>
+            <span>{sharing}</span>
+
+            <span>Site design:</span>
+            <span>{siteDesignTitle === "" ? "—" : `${siteDesignTitle}`}</span>
+
+            <span>Associated with hub:</span>
+            <span>{hubTitle === "" ? "—" : `${hubTitle}`}</span>
+          </div>
+
         </div>
         <div className={styles.result_progress}>
           {progress === "Finished" ? 

@@ -356,7 +356,7 @@ const copyOnClick = (e) => {
                         <a href={`${siteURL}/_layouts/15/siteanalytics.aspx?view=19`} title="Site Usage"><Icon iconName="LineChart"/></a>  
                         <a href={`${siteURL}/_layouts/15/storman.aspx`} title="Site Storage"><Icon iconName="OfflineStorage"/></a> 
                         <div className={styles.mainSiteBoxBottomLeft}>
-                            <a className={styles.buttonModern} href={`${siteURL}/_layouts/15/AdminRecycleBin.aspx`} title="Site Recycle Bin"><Icon iconName="RecycleBin"/></a>
+                            <a className={styles.buttonModern} href={`${siteURL}/_layouts/15/AdminRecycleBin.aspx?View=1`} title="Site Recycle Bin"><Icon iconName="RecycleBin"/></a>
                             <a className={styles.buttonClassic} href={`${siteURL}/_layouts/15/AdminRecycleBin.aspx?View=2`} title="2nd stage Site Recycle Bin"><Icon iconName="EmptyRecycleBin"/></a> 
                         </div>
                         <button onClick={pnpVisHandler} title="PnP Scripts App" className="PnPScriptButton"><Icon iconName="PasteAsCode"/></button>

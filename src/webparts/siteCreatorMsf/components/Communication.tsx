@@ -6,7 +6,6 @@ import {  PeoplePicker } from '@microsoft/mgt-react';
 //PNP SP
 import { spfi, SPFx as SPFxsp} from "@pnp/sp";
 import { Web } from "@pnp/sp/webs";  
-import { IHubSiteInfo } from  "@pnp/sp/hubsites";
 import "@pnp/sp/hubsites";
 import "@pnp/sp/sites";
 import "@pnp/sp/user-custom-actions";
@@ -19,6 +18,11 @@ import "@pnp/sp/features";
 //PNP GRAPH
 import { SPFx, graphfi } from "@pnp/graph";
 import "@pnp/graph/users";
+import "@pnp/graph/sites";
+import "@pnp/graph/content-types";
+
+//FLUENT
+import { Dropdown, IDropdownOption } from '@fluentui/react/lib/Dropdown';
 
 
 
@@ -36,12 +40,36 @@ export default function Communication (props) {
   const [error, setError] = useState ("")
   const [title,setTitle] = useState("")
   const [titleExist, setTitleExist] = useState(false)
-  const addTitle = (e) => {
-    setProgress("Not run yet")
-    setTitle(e.target.value)
-    siteExistsChecker(e.target.value)
-  }
 
+  //Content types
+  const ct = props.ct
+  const ct_options: IDropdownOption[] = [...ct]
+  const [selected_ct,setSelected_ct] = useState([])
+  const selectedHandler_ct = (event: React.FormEvent<HTMLDivElement>, item: IDropdownOption | undefined): void => {
+    if (item.selected) {
+      setSelected_ct([...selected_ct, {key: item.key, text: item.text}]);
+    } else {
+      setSelected_ct(selected_ct.filter(item => item.key !== item.key));
+    }
+  };
+
+
+  //Avaiable Hubsites
+  const hs = props.hs
+  const hs_options: IDropdownOption[] = [{key:null, text: "none"}, ...hs]
+  const [selected_hs,setSelected_hs] = useState({key: null, text: "none"})
+  const selectedHandler_hs = (event: React.FormEvent<HTMLDivElement>, item: IDropdownOption | undefined): void => {
+      setSelected_hs(item ? item : undefined);
+  };
+
+
+  //Avaiable Site designs
+  const sd = props.sd
+  const sd_options: IDropdownOption[] = [{key:null, text: "none"}, ...sd]
+  const [selected_sd,setSelected_sd] = useState({key: null, text: "none"})
+  const selectedHandler_sd = (event: React.FormEvent<HTMLDivElement>, item: IDropdownOption | undefined): void => {
+    setSelected_sd(item ? item : undefined);
+  };
 
   //Users states
   const[adminId,setAdminId] =useState([])
@@ -78,86 +106,8 @@ export default function Communication (props) {
     return admin
   }
 
-  //Hub states
-  const [hub,setHub] = useState("")
-  const [hubTitle,setHubTitle] = useState("None")
-  const [hubOwner, setHubOwner] = useState(false)
-  const [hubChecker,setHubChecker] = useState(false)
 
-  const addHub = (e) => {
-    setHub(e.target.value)
-  }
-  
-  //Hub checkers
-  useEffect(()=> {
-    if (hub === "") {
-      setHubChecker(true)
-      setHubTitle("None")
-    } else {
-    const hubcheck = hub.split("-")
-    hubcheck.length != 5 || 
-    hubcheck[0].length !=8 ||
-    hubcheck[1].length !=4 ||
-    hubcheck[2].length !=4 ||
-    hubcheck[3].length !=4 ||
-    hubcheck[4].length !=12 ? 
-    setHubChecker(false)  : setHubChecker(true)
-    }
-  },[hub])
-
-  useEffect(()=>{
-    hubChecker && hub === "" ? setHubTitle("None") :
-    hubChecker && hub !== "" ? getHub(hub) :
-    setHubTitle("None")
-  },[hubChecker,hub])
-
-  async function getHub (hubID) {
-    const hubsite: IHubSiteInfo = await sp.hubSites.getById(hubID)();
-    setHubTitle(hubsite.Title)
-    
-    hubsite.Targets.includes(`${context.pageContext.user.email.toLowerCase()}`) ? setHubOwner(true) : setHubOwner(false)
-  }
-
-  //Design states
-  const [siteDesign, setSiteDesign] = useState("")
-  const [siteDesignTitle, setSiteDesignTitle] = useState("None")
-  const [designChecker,setDesignChecker] = useState(false)
-
-  const addDesign = (e) => {
-    setDesignChecker(false)
-    setSiteDesign(e.target.value)
-  }
-
-  //Design checker
-  useEffect(()=> {
-    if (siteDesign === "") {
-      setDesignChecker(true)
-      setSiteDesignTitle("None") 
-    } else {
-    const designcheck = siteDesign.split("-")
-    designcheck.length != 5 || 
-    designcheck[0].length !=8 ||
-    designcheck[1].length !=4 ||
-    designcheck[2].length !=4 ||
-    designcheck[3].length !=4 ||
-    designcheck[4].length !=12 ? 
-    setDesignChecker(false)  : setDesignChecker(true)
-  }
-  },[siteDesign])
-
-  useEffect(()=>{
-    designChecker && siteDesign === "" ? setSiteDesignTitle("None") : 
-    designChecker && siteDesign !== "" ? getDesign(siteDesign) : 
-    setSiteDesignTitle("None")
-  },[designChecker, siteDesign])
-
-  async function getDesign (designID) {
-      const design = await sp.siteDesigns.getSiteDesignMetadata(designID)
-      setSiteDesignTitle(design.Title)
-      console.log("Design found")
-   }
-
-  //Sharing state
+ //Sharing state
   const [sharingId, setSharingId] = useState("1de7f8a5-b635-42a9-b8c0-32ae09e26765")
   const [sharing, setSharing] = useState("New and existing guest")
   const onSharingChange = e => {
@@ -171,38 +121,6 @@ export default function Communication (props) {
     setSharingId("8759e9ce-6309-4d33-b499-0c06dbc141a0")
   }
 
-
-
- //SCRIPTS
- /*
-Id                  : 8759e9ce-6309-4d33-b499-0c06dbc141a0 OK
-Title               :  External sharing Disabled (Communication Site)
-WebTemplate         : 68
-SiteScriptIds       : {721f126f-a657-4f38-8e44-4ddca33bb8be}
-Description         : Sets External sharing to Disabled (Communication Site)
-
-Id                  : 9251bc06-7392-4889-bf50-275a42d63699
-Title               :  External sharing ExistingExternalUserSharingOnly (Communication Site)
-WebTemplate         : 68
-SiteScriptIds       : {f5ce4b3c-7b29-44e5-9a8d-cdd8ad2db50b}
-Description         : Sets External sharing to ExistingExternalUserSharingOnly (Communication Site)
-
-Id                  : 1de7f8a5-b635-42a9-b8c0-32ae09e26765 
-Title               :  External sharing ExternalUserSharingOnly (Communication Site)
-WebTemplate         : 68
-SiteScriptIds       : {6563274d-f5fe-451d-a916-f91e488c86eb}
-Description         : Sets External sharing to ExternalUserSharingOnly (Communication Site)
-
-Id                  : 6ddcd576-4e03-449c-bdf6-fa555a460674 OK
-Title               :  External sharing ExternalUserAndGuestSharing (Communication Site)
-WebTemplate         : 68
-SiteScriptIds       : {3897ba25-22bd-40ad-9fb3-a2df5132c928}
-Description         : Sets External sharing to ExternalUserSharingOnly (Communication Site)
-
-*/ 
-
-
-
 //SITE CREATION
   const createSite = async (e) => {
     e.preventDefault()
@@ -212,10 +130,6 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Communic
       Url: `https://msfintl.sharepoint.com/sites/${domain}-${title}`,
       WebTemplate: "SITEPAGEPUBLISHING#0"    
     };
-
-    if (siteDesign !== "") {
-      siteProps['siteDesignId']
-    }
 
     setProgress("Creating Communication site ...");
   
@@ -249,13 +163,33 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Communic
       
       setProgress("Communication site created. Preparing other settings ...");
       await new Promise((resolve) => setTimeout(resolve, 10000));
+      
+    
+      if (selected_ct.length > 0) { 
+      await applyTaxonomy(siteUrl)
+      for (const ct of selected_ct) {
+        setProgress(`Adding ${ct.text} content type ...`)
+        await includeContentTypes(ct.key,siteUrl)
+      }  
+      } 
       await applyScript(siteUrl,sharingId, 1)
       owners.length !== 0 && await addSiteOwners(siteUrl)
       members.length !== 0 && await addSiteMembers(siteUrl)
       visitors.length !== 0 && await addSiteVisitors(siteUrl)
-      siteDesign !== "" && designChecker ? await applyScript(siteUrl,siteDesign, 0) : null
-      hub !== "" && hubChecker ? await associateToHub(siteUrl) : null
+      selected_sd.key !== null ? await applyScript(siteUrl,selected_sd.key, 0) : null
+      selected_hs.key !== null ? await associateToHub(siteUrl) : null
       setProgress("Finished")
+  }
+
+  const applyTaxonomy = async(siteUrl) => {
+    const newsp = spfi(siteUrl).using(SPFxsp(context))
+    try {
+      await newsp.site.features.add("73EF14B1-13A9-416b-A9B5-ECECA2B0604C")
+      setProgress("Adding taxonomy feature")
+    } catch (error) {
+      console.log(`Error when adding taxonomy feauture: ${error}`)
+    }
+
   }
 
   const applyScript = async(siteUrl,designId,type) => {
@@ -332,14 +266,33 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Communic
         setProgress("Associating with hub ...");
           const newsp = spfi(siteUrl).using(SPFxsp(context))
           try {
-            await newsp.site.joinHubSite(`${hub}`)
+            await newsp.site.joinHubSite(`${selected_hs.key}`)
             setProgress("Associated with the hub ...")
           } catch (error) {
             setError(`Error when associating to hub: ${error}`);
           }
     }
 
-  const disabled = title === "" || titleExist || !hubChecker || !designChecker ? true : false
+  async function includeContentTypes (id,siteURL) {
+    const urlObject = new URL(siteURL);
+    const host = urlObject.hostname
+    const path = urlObject.pathname
+    try {
+      await graph.sites.getByUrl(host, path).contentTypes.addCopyFromContentTypeHub(`${id}`);
+    } catch (error) {
+      setError(`Error when syncing content types: ${error}`);
+    } 
+ }
+
+  const disabled = title === "" || titleExist ? true : false
+
+  const addTitle = (e) => {
+    setProgress("Not run yet")
+    setError("")
+    setTitle(e.target.value)
+    siteExistsChecker(e.target.value)
+  }
+
 
   return (
     <div className={styles.site_wrapper}>
@@ -401,26 +354,31 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Communic
                 <label htmlFor="Only people in your organization">Only people in your organization</label>
               </span>
           </div>
-          <label htmlFor='siteScript'>Custom site design (design id) <a target="_blank" href="https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-overview">?</a></label>
-          <input id="siteScript" type="text" placeholder='00000000-0000-0000-0000-000000000000' onChange={addDesign}/>
-          <span className={styles.input_comment}>
-            { 
-            siteDesign === "" ? "No design applied - OK" :
-            designChecker ? 
-              `${siteDesignTitle} - OK` : 
-              "Wrong format or id"
-            }
-          </span>
-          <label htmlFor='hubId'>Associate with hub (site id)</label>
-          <input id="hubId" type="text" placeholder='00000000-0000-0000-0000-000000000000' onChange={addHub}/>
-          <span className={styles.input_comment}>
-            { 
-            hub === "" ? "Not associated to any hub - OK" :
-            hubChecker ? 
-              `${hubTitle} ${hubOwner ? "- OK" : "- Your account is not an owner of the hub or cannot associate sites to it!"}` : 
-              "Wrong format or id"
-            }
-          </span>
+          <Dropdown
+            placeholder="Select"
+            label="Select content type(s)"
+            //defaultSelectedKeys={[selected_ct]}
+            multiSelect
+            options={ct_options}
+            onChange={selectedHandler_ct}
+            //styles={dropdownStyles}
+          />
+          <Dropdown
+            placeholder="Select"
+            label="Select hub"
+            defaultSelectedKey={selected_hs.key}
+            options={hs_options}
+            onChange={selectedHandler_hs}
+            //styles={dropdownStyles}
+          />
+          <Dropdown
+            placeholder="Select"
+            label="Select site design"
+            defaultSelectedKey={selected_sd.key}
+            options={sd_options}
+            onChange={selectedHandler_sd}
+            //styles={dropdownStyles}
+          />
           <div className={styles.createSite_button_wrapper}>
             <input className={styles.createSite_button} type="submit" onClick={createSite} value="Create site" 
                    disabled = {disabled}/>
@@ -428,7 +386,7 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Communic
       </form>
       <div className={styles.result_wrapper}>
         <div className={styles.result_list}>
-          <p>You will create a communication sote. Your site will have the following properties:</p>
+          <p>You will create a communication site. Your site will have the following properties:</p>
           <h3>{domain}-{title}</h3>
           <div className={styles.result_list_details}>
             <span>Url:</span>
@@ -437,18 +395,22 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Communic
             <span>Sharing:</span>
             <span>{sharing}</span>
 
-            <span>Site design:</span>
-            <span>{siteDesignTitle === "" ? "—" : `${siteDesignTitle}`}</span>
-
             <span>Associated with hub:</span>
-            <span>{hubTitle === "" ? "—" : `${hubTitle}`}</span>
-          </div>
+            <span>{selected_hs.text}</span>
 
+            <span>Site design:</span>
+            <span>{selected_sd.text}</span> 
+
+            <span>Content types:</span>
+            <div className={styles.result_list_ct}>
+              {selected_ct.map(ct => <span>{ct.text}</span>)}
+            </div>
+          </div>
         </div>
         <div className={styles.result_progress}>
-          {
-          error !== "" ? <span>{error}</span> :
-          progress === "Finished" ? <a target="_blank" href={`https://msfintl.sharepoint.com/sites/${domain}-${title}`}>Finished - click to open</a> :
+          <span className={styles.error_message}>{error}</span> 
+          {progress === "Finished" ? 
+          <a target="_blank" href={`https://msfintl.sharepoint.com/sites/${domain}-${title}`}>Finished - click to open</a> :
           <span>{progress}</span>
           }
         </div>

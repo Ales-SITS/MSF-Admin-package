@@ -3,7 +3,6 @@ import {useState} from 'react';
 
 //STYLING
 import styles from './SiteOverviewMsf.module.scss';
-import substyles from './SubsiteComponent.module.scss';
 
 import { Icon } from '@fluentui/react/lib/Icon';
 

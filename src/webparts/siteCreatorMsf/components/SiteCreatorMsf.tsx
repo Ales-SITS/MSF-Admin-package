@@ -12,9 +12,17 @@ import { SPFx,graphfi } from "@pnp/graph";
 import "@pnp/graph/groups";
 import "@pnp/graph/members";
 
+import { SPFx as SPFxsp, spfi } from "@pnp/sp";
+import "@pnp/sp/site-designs";
+import { IHubSiteInfo } from  "@pnp/sp/hubsites";
+import "@pnp/sp/hubsites";
+
+
 export default function SiteCreatorMsf (props) {
 
   const graph = graphfi().using(SPFx(props.context))
+  const sp = spfi().using(SPFxsp(props.context))
+  const siteurl = props.context.pageContext.site.absoluteUrl
 
   const [selectedType,setSelectedType] = useState(1)
   const selectedTypeHandler = (type) => {
@@ -23,6 +31,9 @@ export default function SiteCreatorMsf (props) {
 
   const [isAdmin, setIsAdmin] = useState(false)
   const [loader,setLoader] = useState(true)
+  const [contenttypes,setContenttypes] = useState([])
+  const [sitedesigns,setSitedesigns] = useState([])
+  const [hubsites,setHubsites] = useState([])
 
   useEffect(()=>{
     getAdminGroup()
@@ -40,18 +51,58 @@ export default function SiteCreatorMsf (props) {
     setLoader(false)
   }
 
+
+  useEffect(()=>{
+    loadContentTypes()
+    loadSiteDesign()
+    loadHubs()
+  },[loader])
+ 
+  async function loadContentTypes() {
+    const urlObject = new URL(siteurl);
+    const host = urlObject.hostname
+    const path = urlObject.pathname
+    const hubSiteContentTypes = await graph.sites.getByUrl(host, path).contentTypes.getCompatibleHubContentTypes();
+    const cleanedCT = hubSiteContentTypes.map(({id:key, name:text})=>({
+      key,
+      text
+    }))
+    setContenttypes(cleanedCT)
+  }
+
+  async function loadSiteDesign(){
+    const allSiteDesigns = await sp.siteDesigns.getSiteDesigns();
+    const cleanedSD = allSiteDesigns.map(({ Id:key, Title:text, WebTemplate }) => ({
+      key,
+      text,
+      WebTemplate
+    }))
+
+    setSitedesigns(cleanedSD)
+  }
+
+  async function loadHubs() {
+    const hubsites = await sp.hubSites();
+    const cleanedhubs = hubsites.filter(hub => hub.Targets!==null).map(({ID:key, Title:text})=>({
+      key,
+      text  
+    }))
+    setHubsites(cleanedhubs)
+  }
+
+
   return (
     <div className={styles.app_wrapper}>
-      <h2>SITE Creator</h2>
+      <h2>Site Creator</h2>
       <div className={styles.app_navigation}>
         <button onClick={()=>selectedTypeHandler(1)} className={selectedType === 1 && styles.selected_site_type}>Teams site (M365)</button>
         <button onClick={()=>selectedTypeHandler(2)} className={selectedType === 2 && styles.selected_site_type}>Team site without M365</button>
         <button onClick={()=>selectedTypeHandler(3)} className={selectedType === 3 && styles.selected_site_type}>Communication site</button>
       </div>
       {!isAdmin ? <Declined context={props.context} loader={loader}/> :
-       selectedType === 1 ? <M365 context={props.context}/> :
-       selectedType === 2 ? <NonM365 context={props.context}/> : 
-       <Communication context={props.context}/>
+       selectedType === 1 ? <M365 context={props.context} ct={contenttypes}  hs={hubsites} sd={sitedesigns.filter((sd)=>sd.WebTemplate === "64")}/> :
+       selectedType === 2 ? <NonM365 context={props.context} ct={contenttypes}  hs={hubsites} sd={sitedesigns.filter((sd)=>sd.WebTemplate === "1")}/> : 
+       <Communication context={props.context} ct={contenttypes} hs={hubsites} sd={sitedesigns.filter((sd)=>sd.WebTemplate === "68")}/>
       }
     </div>
   )

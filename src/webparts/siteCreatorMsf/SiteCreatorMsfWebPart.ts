@@ -13,11 +13,7 @@ import { ISiteCreatorMsfProps } from './components/ISiteCreatorMsfProps';
 
 //Graph toolkit
 import { Providers } from '@microsoft/mgt-element/dist/es6/providers/Providers';
-import { customElementHelper } from '@microsoft/mgt-element/dist/es6/components/customElementHelper';
 import { SharePointProvider } from '@microsoft/mgt-sharepoint-provider/dist/es6/SharePointProvider';
-//import { lazyLoadComponent } from '@microsoft/mgt-spfx-utils';
-
-import { IDigestCache, DigestCache } from '@microsoft/sp-http';
 
 export interface ISiteCreatorMsfWebPartProps {
   description: string;

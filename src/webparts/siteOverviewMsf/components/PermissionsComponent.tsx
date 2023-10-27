@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {useState, useEffect} from 'react';
 
-import styles from './SiteOverviewMsf.module.scss';
+//import styles from './SiteOverviewMsf.module.scss';
 import '../CSS/styles.css';
 
 import perstyles from './PermissionsComponent.module.scss';
@@ -9,7 +9,7 @@ import perstyles from './PermissionsComponent.module.scss';
 import { spfi, SPFx as SPFxsp} from "@pnp/sp";
 
 //VISUAL
-import { Resizable,ResizableBox } from 'react-resizable';
+//import { Resizable,ResizableBox } from 'react-resizable';
 
 //PNP/SP
 import { Web } from "@pnp/sp/webs";   

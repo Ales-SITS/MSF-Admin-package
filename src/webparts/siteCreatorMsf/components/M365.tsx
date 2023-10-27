@@ -9,7 +9,6 @@ import { MSGraphClientV3  } from "@microsoft/sp-http";
 //PNP SP
 import { spfi, SPFx as SPFxsp} from "@pnp/sp";
 import { Web } from "@pnp/sp/webs";  
-import { IHubSiteInfo } from  "@pnp/sp/hubsites";
 import "@pnp/sp/hubsites";
 import "@pnp/sp/sites";
 import "@pnp/sp/user-custom-actions";
@@ -24,6 +23,8 @@ import "@pnp/sp/features";
 import { SPFx, graphfi } from "@pnp/graph";
 import "@pnp/graph/users";
 
+//FLUENT
+import { Dropdown, IDropdownOption } from '@fluentui/react/lib/Dropdown';
 
 export default function M365 (props) {
 
@@ -43,9 +44,43 @@ export default function M365 (props) {
   const [title,setTitle] = useState("")
   const [titleExist, setTitleExist] = useState(false)
   const addTitle = (e) => {
+    setProgress("Not run yet")
+    setError("")
     setTitle(e.target.value)
     siteExistsChecker(e.target.value)
   }
+
+//Content types
+const ct = props.ct
+const ct_options: IDropdownOption[] = [...ct]
+const [selected_ct,setSelected_ct] = useState([])
+const selectedHandler_ct = (event: React.FormEvent<HTMLDivElement>, item: IDropdownOption | undefined): void => {
+  console.log(item)
+  if (item.selected) {
+    setSelected_ct([...selected_ct, {key: item.key, text: item.text}]);
+  } else {
+    setSelected_ct(selected_ct.filter(item => item.key !== item.key));
+  }
+};
+
+//Avaiable Hubsites
+const hs = props.hs
+const hs_options: IDropdownOption[] = [{key:null, text: "none"}, ...hs]
+const [selected_hs,setSelected_hs] = useState({key: null, text: "none"})
+const selectedHandler_hs = (event: React.FormEvent<HTMLDivElement>, item: IDropdownOption | undefined): void => {
+    setSelected_hs(item ? item : undefined);
+};
+
+
+//Avaiable Site designs
+const sd = props.sd
+const sd_options: IDropdownOption[] = [{key:null, text: "none"}, ...sd]
+const [selected_sd,setSelected_sd] = useState({key: null, text: "none"})
+const selectedHandler_sd = (event: React.FormEvent<HTMLDivElement>, item: IDropdownOption | undefined): void => {
+  setSelected_sd(item ? item : undefined);
+};
+
+
 
 
   //Users states
@@ -90,79 +125,7 @@ export default function M365 (props) {
   })
   },
   [])
-
-  //Hub states
-  const [hub,setHub] = useState("")
-  const [hubTitle,setHubTitle] = useState("")
-  const [hubOwner, setHubOwner] = useState(false)
-  const [hubChecker,setHubChecker] = useState(false)
-
-  const addHub = (e) => {
-    setHub(e.target.value)
-  }
-  
-  //Hub checkers
-  useEffect(()=> {
-    if (hub === "") {
-      setHubChecker(true)
-    } else {
-    const hubcheck = hub.split("-")
-    hubcheck.length != 5 || 
-    hubcheck[0].length !=8 ||
-    hubcheck[1].length !=4 ||
-    hubcheck[2].length !=4 ||
-    hubcheck[3].length !=4 ||
-    hubcheck[4].length !=12 ? 
-    setHubChecker(false)  : setHubChecker(true)
-    }
-  },[hub])
-
-  useEffect(()=>{
-    hubChecker && getHub(hub)
-  },[hubChecker,hub])
-
-  async function getHub (hubID) {
-    const hubsite: IHubSiteInfo = await sp.hubSites.getById(hubID)();
-    setHubTitle(hubsite.Title)
-    
-    hubsite.Targets.includes(`${context.pageContext.user.email.toLowerCase()}`) ? setHubOwner(true) : setHubOwner(false)
-  }
-
-  //Design states
-  const [siteDesign, setSiteDesign] = useState("")
-  const [siteDesignTitle, setSiteDesignTitle] = useState("")
-  const [designChecker,setDesignChecker] = useState(false)
-
-  const addDesign = (e) => {
-    setDesignChecker(false)
-    setSiteDesign(e.target.value)
-  }
-
-  //Design checker
-  useEffect(()=> {
-    if (siteDesign === "") {
-      setDesignChecker(true)
-    } else {
-    const designcheck = siteDesign.split("-")
-    designcheck.length != 5 || 
-    designcheck[0].length !=8 ||
-    designcheck[1].length !=4 ||
-    designcheck[2].length !=4 ||
-    designcheck[3].length !=4 ||
-    designcheck[4].length !=12 ? 
-    setDesignChecker(false)  : setDesignChecker(true)
-  }
-  },[siteDesign])
-
-  useEffect(()=>{
-    designChecker && siteDesign === "" ? null : designChecker && siteDesign !== "" ? getDesign(siteDesign) : null
-  },[designChecker, siteDesign])
-
-  async function getDesign (designID) {
-       const design = await sp.siteDesigns.getSiteDesignMetadata(designID)
-      setSiteDesignTitle(design.Title)
-      console.log("Design found")
-   }
+ 
 
   //Privacy state
   const [privacy, setPrivacy] = useState("Private")
@@ -172,45 +135,18 @@ export default function M365 (props) {
   }
 
   //Sharing state
-  const [sharingId, setSharingId] = useState("123ac0ed-b076-4507-82e4-de444923a4b5")
+  const [sharingId, setSharingId] = useState("6bf7f2ba-2f3f-4449-9c7d-596f22e9cb83")
   const [sharing, setSharing] = useState("New and existing guest")
   const onSharingChange = e => {
     setSharing(e.target.value)
     e.target.value === "Anyone" ?
     setSharingId("004bbf35-ed4a-45e6-9199-cc9881aeba64") :
     e.target.value === "New and existing guest" ?
-    setSharingId("123ac0ed-b076-4507-82e4-de444923a4b5") :
+    setSharingId("6bf7f2ba-2f3f-4449-9c7d-596f22e9cb83") :
     e.target.value === "Existing guest only" ?
     setSharingId("513beb79-9027-4297-a38d-db7cbfb83b07") :
     setSharingId("3b0ffe11-9840-4561-96a9-c6c417976db9")
   }
-
-// SCRIPT
-/*
-Id                  : 3b0ffe11-9840-4561-96a9-c6c417976db9 OK
-Title               :  External sharing Disabled (Team Site)
-WebTemplate         : 64
-SiteScriptIds       : {721f126f-a657-4f38-8e44-4ddca33bb8be}
-Description         : Sets External sharing to Disabled (Team Site)
-
-Id                  : 6bf7f2ba-2f3f-4449-9c7d-596f22e9cb83
-Title               :  External sharing ExistingExternalUserSharingOnly (Team Site)
-WebTemplate         : 64
-SiteScriptIds       : {f5ce4b3c-7b29-44e5-9a8d-cdd8ad2db50b}
-Description         : Sets External sharing to ExistingExternalUserSharingOnly (Team Site)
-
-Id                  : 513beb79-9027-4297-a38d-db7cbfb83b07 OK
-Title               :  External sharing ExternalUserSharingOnly (Team Site)
-WebTemplate         : 64
-SiteScriptIds       : {6563274d-f5fe-451d-a916-f91e488c86eb}
-Description         : Sets External sharing to ExternalUserSharingOnly (Team Site)
-
-Id                  : 004bbf35-ed4a-45e6-9199-cc9881aeba64 OK
-Title               :  External sharing ExternalUserAndGuestSharing (Team Site)
-WebTemplate         : 64
-SiteScriptIds       : {3897ba25-22bd-40ad-9fb3-a2df5132c928}
-Description         : Sets External sharing to ExternalUserSharingOnly (Team Site)
-*/
 
 //SITE CREATION
   const createSite = (e) => {
@@ -271,48 +207,53 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Team Sit
       
       setProgress("Team site (M365) created. Preparing other settings ...");
       await new Promise((resolve) => setTimeout(resolve, 10000));
+      if (selected_ct.length > 0) { 
+        await applyTaxonomy(siteUrl)
+        for (const ct of selected_ct) {
+          setProgress(`Adding ${ct.text} content type ...`)
+          await includeContentTypes(ct.key,siteUrl)
+        }  
+        } 
 
-      await applySharing(siteUrl);
-      hub !== "" && hubChecker ? await associateToHub(siteUrl) : null
-      siteDesign === "" ? setProgress("Team site created") :
-      designChecker ? await applyScript(siteUrl) : null
+      await applyScript(siteUrl,sharingId, 1);
       siteOwners.length !== 0 && await addSiteOwnersCall(siteUrl)
       siteMembers.length !== 0 && await addSiteMembersCall(siteUrl)
       siteVisitors.length !== 0 && await addSiteVisitorsCall(siteUrl)
+      selected_sd.key !== null ? await applyScript(siteUrl,selected_sd.key, 0) : null
+      selected_hs.key !== null ? await associateToHub(siteUrl) : null
       setProgress("Finished")
   }
 
-  async function applySharing(siteUrl) {
-    setProgress("Applying sharing settings ...");
+  const applyTaxonomy = async(siteUrl) => {
+    const newsp = spfi(siteUrl).using(SPFxsp(context))
     try {
-        await sp.siteDesigns.applySiteDesign(
-          `${sharingId}`,
+      await newsp.site.features.add("73EF14B1-13A9-416b-A9B5-ECECA2B0604C")
+      setProgress("Adding taxonomy feature")
+    } catch (error) {
+      console.log(`Error when adding taxonomy feauture: ${error}`)
+    }
+
+  }
+
+  const applyScript = async(siteUrl,designId,type) => {
+    type === 1 ? setProgress("Applying external sharing settings ...") : setProgress("Applying site design ...")
+    const newsp = spfi(siteUrl).using(SPFxsp(context))
+    try {
+        await newsp.siteDesigns.applySiteDesign(
+          `${designId}`,
           `${siteUrl}`
         );
-        setProgress("Other settings and scripts applied")
+        type === 1 ? setProgress("External sharing set ...") : setProgress("Site design applied ...")
       } catch (error) {
-        setError(`Error when applying sharing settings: ${error}`);
+        type === 1 ? setError(`Error when setting External sharing: ${error}`) : setError(`Error when applying site design: ${error}`)
       }
-  } 
-
-  async function applyScript(siteUrl) {
-        setProgress("Applying site design ...");
-        try {
-            await sp.siteDesigns.applySiteDesign(
-              `${siteDesign}`,
-              `${siteUrl}`
-            );
-            setProgress("Other settings and scripts applied")
-          } catch (error) {
-            setError(`Error when applying site design: ${error}`);
-          }
-  } 
+} 
 
   async function associateToHub (siteUrl) {
       setProgress("Associating with hub ...");
         const newsp = spfi(siteUrl).using(SPFxsp(context))
         try {
-          await newsp.site.joinHubSite(`${hub}`)
+          await newsp.site.joinHubSite(`${selected_hs.key}`)
           setProgress("Finished")
         } catch (error) {
           setError(`Error when associating to hub: ${error}`);
@@ -372,6 +313,7 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Team Sit
     })
     setProgress("Site visitors added ....")
   }
+
       const addSitevisitor = async(user, site) =>{
         try {    
           const usersVisitors = await site.associatedVisitorGroup.users
@@ -381,14 +323,23 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Team Sit
         }
       }
 
+    async function includeContentTypes (id,siteURL) {
+        const urlObject = new URL(siteURL);
+        const host = urlObject.hostname
+        const path = urlObject.pathname
+        try {
+          await graph.sites.getByUrl(host, path).contentTypes.addCopyFromContentTypeHub(`${id}`);
+        } catch (error) {
+          setError(`Error when syncing content types: ${error}`);
+        } 
+    }
 
-
-  const disabled = title === "" || titleExist || !hubChecker || !designChecker ? true : false
+  const disabled = title === "" || titleExist ? true : false
 
   return (
     <div className={styles.site_wrapper}>
       <form className={styles.form_wrapper} onSubmit={createSite}>
-          <label htmlFor='siteTitle'>Site name</label>
+          <label htmlFor='siteTitle' className={styles.group_header}>Site name</label>
           <input id="siteTitle" type="text" onChange={addTitle}/>
           <span className={styles.input_comment}>{title === "" ? "Type a site title" : titleExist ? `NG, GRP-${domain}-${title} already exists` : "OK"}</span>
           <span className={styles.group_header}>M365 Group users</span>
@@ -404,8 +355,9 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Team Sit
           <PeoplePicker selectionMode="multiple" selectionChanged={addSiteMembers}/>
           <span>Site Visitors</span>
           <PeoplePicker selectionMode="multiple" selectionChanged={addSiteVisitors}/>
-          <div className={styles.selection_box}>
-            <h4>Privacy</h4>
+          <div className={styles.selection_box_wrapper}>
+            <div className={styles.selection_box}>
+            <span className={styles.group_header}>Privacy</span>
             <span>
                 <input
                     type="radio"
@@ -428,83 +380,89 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Team Sit
                 />
                 <label htmlFor="Public">Public</label>
             </span>
+            </div>
+            <div className={styles.selection_box}>
+              <span className={styles.group_header}>External sharing <a target="_blank" rel="noreferrer" href="https://learn.microsoft.com/en-US/sharepoint/change-external-sharing-site?WT.mc_id=365AdminCSH_inproduct#which-option-to-select">?</a></span>
+                <span>
+                  <input
+                    type="radio"
+                    name="sharing"
+                    value= "Anyone"
+                    id="Anyone"
+                    checked={sharing === "Anyone"}
+                    onChange={onSharingChange}
+                  />
+                  <label htmlFor="Anyone">Anyone</label>
+                </span>
+                <span>
+                  <input
+                      type="radio"
+                      name="sharing"
+                      value= "New and existing guest"
+                      id="New and existing guest"
+                      checked={sharing === "New and existing guest"}
+                      onChange={onSharingChange}
+                  />
+                  <label htmlFor="New and existing guest">New and existing guest</label>
+                </span>
+                <span>
+                  <input
+                      type="radio"
+                      name="sharing"
+                      value= "Existing guest only"
+                      id="Existing guest only"
+                      checked={sharing === "Existing guest only"}
+                      onChange={onSharingChange}
+                  />
+                  <label htmlFor="Existing guest only">Existing guest only</label>
+                </span>
+                <span>
+                  <input
+                      type="radio"
+                      name="sharing"
+                      value= "Only people in your organization"
+                      id="Only people in your organization"
+                      checked={sharing === "Only people in your organization"}
+                      onChange={onSharingChange}
+                  />
+                  <label htmlFor="Only people in your organization">Only people in your organization</label>
+                </span>
+            </div>
           </div>
-          <div className={styles.selection_box}>
-            <h4>External sharing <a target="_blank" href="https://learn.microsoft.com/en-US/sharepoint/change-external-sharing-site?WT.mc_id=365AdminCSH_inproduct#which-option-to-select">?</a></h4>
-              <span>
-                <input
-                  type="radio"
-                  name="sharing"
-                  value= "Anyone"
-                  id="Anyone"
-                  checked={sharing === "Anyone"}
-                  onChange={onSharingChange}
-                />
-                <label htmlFor="Anyone">Anyone</label>
-              </span>
-              <span>
-                <input
-                    type="radio"
-                    name="sharing"
-                    value= "New and existing guest"
-                    id="New and existing guest"
-                    checked={sharing === "New and existing guest"}
-                    onChange={onSharingChange}
-                />
-                <label htmlFor="New and existing guest">New and existing guest</label>
-              </span>
-              <span>
-                <input
-                    type="radio"
-                    name="sharing"
-                    value= "Existing guest only"
-                    id="Existing guest only"
-                    checked={sharing === "Existing guest only"}
-                    onChange={onSharingChange}
-                />
-                <label htmlFor="Existing guest only">Existing guest only</label>
-              </span>
-              <span>
-                <input
-                    type="radio"
-                    name="sharing"
-                    value= "Only people in your organization"
-                    id="Only people in your organization"
-                    checked={sharing === "Only people in your organization"}
-                    onChange={onSharingChange}
-                />
-                <label htmlFor="Only people in your organization">Only people in your organization</label>
-              </span>
-          </div>
-          <label htmlFor='siteScript'>Custom site design (design id) <a target="_blank" href="https://learn.microsoft.com/en-us/sharepoint/dev/declarative-customization/site-design-overview">?</a></label>
-          <input id="siteScript" type="text" placeholder='00000000-0000-0000-0000-000000000000' onChange={addDesign}/>
-          <span className={styles.input_comment}>
-            { 
-            siteDesign === "" ? "No design applied - OK" :
-            designChecker ? 
-              `${siteDesignTitle} - OK` : 
-              "Wrong format or id"
-            }
-          </span>
-          <label htmlFor='hubId'>Associate with hub (site id)</label>
-          <input id="hubId" type="text" placeholder='00000000-0000-0000-0000-000000000000' onChange={addHub}/>
-          <span className={styles.input_comment}>
-            { 
-            hub === "" ? "Not associated to any hub - OK" :
-            hubChecker ? 
-              `${hubTitle} ${hubOwner ? "- OK" : "- Your account is not an owner of the hub or cannot associate sites to it!"}` : 
-              "Wrong format or id"
-            }
-          </span>
+          <Dropdown
+            placeholder="Select"
+            label="Select hub"
+            defaultSelectedKey={selected_hs.key}
+            options={hs_options}
+            onChange={selectedHandler_hs}
+            //styles={dropdownStyles}
+          />
+          <Dropdown
+            placeholder="Select"
+            label="Select site design"
+            defaultSelectedKey={selected_sd.key}
+            options={sd_options}
+            onChange={selectedHandler_sd}
+            //styles={dropdownStyles}
+          />
+          <Dropdown
+            placeholder="Select"
+            label="Select content type(s)"
+            //defaultSelectedKeys={[selected_ct]}
+            multiSelect
+            options={ct_options}
+            onChange={selectedHandler_ct}
+            //styles={dropdownStyles}
+          />
           <div className={styles.createSite_button_wrapper}>
             <input className={styles.createSite_button} type="submit" onClick={createSite} value="Create site" 
                    disabled = {disabled}/>
           </div>
       </form>
       <div className={styles.result_wrapper}>
-        <div className={styles.result_list}>
-          <p>You will create a site with M365 group, which includes planner, teams etc. Your site will have the following properties:</p>
-          <h3>GRP-{domain}-{title}</h3>
+      <div className={styles.result_list}>
+          <p>You will create a team site with M365 group. Your site will have the following properties:</p>
+          <h3>{domain}-{title}</h3>
           <div className={styles.result_list_details}>
             <span>Url:</span>
             <span>https://msfintl.sharepoint.com/sites/{domain}-{title}</span>
@@ -515,20 +473,25 @@ Description         : Sets External sharing to ExternalUserSharingOnly (Team Sit
             <span>Sharing:</span>
             <span>{sharing}</span>
 
-            <span>Site design:</span>
-            <span>{siteDesignTitle === "" ? "—" : `${siteDesignTitle}`}</span>
-
             <span>Associated with hub:</span>
-            <span>{hubTitle === "" ? "—" : `${hubTitle}`}</span>
-          </div>
+            <span>{selected_hs.text}</span>
 
+            <span>Site design:</span>
+            <span>{selected_sd.text}</span> 
+
+            <span>Content types:</span>
+            <div className={styles.result_list_ct}>
+              {selected_ct.map(ct => <span>{ct.text}</span>)}
+            </div>
+          </div>
         </div>
         <div className={styles.result_progress}>
+          <span className={styles.error_message}>{error}</span> 
           {progress === "Finished" ? 
           <a target="_blank" href={`https://msfintl.sharepoint.com/sites/GRP-${domain}-${title}`}>Finished - click to open</a> :
           <span>{progress}</span>
           }
-          {error}      
+
         </div>
       </div>
     </div>

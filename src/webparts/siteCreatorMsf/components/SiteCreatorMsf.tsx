@@ -14,7 +14,6 @@ import "@pnp/graph/members";
 
 import { SPFx as SPFxsp, spfi } from "@pnp/sp";
 import "@pnp/sp/site-designs";
-import { IHubSiteInfo } from  "@pnp/sp/hubsites";
 import "@pnp/sp/hubsites";
 
 
@@ -23,6 +22,82 @@ export default function SiteCreatorMsf (props) {
   const graph = graphfi().using(SPFx(props.context))
   const sp = spfi().using(SPFxsp(props.context))
   const siteurl = props.context.pageContext.site.absoluteUrl
+
+  const domains = {
+    "aerzte-ohne-grenzen.at":"VIE",
+    "amman.msf.org":"UNCLEAR",
+    "amsterdam.msf.org":"OCA",
+    "athens.msf.org":"ATH",
+    "azg.be":"OCB",
+    "barcelona.msf.org":"OCBA",
+    "berlin.msf.org":"BER",
+    "bi.msf.org":"Shared",
+    "beijing.msg.org":"HKG",
+    "bogota.msf.org":"OCBA",
+    "bordeaux.msf.org":"BDX",
+    "brussels.msf.org":"OCB",
+    "buenosaires.msf.org":"OCBA",
+    "copenhagen.msf.org":"CPH",
+    "dubai.msf.org":"OCP",
+    "dublin.msf.org":"LDN",
+    "epicentre.msf.org":"EPI",
+    "geneva.msf.org":"OCG",
+    "zurich.msg.org":"OCG",
+    "helsinki.msf.org":"HEL",
+    "hongkong.msf.org":"HKG",
+    "china.msf.org":"HKG",
+    "istanbul.msf.org":"OCBA",
+    "joburg.msf.org":"JNB",
+    "lakareutangranser.se":"STO",
+    "legerutengrenser.no":"OSL",
+    "legerutengrenser.teams.telia.no":"OSL",
+    "london.msf.org":"LDN",
+    "luxembourg.msf.org":"LUX",
+    "madrid.msf.org":"OCBA",
+    "mail.msf.org":"Shared",
+    "manila.msf.org":"HKG",
+    "mexico.msf.org":"OCG",
+    "migration.msf.org":"TOR",
+    "mmsui.in":"OCB",
+    "montevideo.msf.org":"OCBA",
+    "moscow.msf.org":"BER",
+    "msf.be":"OCB",
+    "msf.ca":"TOR",
+    "msf.dk":"CPH",
+    "msf.global":"Shared",
+    "msf.no":"OSL",
+    "msf.org":"Shared",
+    "msfintl.onmicrosoft.com":"Shared",
+    "nairobi.msf.org":"OCBA",
+    "new-delhi.msf.org":"OCA",
+    "newyork.msf.org":"NYC",
+    "nz.msf.org":"SYD",
+    "oca.msf.org":"OCA",
+    "oslo.msf.org":"OSL",
+    "paris.msf.org":"OCP",
+    "philippines.msf.org":"HKG",
+    "prague.msf.org":"PRG",
+    "rio.msf.org":"RIO",
+    "rome.msf.org":"ROM",
+    "seasia.msf.org":"HKG",
+    "seeap.msf.org":"HKG",
+    "seoul.msf.org":"SEL",
+    "singapore.msf.org":"HKG",
+    "sits.msf.org":"SITS",
+    "somalia.msf.org":"OCA",
+    "somaliland.msf.org":"OCA",
+    "stockholm.msf.org":"STO",
+    "sydney.msf.org":"SYD",
+    "taipei.msf.org1":"TPE",
+    "taiwan.msf.org":"TPE",
+    "tokyo.msf.org":"TYO",
+    "toronto.msf.org":"TOR",
+    "tunis.msf.org":"UNCLEAR",
+    "vienna.msf.org":"VIE",
+    "waca.msf.org":"WaCA"
+  }
+
+  const domain = `${domains[`${props.context.pageContext.user.email?.split("@")[1].toLowerCase()}`]}`
 
   const [selectedType,setSelectedType] = useState(1)
   const selectedTypeHandler = (type) => {
@@ -40,7 +115,6 @@ export default function SiteCreatorMsf (props) {
   },[])
 
   const getAdminGroup = async() => {
-    const admin = await graph.me();
     const admingroups = await graph.me.memberOf();
     const allowgroup = await graph.groups.getById("d35fc400-84f4-40c1-956f-c0532a976d1f").members();
     for (const grpA of admingroups) {
@@ -50,7 +124,6 @@ export default function SiteCreatorMsf (props) {
     }
     setLoader(false)
   }
-
 
   useEffect(()=>{
     loadContentTypes()
@@ -100,9 +173,29 @@ export default function SiteCreatorMsf (props) {
         <button onClick={()=>selectedTypeHandler(3)} className={selectedType === 3 && styles.selected_site_type}>Communication site</button>
       </div>
       {!isAdmin ? <Declined context={props.context} loader={loader}/> :
-       selectedType === 1 ? <M365 context={props.context} ct={contenttypes}  hs={hubsites} sd={sitedesigns.filter((sd)=>sd.WebTemplate === "64")}/> :
-       selectedType === 2 ? <NonM365 context={props.context} ct={contenttypes}  hs={hubsites} sd={sitedesigns.filter((sd)=>sd.WebTemplate === "1")}/> : 
-       <Communication context={props.context} ct={contenttypes} hs={hubsites} sd={sitedesigns.filter((sd)=>sd.WebTemplate === "68")}/>
+       selectedType === 1 ?
+        <M365 
+        context={props.context} 
+        ct={contenttypes}  
+        hs={hubsites} 
+        sd={sitedesigns.filter((sd)=>sd.WebTemplate === "64")}
+        domain={domain}
+        /> :
+       selectedType === 2 ?
+       <NonM365 
+       context={props.context} 
+       ct={contenttypes}  
+       hs={hubsites} 
+       sd={sitedesigns.filter((sd)=>sd.WebTemplate === "1")}
+       domain={domain}
+       /> : 
+       <Communication 
+       context={props.context} 
+       ct={contenttypes} 
+       hs={hubsites} 
+       sd={sitedesigns.filter((sd)=>sd.WebTemplate === "68")}
+       domain={domain}
+       />
       }
     </div>
   )

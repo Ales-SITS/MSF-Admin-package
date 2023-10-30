@@ -26,6 +26,9 @@ import "@pnp/graph/users";
 //FLUENT
 import { Dropdown, IDropdownOption } from '@fluentui/react/lib/Dropdown';
 
+//Component
+import Loader from './Loader'
+
 export default function M365 (props) {
 
   //API
@@ -34,20 +37,34 @@ export default function M365 (props) {
   const graph = graphfi().using(SPFx(context))
 
   //General
-  const domainList = {
-    sits : "SITS"
-  }
-  const domain = domainList[`${context.pageContext.user.email?.split("@")[1]?.split(".")[0].toLowerCase()}`]
+  const domain = props.domain
 
   const [progress, setProgress] = useState("Not run yet")
   const [error, setError] = useState ("")
-  const [title,setTitle] = useState("")
+  const [title,setTitle] = useState(`GRP-${domain}-`)
   const [titleExist, setTitleExist] = useState(false)
+  const [namingconventions,setNamingconventions] = useState(true)
+  const [userdomain,setUserdomain] = useState(true)
+
   const addTitle = (e) => {
     setProgress("Not run yet")
     setError("")
-    setTitle(e.target.value)
-    siteExistsChecker(e.target.value)
+    const title = e.target.value.replaceAll(" ","_")
+    if (title.match(/^GRP-.*/)) {
+      setTitle(title);
+    }
+    if (!title.match(/^GRP-.+-.*$/)){
+      setNamingconventions(false)
+    } else {setNamingconventions(true)}
+
+    if (!title.startsWith(`GRP-${domain}`)){
+      setUserdomain(false)
+    } else {
+      setUserdomain(true)
+    }
+
+    //setTitle(title)
+    siteExistsChecker(title)
   }
 
 //Content types
@@ -80,9 +97,6 @@ const selectedHandler_sd = (event: React.FormEvent<HTMLDivElement>, item: IDropd
   setSelected_sd(item ? item : undefined);
 };
 
-
-
-
   //Users states
   const[adminId,setAdminId] =useState([])
   const [owners,setOwners] = useState([])
@@ -90,7 +104,6 @@ const selectedHandler_sd = (event: React.FormEvent<HTMLDivElement>, item: IDropd
   const [siteOwners,setSiteOwners] = useState([])
   const [siteMembers,setSiteMembers] = useState([])
   const [siteVisitors,setSiteVisitors] = useState([])
-
 
   const addOwners = (e) => {
     const ownersMails = e.detail.map(owner => `https://graph.microsoft.com/v1.0/users/${owner.id}`)
@@ -117,7 +130,6 @@ const selectedHandler_sd = (event: React.FormEvent<HTMLDivElement>, item: IDropd
     setSiteVisitors(visitors)
   }
 
-
   //Admin check
   useEffect(()=>{
     getAdmin().then(result => {
@@ -125,7 +137,6 @@ const selectedHandler_sd = (event: React.FormEvent<HTMLDivElement>, item: IDropd
   })
   },
   [])
- 
 
   //Privacy state
   const [privacy, setPrivacy] = useState("Private")
@@ -153,12 +164,12 @@ const selectedHandler_sd = (event: React.FormEvent<HTMLDivElement>, item: IDropd
     e.preventDefault()
      const group = {
       description: 'For API testing purposes',
-      displayName: `GRP-${domain}-${title}`,
+      displayName: `${title}`,
       groupTypes: ['Unified'],
       mailEnabled: true,
       securityEnabled: false,
       visibility: `${privacy}`,
-      mailNickname: `GRP-${domain}-${title}`
+      mailNickname: `${title}`
     };
 
     if (members.length > 0) {
@@ -178,7 +189,7 @@ const selectedHandler_sd = (event: React.FormEvent<HTMLDivElement>, item: IDropd
         client.api('/groups')
 	      .post(group) 
         .then(() => { 
-          siteExists(`https://msfintl.sharepoint.com/sites/GRP-${domain}-${title}`)      
+          siteExists(`https://msfintl.sharepoint.com/sites/${title}`)      
         })
       .catch((error: any) => {
           setError(`Error when creating site: ${error}`);
@@ -188,7 +199,7 @@ const selectedHandler_sd = (event: React.FormEvent<HTMLDivElement>, item: IDropd
 
   const siteExistsChecker = async(titlecheck) => {
       try {
-        const exists = await sp.site.exists(`https://msfintl.sharepoint.com/sites/GRP-${domain}-${titlecheck}`)
+        const exists = await sp.site.exists(`https://msfintl.sharepoint.com/sites/${titlecheck}`)
         setTitleExist(exists)
       } catch (error) {
         console.error('Site exists:', error);
@@ -334,14 +345,27 @@ const selectedHandler_sd = (event: React.FormEvent<HTMLDivElement>, item: IDropd
         } 
     }
 
-  const disabled = title === "" || titleExist ? true : false
+  const disabled = title === "" || titleExist || namingconventions === false ? true : false
 
   return (
     <div className={styles.site_wrapper}>
       <form className={styles.form_wrapper} onSubmit={createSite}>
-          <label htmlFor='siteTitle' className={styles.group_header}>Site name</label>
-          <input id="siteTitle" type="text" onChange={addTitle}/>
-          <span className={styles.input_comment}>{title === "" ? "Type a site title" : titleExist ? `NG, GRP-${domain}-${title} already exists` : "OK"}</span>
+          <label htmlFor='siteTitle' className={styles.group_header}>Site name <span className={styles.input_hint}>{`(GRP-DOMAIN-Purpose)`}</span></label>
+          <input 
+            id="siteTitle" 
+            type="text" 
+            value={`${title}`} 
+            pattern="GRP-.*" 
+            onChange={addTitle}
+          />
+          <span className={styles.input_comment}>
+            {
+             title === `GRP-${domain}-` ? `Type a site title in the "GRP-DOMAIN-Purpose" format` : 
+             titleExist ? `NG, ${title} already exists` : 
+             !namingconventions ? `NG, please follow the "GRP-DOMAIN-Purpose" naming convention!` :            
+             "OK"}</span>
+          <span className={styles.input_comment}>{userdomain? null : "⚠ Site domain part doesn't match your account domain!"}</span>
+
           <span className={styles.group_header}>M365 Group users</span>
           <span>M365 group Owners</span>
           <PeoplePicker defaultSelectedUserIds={adminId} selectionMode="multiple" selectionChanged={addOwners}/>
@@ -357,7 +381,7 @@ const selectedHandler_sd = (event: React.FormEvent<HTMLDivElement>, item: IDropd
           <PeoplePicker selectionMode="multiple" selectionChanged={addSiteVisitors}/>
           <div className={styles.selection_box_wrapper}>
             <div className={styles.selection_box}>
-            <span className={styles.group_header}>Privacy</span>
+            <span className={styles.group_header}>Privacy <a className={styles.help_link} target="_blank" rel="noreferrer" href="https://www.mrsharepoint.guru/microsoft-office-365-groups-private-vs-public">?</a></span>
             <span>
                 <input
                     type="radio"
@@ -382,7 +406,7 @@ const selectedHandler_sd = (event: React.FormEvent<HTMLDivElement>, item: IDropd
             </span>
             </div>
             <div className={styles.selection_box}>
-              <span className={styles.group_header}>External sharing <a target="_blank" rel="noreferrer" href="https://learn.microsoft.com/en-US/sharepoint/change-external-sharing-site?WT.mc_id=365AdminCSH_inproduct#which-option-to-select">?</a></span>
+              <span className={styles.group_header}>External sharing <a className={styles.help_link} target="_blank" rel="noreferrer" href="https://learn.microsoft.com/en-US/sharepoint/change-external-sharing-site?WT.mc_id=365AdminCSH_inproduct#which-option-to-select">?</a></span>
                 <span>
                   <input
                     type="radio"
@@ -429,43 +453,42 @@ const selectedHandler_sd = (event: React.FormEvent<HTMLDivElement>, item: IDropd
                 </span>
             </div>
           </div>
+          <span className={styles.group_header}>Other</span>
           <Dropdown
             placeholder="Select"
-            label="Select hub"
+            label="Associate to hub"
             defaultSelectedKey={selected_hs.key}
             options={hs_options}
             onChange={selectedHandler_hs}
-            //styles={dropdownStyles}
           />
           <Dropdown
             placeholder="Select"
-            label="Select site design"
+            label="Apply site design"
             defaultSelectedKey={selected_sd.key}
             options={sd_options}
             onChange={selectedHandler_sd}
-            //styles={dropdownStyles}
           />
           <Dropdown
             placeholder="Select"
-            label="Select content type(s)"
-            //defaultSelectedKeys={[selected_ct]}
+            label="Select content type(s), if handled in site designs and flows"
             multiSelect
             options={ct_options}
             onChange={selectedHandler_ct}
-            //styles={dropdownStyles}
           />
           <div className={styles.createSite_button_wrapper}>
-            <input className={styles.createSite_button} type="submit" onClick={createSite} value="Create site" 
+            <input className={styles.createSite_button} 
+                   type="submit" onClick={createSite} 
+                   value="Create site" 
                    disabled = {disabled}/>
           </div>
       </form>
       <div className={styles.result_wrapper}>
       <div className={styles.result_list}>
           <p>You will create a team site with M365 group. Your site will have the following properties:</p>
-          <h3>{domain}-{title}</h3>
+          <h3>{title}</h3>
           <div className={styles.result_list_details}>
             <span>Url:</span>
-            <span>https://msfintl.sharepoint.com/sites/{domain}-{title}</span>
+            <span>https://msfintl.sharepoint.com/sites/{title}</span>
 
             <span>Privacy:</span>
             <span>{privacy}</span>
@@ -484,15 +507,15 @@ const selectedHandler_sd = (event: React.FormEvent<HTMLDivElement>, item: IDropd
               {selected_ct.map(ct => <span>{ct.text}</span>)}
             </div>
           </div>
-        </div>
-        <div className={styles.result_progress}>
+      </div>
+      <div className={styles.result_progress}>
           <span className={styles.error_message}>{error}</span> 
           {progress === "Finished" ? 
-          <a target="_blank" href={`https://msfintl.sharepoint.com/sites/GRP-${domain}-${title}`}>Finished - click to open</a> :
+          <a className={styles.finished_link} target="_blank" href={`https://msfintl.sharepoint.com/sites/${title}`}><span className={styles.finished_link_check}>&#10003;</span> Finished - click to open</a> :
           <span>{progress}</span>
           }
-
-        </div>
+          {progress !== "Finished" && progress !== "Not run yet" ? <Loader/> : null}
+      </div>
       </div>
     </div>
   )

@@ -3,9 +3,10 @@
   "solution": {
     "name": "MSF Admin package",
     "id": "087c5348-5903-491e-b90c-03233fc57c28",
-    "version": "2.0.1.1",
+    "version": "2.0.2.1",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
+    "iconPath": "MSF.png",
     "webApiPermissionRequests": [
       {
         "resource": "Microsoft Graph",
@@ -52,7 +53,7 @@
         "title": "msf-admin-package Feature",
         "description": "The feature that activates elements of the msf-admin-package solution.",
         "id": "97999a72-c8fa-409e-9d0e-19527b72c0ea",
-        "version": "2.0.1.1"
+        "version": "2.0.2.1"
       }
     ]
   },

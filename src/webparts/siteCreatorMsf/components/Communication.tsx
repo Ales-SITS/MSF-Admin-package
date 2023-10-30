@@ -24,7 +24,8 @@ import "@pnp/graph/content-types";
 //FLUENT
 import { Dropdown, IDropdownOption } from '@fluentui/react/lib/Dropdown';
 
-
+//Component
+import Loader from './Loader'
 
 export default function Communication (props) {
 
@@ -34,12 +35,14 @@ export default function Communication (props) {
   const graph = graphfi().using(SPFx(context))
 
   //General
-  const domain = context.pageContext.user.email?.split("@")[1]?.split(".")[0]?.toUpperCase()
+  const domain = props.domain
 
   const [progress, setProgress] = useState("Not run yet")
   const [error, setError] = useState ("")
-  const [title,setTitle] = useState("")
+  const [title,setTitle] = useState(`${domain}-`)
   const [titleExist, setTitleExist] = useState(false)
+  const [namingconventions,setNamingconventions] = useState(true)
+  const [userdomain,setUserdomain] = useState(true)
 
   //Content types
   const ct = props.ct
@@ -126,8 +129,8 @@ export default function Communication (props) {
     e.preventDefault()
      const siteProps = {
       Owner: `${owners[0]}`,
-      Title: `${domain}-${title}`,
-      Url: `https://msfintl.sharepoint.com/sites/${domain}-${title}`,
+      Title: `${title}`,
+      Url: `https://msfintl.sharepoint.com/sites/${title}`,
       WebTemplate: "SITEPAGEPUBLISHING#0"    
     };
 
@@ -139,12 +142,12 @@ export default function Communication (props) {
         console.log(`Creating site error: ${error}`)
     }
 
-    siteExists(`https://msfintl.sharepoint.com/sites/${domain}-${title}`)
+    siteExists(`https://msfintl.sharepoint.com/sites/${title}`)
   };
 
   const siteExistsChecker = async(titlecheck) => {
       try {
-        const exists = await sp.site.exists(`https://msfintl.sharepoint.com/sites/${domain}-${titlecheck}`)
+        const exists = await sp.site.exists(`https://msfintl.sharepoint.com/sites/${titlecheck}`)
         setTitleExist(exists)
       } catch (error) {
         console.error('Site exists:', error);
@@ -289,17 +292,38 @@ export default function Communication (props) {
   const addTitle = (e) => {
     setProgress("Not run yet")
     setError("")
-    setTitle(e.target.value)
+    const title = e.target.value.replaceAll(" ","_")
+    setTitle(title)
     siteExistsChecker(e.target.value)
+
+    if (!title.match(/.+-.+/)){
+      setNamingconventions(false)
+    } else {setNamingconventions(true)}
+
+    if (!title.startsWith(`${domain}`)){
+      setUserdomain(false)
+    } else {
+      setUserdomain(true)
+    }
+
   }
 
 
   return (
     <div className={styles.site_wrapper}>
       <form className={styles.form_wrapper} onSubmit={createSite}>
-          <label htmlFor='siteTitle'>Site name</label>
-          <input id="siteTitle" type="text" onChange={addTitle}/>
-          <span className={styles.input_comment}>{title === "" ? "Type a site title" : titleExist ? `NG, ${domain}-${title} already exists!` : "OK"}</span>
+          <label htmlFor='siteTitle' className={styles.group_header}>Site name <span className={styles.input_hint}>{`(DOMAIN-Purpose)`}</span></label>
+          <input 
+          id="siteTitle" 
+          type="text" 
+          value={`${title}`}  
+          onChange={addTitle}
+          />
+          <span className={styles.input_comment}>
+            {title === `${domain}-` ? `Type a site title in the "DOMAIN-Purpose" format` : titleExist ? `NG, ${title} already exists!` : "OK"}
+          </span>
+          {namingconventions? null : <span className={styles.input_comment}> "⚠ Please follow the "DOMAIN-Purpose" naming convention!"</span>}
+          {userdomain? null : <span className={styles.input_comment}> "⚠ Site domain part doesn't match your account domain!"</span>}
           <span className={styles.group_header}>Site users</span>
           <span>Site Owners</span>
           <PeoplePicker defaultSelectedUserIds={adminId} selectionMode="multiple" selectionChanged={addOwners}/>
@@ -308,7 +332,7 @@ export default function Communication (props) {
           <span>Site Visitors</span>
           <PeoplePicker selectionMode="multiple" selectionChanged={addVisitors}/>
           <div className={styles.selection_box}>
-            <h4>External sharing <a target="_blank" href="https://learn.microsoft.com/en-US/sharepoint/change-external-sharing-site?WT.mc_id=365AdminCSH_inproduct#which-option-to-select">?</a></h4>
+          <span className={styles.group_header}>External sharing <a className={styles.help_link} target="_blank" rel="noreferrer" href="https://learn.microsoft.com/en-US/sharepoint/change-external-sharing-site?WT.mc_id=365AdminCSH_inproduct#which-option-to-select">?</a></span>
               <span>
                 <input
                   type="radio"
@@ -354,30 +378,27 @@ export default function Communication (props) {
                 <label htmlFor="Only people in your organization">Only people in your organization</label>
               </span>
           </div>
+          <span className={styles.group_header}>Other</span>
           <Dropdown
             placeholder="Select"
-            label="Select content type(s)"
-            //defaultSelectedKeys={[selected_ct]}
-            multiSelect
-            options={ct_options}
-            onChange={selectedHandler_ct}
-            //styles={dropdownStyles}
-          />
-          <Dropdown
-            placeholder="Select"
-            label="Select hub"
+            label="Associate to hub"
             defaultSelectedKey={selected_hs.key}
             options={hs_options}
             onChange={selectedHandler_hs}
-            //styles={dropdownStyles}
           />
           <Dropdown
             placeholder="Select"
-            label="Select site design"
+            label="Apply site design"
             defaultSelectedKey={selected_sd.key}
             options={sd_options}
             onChange={selectedHandler_sd}
-            //styles={dropdownStyles}
+          />
+                    <Dropdown
+            placeholder="Select"
+            label="Select content type(s), if handled in site designs and flows"
+            multiSelect
+            options={ct_options}
+            onChange={selectedHandler_ct}
           />
           <div className={styles.createSite_button_wrapper}>
             <input className={styles.createSite_button} type="submit" onClick={createSite} value="Create site" 
@@ -390,7 +411,7 @@ export default function Communication (props) {
           <h3>{domain}-{title}</h3>
           <div className={styles.result_list_details}>
             <span>Url:</span>
-            <span>https://msfintl.sharepoint.com/sites/{domain}-{title}</span>
+            <span>https://msfintl.sharepoint.com/sites/{title}</span>
 
             <span>Sharing:</span>
             <span>{sharing}</span>
@@ -410,9 +431,10 @@ export default function Communication (props) {
         <div className={styles.result_progress}>
           <span className={styles.error_message}>{error}</span> 
           {progress === "Finished" ? 
-          <a target="_blank" href={`https://msfintl.sharepoint.com/sites/${domain}-${title}`}>Finished - click to open</a> :
+          <a className={styles.finished_link} target="_blank" href={`https://msfintl.sharepoint.com/sites/${title}`}><span className={styles.finished_link_check}>&#10003;</span> Finished - click to open</a> :
           <span>{progress}</span>
           }
+          {progress !== "Finished" && progress !== "Not run yet" ? <Loader/> : null}
         </div>
       </div>
     </div>

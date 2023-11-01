@@ -92,8 +92,6 @@ export default function SiteOverviewMsf (props) {
     }
 
 //CONST & HIDERS 
-    const [test, setTest] = useState()
-
     const [hubsites, setHubsites] = useState([])
 
     const [subsites, setSubsites] = useState([]);

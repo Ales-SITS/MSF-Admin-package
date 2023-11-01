@@ -408,7 +408,7 @@ export default function Communication (props) {
       <div className={styles.result_wrapper}>
         <div className={styles.result_list}>
           <p>You will create a communication site. Your site will have the following properties:</p>
-          <h3>{domain}-{title}</h3>
+          <h3>{title}</h3>
           <div className={styles.result_list_details}>
             <span>Url:</span>
             <span>https://msfintl.sharepoint.com/sites/{title}</span>

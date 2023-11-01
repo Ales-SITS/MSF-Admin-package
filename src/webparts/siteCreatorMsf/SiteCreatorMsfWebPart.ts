@@ -3,7 +3,8 @@ import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import {
   IPropertyPaneConfiguration,
-  PropertyPaneTextField
+  PropertyPaneTextField,
+  PropertyPaneToggle
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 
@@ -16,7 +17,7 @@ import { Providers } from '@microsoft/mgt-element/dist/es6/providers/Providers';
 import { SharePointProvider } from '@microsoft/mgt-sharepoint-provider/dist/es6/SharePointProvider';
 
 export interface ISiteCreatorMsfWebPartProps {
-  description: string;
+  expanded: boolean
 }
 
 export default class SiteCreatorMsfWebPart extends BaseClientSideWebPart<ISiteCreatorMsfWebPartProps> {
@@ -26,6 +27,7 @@ export default class SiteCreatorMsfWebPart extends BaseClientSideWebPart<ISiteCr
       SiteCreatorMsf,
       {
         context: this.context,
+        expanded: this.properties.expanded
       }
     );
 
@@ -56,10 +58,12 @@ export default class SiteCreatorMsfWebPart extends BaseClientSideWebPart<ISiteCr
           },
           groups: [
             {
-              groupName: strings.BasicGroupName,
+              groupName: "General",
               groupFields: [
-                PropertyPaneTextField('description', {
-                  label: strings.DescriptionFieldLabel
+                PropertyPaneToggle('expanded',{
+                  label: "Collapsed/Expanded display",
+                  offText: "Collapsed",
+                  onText: "Expanded"
                 })
               ]
             }

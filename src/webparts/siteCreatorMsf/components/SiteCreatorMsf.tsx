@@ -19,6 +19,7 @@ import "@pnp/sp/hubsites";
 
 export default function SiteCreatorMsf (props) {
 
+
   const graph = graphfi().using(SPFx(props.context))
   const sp = spfi().using(SPFxsp(props.context))
   const siteurl = props.context.pageContext.site.absoluteUrl
@@ -99,6 +100,12 @@ export default function SiteCreatorMsf (props) {
 
   const domain = `${domains[`${props.context.pageContext.user.email?.split("@")[1].toLowerCase()}`]}`
 
+  const [expanded, setexpanded] = useState(props.expanded)
+  console.log(props.expanded)
+  const expandedHandler = () => {
+    setexpanded(current => !current)
+  }
+
   const [selectedType,setSelectedType] = useState(1)
   const selectedTypeHandler = (type) => {
     setSelectedType(type)
@@ -166,7 +173,14 @@ export default function SiteCreatorMsf (props) {
 
   return (
     <div className={styles.app_wrapper}>
-      <h2>Site Creator</h2>
+      <div className={styles.top_wrapper}>
+        <h2>Site Creator</h2>
+        <button onClick={expandedHandler} title={`${expanded ? "Click to expand" : "Click to collapse"}`} className={expanded ? styles.mainSiteBoxBottomRight : `${styles.mainSiteBoxBottomRight} ${styles.mainSiteBoxBottomRightHidden} `}>
+        ▲
+        </button>
+      </div>
+      {expanded && 
+      <>
       <div className={styles.app_navigation}>
         <button onClick={()=>selectedTypeHandler(1)} className={selectedType === 1 && styles.selected_site_type}>Teams site (M365)</button>
         <button onClick={()=>selectedTypeHandler(2)} className={selectedType === 2 && styles.selected_site_type}>Team site without M365</button>
@@ -197,38 +211,8 @@ export default function SiteCreatorMsf (props) {
        domain={domain}
        />
       }
+      </>
+      }
     </div>
   )
 }
-
-
-/*
-Id                  : f5ce4b3c-7b29-44e5-9a8d-cdd8ad2db50b
-Title               : External sharing ExistingExternalUserSharingOnly
-Description         : Sets External sharing to ExistingExternalUserSharingOnly 
-Content             : 
-Version             : 1
-IsSiteScriptPackage : False
-
-Id                  : 721f126f-a657-4f38-8e44-4ddca33bb8be
-Title               : External sharing Disabled
-Description         : Sets External sharing to Disabled
-Content             : 
-Version             : 1
-IsSiteScriptPackage : False
-
-Id                  : 6563274d-f5fe-451d-a916-f91e488c86eb
-Title               : External sharing ExternalUserSharingOnly
-Description         : Sets External sharing to ExternalUserSharingOnly
-Content             : 
-Version             : 1
-IsSiteScriptPackage : False
-
-Id                  : 3897ba25-22bd-40ad-9fb3-a2df5132c928
-Title               : External sharing ExternalUserAndGuestSharing
-Description         : Sets External sharing to ExternalUserAndGuestSharing
-Content             : 
-Version             : 1
-IsSiteScriptPackage : False
-
-*/

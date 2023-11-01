@@ -515,7 +515,7 @@ const selectedHandler_sd = (event: React.FormEvent<HTMLDivElement>, item: IDropd
           <span>{progress}</span>
           }
           {progress !== "Finished" && progress !== "Not run yet" ? <Loader/> : null}
-      </div>
+    </div>
       </div>
     </div>
   )
